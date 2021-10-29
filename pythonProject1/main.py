@@ -2,8 +2,8 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import math
 import os.path
-
 import cx_Oracle
 import pandas as pd
 import sys
@@ -23,131 +23,305 @@ def print_hi(name):
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-      MainWindow.setObjectName("MainWindow")
-      MainWindow.resize(1379, 847)
-      self.centralwidget = QtWidgets.QWidget(MainWindow)
-      self.centralwidget.setObjectName("centralwidget")
-      self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-      self.pushButton.setGeometry(QtCore.QRect(110, 20, 75, 23))
-      self.pushButton.setObjectName("pushButton")
-      self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-      self.lineEdit.setGeometry(QtCore.QRect(10, 250, 113, 20))
-      self.lineEdit.setObjectName("lineEdit")
-      self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-      self.pushButton_2.setGeometry(QtCore.QRect(1280, 20, 75, 23))
-      self.pushButton_2.setObjectName("pushButton_2")
-      self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-      self.tableWidget.setGeometry(QtCore.QRect(290, 50, 1071, 711))
-      self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-      self.tableWidget.setObjectName("tableWidget")
-      self.tableWidget.setColumnCount(0)
-      self.tableWidget.setRowCount(0)
-      self.label = QtWidgets.QLabel(self.centralwidget)
-      self.label.setGeometry(QtCore.QRect(560, 30, 41, 21))
-      self.label.setObjectName("label")
-      self.label_2 = QtWidgets.QLabel(self.centralwidget)
-      self.label_2.setGeometry(QtCore.QRect(610, 30, 261, 21))
-      self.label_2.setText("")
-      self.label_2.setObjectName("label_2")
-      self.label_3 = QtWidgets.QLabel(self.centralwidget)
-      self.label_3.setGeometry(QtCore.QRect(10, 22, 81, 20))
-      font = QtGui.QFont()
-      font.setFamily("-윤고딕110")
-      font.setPointSize(12)
-      self.label_3.setFont(font)
-      self.label_3.setObjectName("label_3")
-      self.listWidget = QtWidgets.QListWidget(self.centralwidget)
-      self.listWidget.setGeometry(QtCore.QRect(10, 50, 171, 192))
-      self.listWidget.setObjectName("listWidget")
-      self.label_4 = QtWidgets.QLabel(self.centralwidget)
-      self.label_4.setGeometry(QtCore.QRect(290, 30, 71, 21))
-      self.label_4.setObjectName("label_4")
-      self.label_5 = QtWidgets.QLabel(self.centralwidget)
-      self.label_5.setGeometry(QtCore.QRect(360, 30, 191, 21))
-      self.label_5.setText("")
-      self.label_5.setObjectName("label_5")
-      MainWindow.setCentralWidget(self.centralwidget)
-      self.menubar = QtWidgets.QMenuBar(MainWindow)
-      self.menubar.setGeometry(QtCore.QRect(0, 0, 1379, 21))
-      self.menubar.setObjectName("menubar")
-      MainWindow.setCentralWidget(self.centralwidget)
-      self.menubar = QtWidgets.QMenuBar(MainWindow)
-      self.menubar.setGeometry(QtCore.QRect(0, 0, 1379, 21))
-      self.menubar.setObjectName("menubar")
-      MainWindow.setMenuBar(self.menubar)
-      self.statusbar = QtWidgets.QStatusBar(MainWindow)
-      self.statusbar.setObjectName("statusbar")
-      MainWindow.setStatusBar(self.statusbar)
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1256, 680)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1241, 660))
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.label_7 = QtWidgets.QLabel(self.tab)
+        self.label_7.setGeometry(QtCore.QRect(250, 600, 151, 16))
+        self.label_7.setText("")
+        self.label_7.setObjectName("label_7")
+        self.tableWidget = QtWidgets.QTableWidget(self.tab)
+        self.tableWidget.setGeometry(QtCore.QRect(180, 30, 1051, 560))
+        self.tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.label_2 = QtWidgets.QLabel(self.tab)
+        self.label_2.setGeometry(QtCore.QRect(510, 10, 331, 21))
+        self.label_2.setText("")
+        self.label_2.setObjectName("label_2")
+        self.label_5 = QtWidgets.QLabel(self.tab)
+        self.label_5.setGeometry(QtCore.QRect(260, 10, 191, 21))
+        self.label_5.setText("")
+        self.label_5.setObjectName("label_5")
+        self.label_6 = QtWidgets.QLabel(self.tab)
+        self.label_6.setGeometry(QtCore.QRect(180, 600, 71, 16))
+        self.label_6.setObjectName("label_6")
+        self.label = QtWidgets.QLabel(self.tab)
+        self.label.setGeometry(QtCore.QRect(460, 10, 41, 21))
+        self.label.setObjectName("label")
+        self.pushButton_2 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_2.setGeometry(QtCore.QRect(1150, 0, 75, 23))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.label_4 = QtWidgets.QLabel(self.tab)
+        self.label_4.setGeometry(QtCore.QRect(180, 10, 71, 21))
+        self.label_4.setObjectName("label_4")
+        self.pushButton = QtWidgets.QPushButton(self.tab)
+        self.pushButton.setGeometry(QtCore.QRect(100, 0, 71, 23))
+        self.pushButton.setObjectName("pushButton")
+        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.tab)
+        self.plainTextEdit.setGeometry(QtCore.QRect(0, 260, 171, 71))
+        self.plainTextEdit.setReadOnly(True)
+        self.plainTextEdit.setObjectName("plainTextEdit")
+        self.listWidget = QtWidgets.QListWidget(self.tab)
+        self.listWidget.setGeometry(QtCore.QRect(0, 30, 171, 192))
+        self.listWidget.setObjectName("listWidget")
+        self.label_3 = QtWidgets.QLabel(self.tab)
+        self.label_3.setGeometry(QtCore.QRect(10, 2, 81, 20))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(12)
+        self.label_3.setFont(font)
+        self.label_3.setObjectName("label_3")
+        self.pushButton_3 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_3.setGeometry(QtCore.QRect(0, 230, 75, 23))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tabWidget.addTab(self.tab_2, "")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1256, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
 
-      self.retranslateUi(MainWindow)
-      QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-      _translate = QtCore.QCoreApplication.translate
-      MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-      self.pushButton.setText(_translate("MainWindow", "조회"))
-      self.pushButton_2.setText(_translate("MainWindow", "엑셀 변환"))
-      self.tableWidget.setSortingEnabled(True)
-      self.label.setText(_translate("MainWindow", "선택값:"))
-      self.label_3.setText(_translate("MainWindow", "DB리스트"))
-      self.label_4.setText(_translate("MainWindow", "검색테이블: "))
+       _translate = QtCore.QCoreApplication.translate
+       MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+       self.tableWidget.setSortingEnabled(True)
+       self.label_6.setText(_translate("MainWindow", "조회 데이터:"))
+       self.label.setText(_translate("MainWindow", "선택값:"))
+       self.pushButton_2.setText(_translate("MainWindow", "엑셀 변환"))
+       self.label_4.setText(_translate("MainWindow", "검색테이블: "))
+       self.pushButton.setText(_translate("MainWindow", "조회"))
+       self.label_3.setText(_translate("MainWindow", "DB리스트"))
+       self.pushButton_3.setText(_translate("MainWindow", "조건검색"))
+       self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "데이터 조회"))
+       self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "그래픽 조회"))
 
-
-
-    # 클래스 변수
-      Ui_MainWindow.selectedTable="" # DB리스트 선택값
-      Ui_MainWindow.dfRow=0 # 검색된 자료 row
-      Ui_MainWindow.mainWindow_df="" # 메인 자료값 df
+       # 클래스 변수
+       Ui_MainWindow.selectedTable="" # DB리스트 선택값
+       Ui_MainWindow.dfRow=0 # 검색된 자료 row
+       Ui_MainWindow.mainWindow_df="" # 메인 자료값 df
+       Ui_MainWindow.sqlQuery1="" # 추가 조건
+       Ui_MainWindow.maxSearch=100000 # 최대 조회가능 숫자
 
     # Qt디자이너 외 구현
-      self.setListWidget()
-      self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers) # 내용수정 금지
+       self.setListWidget() # DB리스트 생성
+       self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers) # 내용수정 금지
+       self.newWindow1 = QDialog() # 검색조건 창
+       self.pushButton_3.setDisabled(True)
 
-     # 버튼클릭 이벤트
-      self.pushButton.clicked.connect(self.createTable)  # 조회 버튼
-      self.pushButton_2.clicked.connect(lambda: self.toExcel())  # 엑셀변환 버튼
-      self.tableWidget.cellClicked.connect(self.cellClickEvent) # 표 클릭시 발생 이벤트
-      self.listWidget.currentItemChanged.connect(self.clickListWidget) # DB리스트 클릭시 발생 이벤트
-      self.listWidget.doubleClicked.connect(self.createTable) # DB리스트 더블클릭시 발생 이벤트
+    # 이벤트
+       self.pushButton.clicked.connect(self.createTable)  # 조회 버튼 createTable
+       self.pushButton_2.clicked.connect(self.toExcel)  # 엑셀변환 버튼
+       self.tableWidget.cellClicked.connect(self.cellClickEvent) # 표 클릭시 발생 이벤트
+       self.listWidget.currentItemChanged.connect(self.clickListWidget) # DB리스트 클릭시 발생 이벤트
+       self.listWidget.doubleClicked.connect(self.createTable) # DB리스트 더블클릭시 발생 이벤트
+       self.pushButton_3.clicked.connect(self.windowQuery) # 검색조건 추가 버튼
+
+    def windowQuery(self):
+        """ 검색조건 추가 창
+        """
+        self.win1label = QtWidgets.QLabel(self.newWindow1)
+        self.win1label.setGeometry(QtCore.QRect(0, 40, 51, 21))
+        self.win1label.setObjectName("win1label")
+        self.win1comboBox = QtWidgets.QComboBox(self.newWindow1)
+        self.win1comboBox.setGeometry(QtCore.QRect(40, 70, 151, 22))
+        self.win1comboBox.setObjectName("win1comboBox")
+        self.win1label_2 = QtWidgets.QLabel(self.newWindow1)
+        self.win1label_2.setGeometry(QtCore.QRect(90, 40, 51, 21))
+        self.win1label_2.setObjectName("win1label_2")
+        self.win1comboBox_3 = QtWidgets.QComboBox(self.newWindow1)
+        self.win1comboBox_3.setGeometry(QtCore.QRect(200, 70, 71, 22))
+        self.win1comboBox_3.setObjectName("win1comboBox_3")
+        self.win1lineEdit = QtWidgets.QLineEdit(self.newWindow1)
+        self.win1lineEdit.setGeometry(QtCore.QRect(280, 70, 121, 21))
+        self.win1lineEdit.setObjectName("win1lineEdit")
+        self.win1pushButton = QtWidgets.QPushButton(self.newWindow1)
+        self.win1pushButton.setGeometry(QtCore.QRect(340, 10, 75, 23))
+        self.win1pushButton.setObjectName("win1pushButton")
+        self.win1checkBox = QtWidgets.QCheckBox(self.newWindow1)
+        self.win1checkBox.setEnabled(True)
+        self.win1checkBox.setGeometry(QtCore.QRect(20, 70, 21, 20))
+        self.win1checkBox.setText("")
+        self.win1checkBox.setChecked(True)
+        self.win1checkBox.setObjectName("win1checkBox")
+        self.win1lineEdit_2 = QtWidgets.QLineEdit(self.newWindow1)
+        self.win1lineEdit_2.setEnabled(False)
+        self.win1lineEdit_2.setGeometry(QtCore.QRect(280, 100, 121, 21))
+        self.win1lineEdit_2.setReadOnly(False)
+        self.win1lineEdit_2.setObjectName("win1lineEdit_2")
+        self.win1comboBox_4 = QtWidgets.QComboBox(self.newWindow1)
+        self.win1comboBox_4.setGeometry(QtCore.QRect(200, 100, 71, 22))
+        self.win1comboBox_4.setObjectName("win1comboBox_4")
+        self.win1checkBox_2 = QtWidgets.QCheckBox(self.newWindow1)
+        self.win1checkBox_2.setEnabled(True)
+        self.win1checkBox_2.setGeometry(QtCore.QRect(20, 100, 21, 20))
+        self.win1checkBox_2.setText("")
+        self.win1checkBox_2.setObjectName("win1checkBox_2")
+        self.win1comboBox_2 = QtWidgets.QComboBox(self.newWindow1)
+        self.win1comboBox_2.setGeometry(QtCore.QRect(40, 100, 151, 22))
+        self.win1comboBox_2.setObjectName("win1comboBox_2")
+        self.win1label_3 = QtWidgets.QLabel(self.newWindow1)
+        self.win1label_3.setGeometry(QtCore.QRect(210, 40, 51, 21))
+        self.win1label_3.setObjectName("win1label_3")
+        self.win1label_4 = QtWidgets.QLabel(self.newWindow1)
+        self.win1label_4.setGeometry(QtCore.QRect(330, 40, 51, 21))
+        self.win1label_4.setObjectName("win1label_4")
+
+        _translate = QtCore.QCoreApplication.translate
+        self.win1label.setText(_translate("MainWindow", "사용여부"))
+        self.win1label_2.setText(_translate("MainWindow", "검색 항목"))
+        self.win1pushButton.setText(_translate("MainWindow", "확인"))
+        self.win1label_3.setText(_translate("MainWindow", "검색 조건"))
+        self.win1label_4.setText(_translate("MainWindow", "값"))
+
+         # QT디자이너 외 구현
+        self.newWindow1.sqlQuery=""
+        self.newWindow1.setWindowTitle("조건검색창")
+        self.newWindow1.setWindowModality(QtCore.Qt.ApplicationModal) # 하위창 컨트롤 금지
+        self.newWindow1.resize(426, 298)
+        self.win1pushButton.setDisabled(False) # 쿼리추가 버튼 비활성화
+        self.setCombobox()
+        self.newWindow1.show()
+
+
+         # 이벤트
+        self.win1pushButton.clicked.connect(self.submitQuery) # 확인버튼 누를시
+        self.win1checkBox.stateChanged.connect(self.ableQuery1) # 체크박스 변화시
+        self.win1checkBox_2.stateChanged.connect(self.ableQuery2)
+
+    def ableQuery1(self):
+        """ 체크시 옆에 텍스트박스 활성화, 해제시 비활성화+값 지움"""
+        if self.win1checkBox.isChecked():
+            self.win1lineEdit.setEnabled(True)  # 입력문 활성화
+            self.win1pushButton.setDisabled(False)
+        else:
+            self.win1lineEdit.setEnabled(False)
+            self.win1lineEdit.setText("")
+
+    def ableQuery2(self):
+        if self.win1checkBox_2.isChecked():
+            self.win1lineEdit_2.setEnabled(True)  # 입력문 활성화
+            self.win1pushButton.setDisabled(False)
+        else:
+            self.win1lineEdit_2.setEnabled(False)
+            self.win1lineEdit_2.setText("")
+
+    def submitQuery(self):
+        """ 추가검색조건 SQL에 추가"""
+        sql1=""
+        sql2=""
+        if self.win1lineEdit.text()=="":
+            self.win1lineEdit.setEnabled(False)
+            self.win1checkBox.setChecked(False)
+        else:
+            sql1=self.setQuery(self.win1comboBox.currentText(),self.win1comboBox_3.currentIndex(),self.win1lineEdit.text())
+        if self.win1lineEdit_2.text()=="":
+            self.win1lineEdit_2.setEnabled(False)
+            self.win1checkBox_2.setChecked(False)
+        else:
+            sql2=self.setQuery(self.win1comboBox_2.currentText(),self.win1comboBox_4.currentIndex(),self.win1lineEdit_2.text())
+        Ui_MainWindow.sqlQuery1=sql1+sql2
+        # self.lineEdit.setText(Ui_MainWindow.sqlQuery1.replace("and ","",1))
+        self.plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery1.replace("and ","",1))
+        self.createTable()
+        self.newWindow1.close()
+
+    def setQuery(self,columnText,i,lineEditText):
+        """ 조건을 설정해 SQL에 추가 """
+        str1=[ " like '%"," = '", " != '", " <= '", " >= '"]
+        str2=["%'","'"]
+        sql=" and "+columnText+str1[i]+lineEditText+str2[math.trunc((i+9)/10)]
+        return sql
+
+    def setCombobox(self):
+        """ 콤보박스값들 설정 """
+        comboList=["부분일치","일치","제외","이상","이하"]
+        for i in comboList:
+            self.win1comboBox_3.addItem(i)
+            self.win1comboBox_4.addItem(i)
+        for i in Ui_MainWindow.mainWindow_df.columns.values.tolist():
+            self.win1comboBox.addItem(i)
+            self.win1comboBox_2.addItem(i)
+
+#   -------------------------------------------메인페이지
+
 
     def setListWidget(self):
-      """ 왼쪽 리스트에 DB리스트 생성
-      리스트는 하드코딩 약 8만건 기준 조회시간 30초, 약 400만건 기준 조회시간
-      """
-      dbList=["ASD","TB"]
+      """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
+      dbList = ["TB","ASD"]
       self.listWidget.addItems(dbList)
 
     def clickListWidget(self):
-      """ DB리스트 클릭시 클래스 변수에 값을 저장
-      """
+      """ DB리스트 클릭시 클래스 변수에 값을 저장 """
       Ui_MainWindow.selectedTable=self.listWidget.currentItem().text()
+      Ui_MainWindow.sqlQuery1 = ""
+      self.plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery1)
+      # self.lineEdit.setText(Ui_MainWindow.sqlQuery1)
+      self.pushButton_3.setDisabled(True)
 
     def cellClickEvent(self,row,col):
-      """ 셀 클릭값 받아오기
-      """
+      """ 셀 클릭값 받아오기 드래그가 가능하기 때문에 정보유출에 취약"""
       clickCellText=self.tableWidget.item(row, col).text()
       self.label_2.setText(clickCellText)
 
+
     def createTable(self):
-      """ 테이블 설정
-      테이블 컬럼, 로우 수, 컬럼명 설정을 함
-      :return: Dataframe타입 조회값
-      """
+      """ 테이블 컬럼, 로우 수, 컬럼명 설정을 함
+      :return: Dataframe타입 조회값 """
+      sqlValue=self.searchValue()
       if Ui_MainWindow.selectedTable:
-        df = pd.DataFrame(self.searchValue())
-        Ui_MainWindow.dfRow=len(df.index)
-        self.tableWidget.setColumnCount(len(df.columns))
-        self.tableWidget.setRowCount(len(df.index))
-        self.tableWidget.setHorizontalHeaderLabels(self.searchColumn())
-        self.setTableData(df)
-        Ui_MainWindow.mainWindow_df = df
-        self.label_5.setText(Ui_MainWindow.selectedTable)
+          if sqlValue:
+            header=self.searchColumn()
+            df = pd.DataFrame(sqlValue)
+            df.columns=header
+            self.tableCount()
+            Ui_MainWindow.dfRow=len(df.index)
+            self.tableWidget.setColumnCount(len(df.columns))
+            self.tableWidget.setRowCount(len(df.index))
+            self.tableWidget.setHorizontalHeaderLabels(header)
+            self.setTableData(df)
+            Ui_MainWindow.mainWindow_df = df
+            self.label_5.setText(Ui_MainWindow.selectedTable)
+            self.label_7.setText(str(Ui_MainWindow.dfRow)+" / 전체:"+self.tableCount())
+            self.tableWidget.resizeColumnsToContents()
+            self.pushButton_3.setDisabled(False)
+          else:
+            self.tableWidget.clear()
+            self.tableWidget.setRowCount(0)
+            self.label_5.setText("조회값 없음")
       else:
         self.label_5.setText("없음")
+      self.label_2.setText("")
+
+    def tableCount(self):
+        """테이블 자료수 조회"""
+        sql="select count(*) from "+Ui_MainWindow.selectedTable
+        cur.execute(sql)
+        cnt = cur.fetchall()
+        a=list(cnt[0])[0]
+        return str(a)
 
     def searchColumn(self):
-      """ SQL 컬럼명 리턴
-      테이블 컬럼을 가지고와서 List로 변환
+      """ 테이블 컬럼을 가지고와서 List로 변환
       :return List타입 컬럼명들
       """
       if Ui_MainWindow.selectedTable:
@@ -161,37 +335,33 @@ class Ui_MainWindow(object):
           return str1
 
     def searchValue(self):
-      """ SQL 값 리턴
-      어떤 테이블은 로우수가 1200만개가 넘는 것도 있으니 주의
+      """ SQL 값 리턴. 어떤 테이블은 로우수가 1200만개가 넘는 것도 있어서 5만건으로 제한 200만건 넘어가면 에러나면서 컴퓨터 꺼짐 10만건에 1분가량 소요
       :return: Dataframe타입 SQL조회값
       """
       row=""
       if Ui_MainWindow.selectedTable: #값 있는 경우
-        sql = "select * from "+Ui_MainWindow.selectedTable
+        sql = "select * from "+Ui_MainWindow.selectedTable+" where 1=1"+Ui_MainWindow.sqlQuery1
+        print("sql:"+sql)
         cur.execute(sql)
-        row = cur.fetchall()
+        row = cur.fetchmany(Ui_MainWindow.maxSearch)
       else: #값 없는 경우
         sql = ""
 
       return row
 
     def setTableData(self, df):
-      """조회값 입력
-      for로 돌리면서 값을 입력
-      :param df: dataframe타입 SQL조회값
-      """
+      """for로 돌리면서 표에 값을 입력, Null값 따로 처리안함"""
       for i in range(len(df.index)):
         for j in range(len(df.columns)):
          self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
 
     def toExcel(self):
-      """엑셀 변환 에러로그 없이 꺼지면 지정된 저장경로 관련 문제
-      """
+      """엑셀 변환. 에러로그 없이 꺼지면 지정된 저장경로 관련 문제"""
       a = QMessageBox()
       if Ui_MainWindow.dfRow:
           fileName=datetime.today().strftime("%Y%m%d%H%M%S")
 
-          excelTitle=(r"C:\\"+fileName+".xlsx")
+          excelTitle=(r"C:\Users\User\Desktop/"+fileName+".xlsx")
           Ui_MainWindow.mainWindow_df.to_excel(excelTitle)
 
           if os.path.exists(excelTitle):
@@ -206,15 +376,17 @@ class Ui_MainWindow(object):
 
  # 메인
 if __name__ == '__main__':
- # conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
- dsn = cx_Oracle.makedsn("localhost", 1521, "xe")
- conn = cx_Oracle.connect("system", "1234")
- cur = conn.cursor()
- app=QtWidgets.QApplication(sys.argv)
- MainWindow = QtWidgets.QMainWindow()
- ui = Ui_MainWindow()
- ui.setupUi(MainWindow)
- MainWindow.show()
- sys.exit(app.exec_())
+     dsn = cx_Oracle.makedsn("localhost", 1521, "xe")
+     conn = cx_Oracle.connect("system", "1234")
+     cur = conn.cursor()
+     app=QtWidgets.QApplication(sys.argv)
+     MainWindow = QtWidgets.QMainWindow()
+     ui = Ui_MainWindow()
+     ui.setupUi(MainWindow)
+     MainWindow.show()
+     sys.exit(app.exec_())
 
 
+# dbList = ["FS_펀드속성코드정보", "FS_시장지수코드정보", "FS_운용사정보", "공통코드", "FS_매입_환매거래정보", "FS_운용사유형별지표및성과분석"]
+#      conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
+# excelTitle = (r"C:\Users\User\Desktop/" + fileName + ".xlsx")​
