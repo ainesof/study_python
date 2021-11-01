@@ -2,15 +2,16 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import json
 import math
 import os.path
+import re
 import cx_Oracle
 import pandas as pd
 import sys
-import requests, bs4
-from pandas import json_normalize
+import requests
+import bs4
 from datetime import datetime
+from pandas.api.types import is_numeric_dtype
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import *
 
@@ -19,10 +20,6 @@ from matplotlib import font_manager, rc
 font_path = "C:/Windows/Fonts/NGULIM.TTF"
 font = font_manager.FontProperties(fname=font_path).get_name()
 rc('font', family=font)
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -58,6 +55,12 @@ class Ui_MainWindow(object):
         self.label_6 = QtWidgets.QLabel(self.tab)
         self.label_6.setGeometry(QtCore.QRect(180, 600, 71, 16))
         self.label_6.setObjectName("label_6")
+        self.label_8 = QtWidgets.QLabel(self.tab)
+        self.label_8.setGeometry(QtCore.QRect(400, 600, 71, 16))
+        self.label_8.setObjectName("label_8")
+        self.label_9 = QtWidgets.QLabel(self.tab)
+        self.label_9.setGeometry(QtCore.QRect(500, 600, 71, 16))
+        self.label_9.setObjectName("label_9")
         self.label = QtWidgets.QLabel(self.tab)
         self.label.setGeometry(QtCore.QRect(460, 10, 41, 21))
         self.label.setObjectName("label")
@@ -110,6 +113,8 @@ class Ui_MainWindow(object):
         self.tableWidget.setSortingEnabled(True)
         self.label_6.setText(_translate("MainWindow", "조회 데이터:"))
         self.label.setText(_translate("MainWindow", "선택값:"))
+        self.label_8.setText(_translate("MainWindow", "인덱스:"))
+        self.label_9.setText(_translate("MainWindow", "합계:"))
         self.pushButton_2.setText(_translate("MainWindow", "엑셀 변환"))
         self.label_4.setText(_translate("MainWindow", "검색테이블: "))
         self.pushButton.setText(_translate("MainWindow", "조회"))
@@ -160,9 +165,11 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(self.createTable)  # 조회 버튼 createTable
         self.pushButton_2.clicked.connect(self.toExcel)  # 엑셀변환 버튼
         self.tableWidget.cellClicked.connect(self.cellClickEvent) # 표 클릭시 발생 이벤트
+        self.tableWidget.currentCellChanged.connect(self.cellClickEvent)  # 표 클릭시 발생 이벤트
         self.listWidget.currentItemChanged.connect(self.clickListWidget) # DB리스트 클릭시 발생 이벤트
         self.listWidget.doubleClicked.connect(self.createTable) # DB리스트 더블클릭시 발생 이벤트
         self.pushButton_3.clicked.connect(self.windowQuery) # 검색조건 추가 버튼
+
 
     def windowQuery(self):
         """ 검색조건 추가 창
@@ -295,7 +302,7 @@ class Ui_MainWindow(object):
 
     def setListWidget(self):
         """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
-        dbList = ["TB","ASD","INCOME","증권회사","지급보증","공공기관","증권회사"]
+        dbList = ["TB","ASD","INCOME","증권회사","지급보증","공공기관"]
         self.listWidget.addItems(dbList)
 
     def clickListWidget(self):
@@ -307,9 +314,25 @@ class Ui_MainWindow(object):
         self.pushButton_3.setDisabled(True)
 
     def cellClickEvent(self,row,col):
-        """ 셀 클릭값 받아오기 드래그가 가능하기 때문에 정보유출에 취약"""
+        """ 셀 클릭값 받아오기 마우스로 드래그하는건 계산 안됨, 문자에 숫자 껴있는건 맨 앞 숫자만 다 가져옴"""
         clickCellText=self.tableWidget.item(row, col).text()
         self.label_2.setText(clickCellText)
+        aa=self.tableWidget.selectedRanges()
+        cnt=0
+        tot=[]
+        for idx, val in enumerate(aa): # val.columnCount(), val.topRow(), val.leftColumn(), val.bottomRow(), val.rightColumn()
+            # print("{} [{},{}],[{},{}]".format(val.columnCount(), val.topRow(), val.leftColumn(), val.bottomRow(), val.rightColumn()))
+
+            for i in range(int(val.topRow()), int(val.bottomRow())+1):
+                for k in range(int(val.leftColumn()), int(val.rightColumn())+1):
+                    cnt=cnt+1
+            # print(self.tableWidget.item(val.topRow(), val.leftColumn()).text())
+                    value=re.findall("\d+",self.tableWidget.item(i, k).text())
+                    if value:
+                        tot.append(int(value[0]))
+
+        self.label_8.setText(str(cnt)) # 선택 수량
+        self.label_9.setText(str(sum(tot))) # 합계
 
 
     def createTable(self):
@@ -505,3 +528,5 @@ if __name__ == '__main__':
 #      conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
 # excelTitle = (r"C:\Users\User\Desktop/" + fileName + ".xlsx")
 # pyuic5 -x naver.ui -o naver.py
+# ModuleNotFoundError: No module named 'requests': 파이참에 깔아도 위치가 다른게 딸려서 인식 못 하는거니 파이썬/scripts에 가서 pip로 requests 설치
+# 파이썬창에서 import requests를 치면 반응이 없고 그냥 requests를 쳤을 때 에러가 아니고 다른게 나오면 설치된거. 다른것도 마찬가지
