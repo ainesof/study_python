@@ -84,7 +84,7 @@
      <widget class="QPushButton" name="pushButton_3">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>110</x>
         <y>10</y>
         <width>75</width>
         <height>23</height>
@@ -103,6 +103,27 @@
         <height>351</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>71</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>320</y>
+        <width>160</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="tab1_win2verticalLayout"/>
      </widget>
     </widget>
    </widget>
