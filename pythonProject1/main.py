@@ -2,15 +2,12 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import math
-import os.path
-import re
+import decimal
+import math, os.path, sys, traceback
 import cx_Oracle
 import matplotlib.pyplot as plt
 import pandas as pd
-import sys
-import requests
-import bs4
+import requests, bs4
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import datetime
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -30,21 +27,21 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1256, 847)
+        MainWindow.resize(1256, 719)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setEnabled(True)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1241, 801))
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1241, 681))
         self.tabWidget.setObjectName("tabWidget")
         self.tab1 = QtWidgets.QWidget()
         self.tab1.setObjectName("tab1")
         self.label_7 = QtWidgets.QLabel(self.tab1)
-        self.label_7.setGeometry(QtCore.QRect(250, 750, 181, 20))
+        self.label_7.setGeometry(QtCore.QRect(250, 630, 181, 20))
         self.label_7.setText("")
         self.label_7.setObjectName("label_7")
         self.tableWidget = QtWidgets.QTableWidget(self.tab1)
-        self.tableWidget.setGeometry(QtCore.QRect(180, 30, 1051, 701))
+        self.tableWidget.setGeometry(QtCore.QRect(180, 30, 1051, 581))
         self.tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setAlternatingRowColors(True)
@@ -52,24 +49,24 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.label_2 = QtWidgets.QLabel(self.tab1)
-        self.label_2.setGeometry(QtCore.QRect(470, 730, 221, 21))
+        self.label_2.setGeometry(QtCore.QRect(470, 610, 221, 21))
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
         self.label_5 = QtWidgets.QLabel(self.tab1)
-        self.label_5.setGeometry(QtCore.QRect(250, 730, 181, 21))
+        self.label_5.setGeometry(QtCore.QRect(250, 610, 181, 21))
         self.label_5.setText("")
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(self.tab1)
-        self.label_6.setGeometry(QtCore.QRect(180, 750, 71, 21))
+        self.label_6.setGeometry(QtCore.QRect(180, 630, 71, 21))
         self.label_6.setObjectName("label_6")
         self.label = QtWidgets.QLabel(self.tab1)
-        self.label.setGeometry(QtCore.QRect(430, 730, 41, 21))
+        self.label.setGeometry(QtCore.QRect(430, 610, 41, 21))
         self.label.setObjectName("label")
         self.pushButton_2 = QtWidgets.QPushButton(self.tab1)
         self.pushButton_2.setGeometry(QtCore.QRect(1150, 0, 75, 23))
         self.pushButton_2.setObjectName("pushButton_2")
         self.label_4 = QtWidgets.QLabel(self.tab1)
-        self.label_4.setGeometry(QtCore.QRect(180, 730, 71, 21))
+        self.label_4.setGeometry(QtCore.QRect(180, 610, 71, 21))
         self.label_4.setObjectName("label_4")
         self.pushButton = QtWidgets.QPushButton(self.tab1)
         self.pushButton.setEnabled(True)
@@ -97,17 +94,17 @@ class Ui_MainWindow(object):
         self.pushButton_4.setGeometry(QtCore.QRect(180, 0, 75, 23))
         self.pushButton_4.setObjectName("pushButton_4")
         self.label_8 = QtWidgets.QLabel(self.tab1)
-        self.label_8.setGeometry(QtCore.QRect(430, 750, 41, 21))
+        self.label_8.setGeometry(QtCore.QRect(430, 630, 41, 21))
         self.label_8.setObjectName("label_8")
         self.label_9 = QtWidgets.QLabel(self.tab1)
-        self.label_9.setGeometry(QtCore.QRect(470, 750, 51, 21))
+        self.label_9.setGeometry(QtCore.QRect(470, 630, 51, 21))
         self.label_9.setText("")
         self.label_9.setObjectName("label_9")
         self.label_10 = QtWidgets.QLabel(self.tab1)
-        self.label_10.setGeometry(QtCore.QRect(530, 750, 41, 21))
+        self.label_10.setGeometry(QtCore.QRect(530, 630, 41, 21))
         self.label_10.setObjectName("label_10")
         self.label_11 = QtWidgets.QLabel(self.tab1)
-        self.label_11.setGeometry(QtCore.QRect(570, 750, 141, 21))
+        self.label_11.setGeometry(QtCore.QRect(570, 630, 141, 21))
         self.label_11.setText("")
         self.label_11.setObjectName("label_11")
         self.label_12 = QtWidgets.QLabel(self.tab1)
@@ -122,6 +119,10 @@ class Ui_MainWindow(object):
         self.checkBox.setText("")
         self.checkBox.setChecked(True)
         self.checkBox.setObjectName("checkBox")
+        self.label_13 = QtWidgets.QLabel(self.tab1)
+        self.label_13.setGeometry(QtCore.QRect(260, 0, 881, 21))
+        self.label_13.setText("")
+        self.label_13.setObjectName("label_13")
         self.tabWidget.addTab(self.tab1, "")
         self.tab2 = QtWidgets.QWidget()
         self.tab2.setObjectName("tab2")
@@ -216,7 +217,6 @@ class Ui_MainWindow(object):
         Ui_MainWindow.mainWindow_df = ""  # 메인 자료값 df
         Ui_MainWindow.sqlQuery1 = ""  # 추가 조건
         Ui_MainWindow.maxSearch = 1000  # 최대 조회가능 숫자
-        Ui_MainWindow.filePath = r"C:\Users\User\Desktop/" # 다운로드 경로
 
         # Qt디자이너 외 구현
         self.setListWidget()  # DB리스트 생성
@@ -229,9 +229,10 @@ class Ui_MainWindow(object):
         self.tab2_comboBox.addItem('json')
         self.tableWidget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter)  # 헤더 중앙정렬
 
+
         # 이벤트
         self.actionInfo_site.triggered.connect(self.menuInfo) # 코딩 참고 사이트
-        self.menu_2.triggered.connect(self.fileDownload) # 다운 경로 설정
+        # self.menu_2.triggered.connect() # 툴바 메뉴선택
         self.pushButton.clicked.connect(self.createTable)  # 조회
         self.pushButton_2.clicked.connect(self.toExcel)  # 엑셀변환 버튼
         self.tableWidget.cellClicked.connect(self.cellClickEvent)  # 표 클릭시
@@ -245,12 +246,6 @@ class Ui_MainWindow(object):
         self.tab2_pushbutton.clicked.connect(self.connectAPI)  # API 자료조회
 
         # -----------------------------------windowGraphic
-
-    def menuInfo(self):
-        os.system('explorer https://codetorial.net/pyqt5/index.html')
-
-    def fileDownload(self):
-        print("팝업")
 
     def windowGraphic(self):
         """그래프 차트 창 """
@@ -289,24 +284,28 @@ class Ui_MainWindow(object):
         # Qt디자이너 외 구현
         chart = ["원형차트", "선차트", "막대차트", "산포도"]
 
-        for i in Ui_MainWindow.mainWindow_df.columns.values.tolist():
-            self.tab1_win2comboBox.addItem(i)
-        for i in chart:
-            self.tab1_win2comboBox_2.addItem(i)
+        try:
+            for i in Ui_MainWindow.mainWindow_df.columns.values.tolist():
+                self.tab1_win2comboBox.addItem(i)
+            for i in chart:
+                self.tab1_win2comboBox_2.addItem(i)
 
-        plt.ion()
-        self.fig = plt.Figure()
-        self.canvas = FigureCanvas(self.fig)
-        layout = QVBoxLayout(self.tab1_win2widget)
-        layout.addWidget(self.canvas)
+            plt.ion()
+            self.fig = plt.Figure()
+            self.canvas = FigureCanvas(self.fig)
+            layout = QVBoxLayout(self.tab1_win2widget)
+            layout.addWidget(self.canvas)
 
-        # self.tab1_win2widget.addToolBar(NavigationToolbar(self.canvas, self.tab1_win2widget)) # 툴바 추가가 안됨
-        self.tab1_newWindow2.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
-        self.tab1_newWindow2.show()
-        plt.close(self.fig)  # 종료시 차트 지움
+            # self.tab1_win2widget.addToolBar(NavigationToolbar(self.canvas, self.tab1_win2widget)) # 툴바 추가가 안됨
+            self.tab1_newWindow2.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
+            self.tab1_newWindow2.show()
+            plt.close(self.fig)  # 종료시 차트 지움
 
-        # 이벤트
-        self.tab1_win2pushButton.clicked.connect(lambda: self.selectGraphic(chart))  # 그래픽 팝업 버튼
+            # 이벤트
+            self.tab1_win2pushButton.clicked.connect(lambda: self.selectGraphic(chart))  # 그래픽 팝업 버튼
+
+        except:
+            traceback.print_exc()
 
     def selectGraphic(self, chart):
         """ 차트 선택"""
@@ -319,7 +318,7 @@ class Ui_MainWindow(object):
         elif self.tab1_win2comboBox_2.currentText() == chart[3]:
             self.set_GraphScatter()
         else:
-            print("차트선택 error")
+            traceback.print_exc()
 
     def chartValue(self):
         """ 차트에 쓸 인덱스, 값 계산해서 리턴"""
@@ -539,7 +538,7 @@ class Ui_MainWindow(object):
         self.pushButton_4.setDisabled(True)
 
     def cellClickEvent(self, row, col):
-        """ 셀 클릭값 받아오기 문자에 숫자 껴있는건 맨 앞 숫자만 다 가져옴, 음수 소수점 식별 불가 객체 슬라이스해서 -, 숫자조건하고 .은 카운트 해서 1회, 그 외에 오직 숫자만 숫자로 인식하게끔"""
+        """ 셀 클릭시 계산값을 보여줌"""
         try:
             clickCellText = self.tableWidget.item(row, col).text()
             self.label_2.setText(clickCellText)
@@ -552,46 +551,84 @@ class Ui_MainWindow(object):
                 for i in range(int(val.topRow()), int(val.bottomRow()) + 1):
                     for k in range(int(val.leftColumn()), int(val.rightColumn()) + 1):
                         cnt = cnt + 1
-                        value = re.findall("\d+", self.tableWidget.item(i, k).text())
+                        value=self.isFloat(self.tableWidget.item(i, k).text())
                         if value:
-                            tot.append(int(value[0]))
+                            tot.append(value)
 
             self.label_9.setText(str(cnt))  # 선택 수량
             self.label_11.setText(str(sum(tot)))  # 합계
         except:
-            self.createTable()
-            print("cellClickEvent 에러")
+            # self.createTable()
+            traceback.print_exc()
+
+    def isFloat(self,str):
+        """정수, 소수만 소수타입으로 변환해 리턴"""
+        basischk=0
+        numeric=False
+        returnvalue=0
+        value=list(str)
+
+        for idx,val in enumerate(value):
+            if idx==0:
+                if val=='-' or val.isdigit()==True:
+                 continue
+                else:
+                 break
+            elif idx==len(value)-1:
+                numeric=True
+            else:
+                if val.isdigit()==True:
+                    continue
+                elif val==".":
+                    basischk=+1
+                elif basischk>=2:
+                    break
+                else:
+                    break
+
+        if numeric==True:
+            returnvalue=decimal.Decimal(str) # 부동소수점 문제 해결
+        return returnvalue
 
     def createTable(self):
-        """ 테이블 컬럼, 로우 수, 컬럼명 설정을 함
-        :return: Dataframe타입 조회값 """
-        sqlValue = self.searchValue()
-        if Ui_MainWindow.selectedTable:
-            if sqlValue:
-                header = self.searchColumn()
-                df = pd.DataFrame(sqlValue)
-                df.columns = header
-                df.head()
-                self.tableCount()
-                Ui_MainWindow.dfRow = len(df.index)
-                self.tableWidget.setColumnCount(len(df.columns))
-                self.tableWidget.setRowCount(len(df.index))
-                self.tableWidget.setHorizontalHeaderLabels(header)
-                self.setTableData(df)
-                Ui_MainWindow.mainWindow_df = df
-                self.label_5.setText(Ui_MainWindow.selectedTable)
-                self.label_7.setText(str(Ui_MainWindow.dfRow) + " / 전체:" + self.tableCount())
-                self.tableWidget.resizeColumnsToContents()  # 셀 크기를 내용길이와 같게
-                self.pushButton_3.setDisabled(False)
-                self.actpopup()
+        """ 테이블 컬럼, 로우 수, 컬럼명 설정을 함"""
+        try:
+            sqlValue = self.searchValue()
+            if Ui_MainWindow.selectedTable:
+                if sqlValue:
+                    header = self.searchColumn()
+                    df = pd.DataFrame(sqlValue)
+                    df.columns = header
+                    df.head()
+                    self.tableCount()
+                    Ui_MainWindow.dfRow = len(df.index)
+                    self.tableWidget.setColumnCount(len(df.columns))
+                    self.tableWidget.setRowCount(len(df.index))
+                    self.tableWidget.setHorizontalHeaderLabels(header)
+                    self.setTableData(df)
+                    Ui_MainWindow.mainWindow_df = df
+                    self.label_2.setText("")
+                    self.label_5.setText(Ui_MainWindow.selectedTable)
+                    self.label_7.setText(str(Ui_MainWindow.dfRow) + " / 전체:" + self.tableCount())
+                    self.label_9.setText("")
+                    self.label_11.setText("")
+                    self.tableWidget.resizeColumnsToContents()  # 셀 크기를 내용길이와 같게
+                    self.pushButton_3.setDisabled(False)
+                    self.actpopup()
 
+                else:
+                    self.tableWidget.clear()
+                    self.tableWidget.setRowCount(0)
+                    self.label_2.setText("")
+                    self.label_5.setText(Ui_MainWindow.selectedTable)
+                    self.label_7.setText("0 / 전체:0")
+                    self.label_9.setText("")
+                    self.label_11.setText("")
             else:
-                self.tableWidget.clear()
-                self.tableWidget.setRowCount(0)
-                self.label_5.setText("조회값 없음")
-        else:
-            self.label_5.setText("없음")
-        self.label_2.setText("")
+                self.label_5.setText("없음")
+            self.label_2.setText("")
+        except:
+            traceback.print_exc()
 
     def tableCount(self):
         """테이블 자료수 조회"""
@@ -602,9 +639,7 @@ class Ui_MainWindow(object):
         return str(a)
 
     def searchColumn(self):
-        """ 테이블 컬럼을 가지고와서 List로 변환
-        :return List타입 컬럼명들
-        """
+        """ 테이블 컬럼을 가지고와서 List로 변환해 반환"""
         if Ui_MainWindow.selectedTable:
             str1 = []
 
@@ -617,8 +652,7 @@ class Ui_MainWindow(object):
             return str1
 
     def searchValue(self):
-        """ SQL 값 리턴. 어떤 테이블은 로우수가 1200만개가 넘는 것도 있어서 5만건으로 제한 200만건 넘어가면 에러나면서 컴퓨터 꺼짐 10만건에 1분가량 소요
-        :return: Dataframe타입 SQL조회값"""
+        """ SQL 값 리턴. 어떤 테이블은 로우수가 1200만개가 넘는 것도 있어서 5만건으로 제한 200만건 넘어가면 에러나면서 컴퓨터 꺼짐 10만건에 1분가량 소요"""
         try:
             row = ""
             subSql = ""
@@ -639,38 +673,46 @@ class Ui_MainWindow(object):
             a.setText("데이터 조회 중 오류가 발생했습니다.")
             a.setStandardButtons(QMessageBox.Ok)
             a.exec_()
-            print("searchValue 에러")
+            traceback.print_exc()
 
     def setTableData(self, df):
-        """for로 돌리면서 표에 값을 입력, Null값 따로 처리안함"""
+        """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
         for i in range(len(df.index)):
             for j in range(len(df.columns)):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
 
+    def menuInfo(self):
+        """찾기 귀찮아서"""
+        os.system('explorer https://codetorial.net/pyqt5/index.html')
+
     def toExcel(self):
-        """엑셀 변환. 에러로그 없이 꺼지면 지정된 저장경로 관련 문제 새창 띄워서 경로 지정 필요"""
+        """엑셀 변환 저장"""
         a = QMessageBox()
+
         try:
             if Ui_MainWindow.dfRow:
-                fileName = datetime.today().strftime("%Y%m%d%H%M%S")
+                excelfolder = QFileDialog.getExistingDirectory(self.tab1, '폴더 지정', 'C:\\')
+                # excelfolder = QFileDialog.getSaveFileName(self.tab1, "저장","C:\\'", "excel File(*.xlsx)") 파일명 지정은 나중에 구현
+                filename = datetime.today().strftime("%Y%m%d%H%M%S")
+                excelTitle = (excelfolder + filename + ".xlsx")
+                if excelfolder:
+                    Ui_MainWindow.mainWindow_df.to_excel(excelTitle) # 엑셀 생성
+                    if os.path.exists(excelTitle):
+                        a.setText("경로: " + excelTitle + "\n\n엑셀파일 생성 완료")
 
-                excelTitle = (Ui_MainWindow.filePath + fileName + ".xlsx")
-                Ui_MainWindow.mainWindow_df.to_excel(excelTitle)
-
-                if os.path.exists(excelTitle):
-                    a.setText("경로: " + excelTitle + "\n\n엑셀파일 생성 완료")
-                else:
-                    a.setText("파일이 생성되지 않았습니다")
-                a.setStandardButtons(QMessageBox.Ok)
+                    else:
+                        a.setText("파일이 생성되지 않았습니다")
+                    a.setStandardButtons(QMessageBox.Ok)
+                    a.exec_()
             else:
                 a.setText("변환할 자료가 없습니다")
                 a.setStandardButtons(QMessageBox.Ok)
-            a.exec_()
+                a.exec_()
         except:
             a.setText("파일 생성 중 에러가 발생했습니다.")
             a.setStandardButtons(QMessageBox.Ok)
             a.exec_()
-            print("toExcel 에러")
+            traceback.print_exc()
 
     # --------------------------------------tab2
     def connectAPI(self):
@@ -699,7 +741,7 @@ class Ui_MainWindow(object):
         elif resultType == 'json':
             self.jsonParse(url)
         else:
-            print("??")
+            traceback.print_exc()
 
     def xmlParse(self, url):
         """xml 파싱"""
@@ -780,7 +822,7 @@ if __name__ == '__main__':
 #           "정보_헤지세부전략", "정보_헤지운용구분", "정보_회사", "정보_회사그룹""평가_벤치마크지수", "평가_펀드기여손익", "평가_펀드목표수익",
 #           "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가", "평가_펀드성과평가월간", "평가_펀드성과평가일간", "평가_펀드업종수익률"
 #           ]
-#      conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
+# conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
 # excelTitle = (r"C:\Users\User\Desktop/" + fileName + ".xlsx")
 # pyuic5 -x mainFrame.ui -o mainFrame.py
 # pyuic5 -x windowGraphic.ui -o windowGraphic.py
