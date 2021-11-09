@@ -27,21 +27,21 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1256, 719)
+        MainWindow.resize(1256, 847)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setEnabled(True)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1241, 681))
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1261, 801))
         self.tabWidget.setObjectName("tabWidget")
         self.tab1 = QtWidgets.QWidget()
         self.tab1.setObjectName("tab1")
         self.label_7 = QtWidgets.QLabel(self.tab1)
-        self.label_7.setGeometry(QtCore.QRect(250, 630, 181, 20))
+        self.label_7.setGeometry(QtCore.QRect(250, 750, 181, 20))
         self.label_7.setText("")
         self.label_7.setObjectName("label_7")
         self.tableWidget = QtWidgets.QTableWidget(self.tab1)
-        self.tableWidget.setGeometry(QtCore.QRect(180, 30, 1051, 581))
+        self.tableWidget.setGeometry(QtCore.QRect(180, 30, 1051, 701))
         self.tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setAlternatingRowColors(True)
@@ -49,24 +49,24 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.label_2 = QtWidgets.QLabel(self.tab1)
-        self.label_2.setGeometry(QtCore.QRect(470, 610, 221, 21))
+        self.label_2.setGeometry(QtCore.QRect(470, 730, 221, 21))
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
         self.label_5 = QtWidgets.QLabel(self.tab1)
-        self.label_5.setGeometry(QtCore.QRect(250, 610, 181, 21))
+        self.label_5.setGeometry(QtCore.QRect(250, 730, 181, 21))
         self.label_5.setText("")
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(self.tab1)
-        self.label_6.setGeometry(QtCore.QRect(180, 630, 71, 21))
+        self.label_6.setGeometry(QtCore.QRect(180, 750, 71, 21))
         self.label_6.setObjectName("label_6")
         self.label = QtWidgets.QLabel(self.tab1)
-        self.label.setGeometry(QtCore.QRect(430, 610, 41, 21))
+        self.label.setGeometry(QtCore.QRect(430, 730, 41, 21))
         self.label.setObjectName("label")
         self.pushButton_2 = QtWidgets.QPushButton(self.tab1)
         self.pushButton_2.setGeometry(QtCore.QRect(1150, 0, 75, 23))
         self.pushButton_2.setObjectName("pushButton_2")
         self.label_4 = QtWidgets.QLabel(self.tab1)
-        self.label_4.setGeometry(QtCore.QRect(180, 610, 71, 21))
+        self.label_4.setGeometry(QtCore.QRect(180, 730, 71, 21))
         self.label_4.setObjectName("label_4")
         self.pushButton = QtWidgets.QPushButton(self.tab1)
         self.pushButton.setEnabled(True)
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setReadOnly(True)
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.listWidget = QtWidgets.QListWidget(self.tab1)
-        self.listWidget.setGeometry(QtCore.QRect(0, 30, 181, 192))
+        self.listWidget.setGeometry(QtCore.QRect(0, 30, 171, 192))
         self.listWidget.setObjectName("listWidget")
         self.label_3 = QtWidgets.QLabel(self.tab1)
         self.label_3.setGeometry(QtCore.QRect(0, 2, 91, 20))
@@ -94,17 +94,17 @@ class Ui_MainWindow(object):
         self.pushButton_4.setGeometry(QtCore.QRect(180, 0, 75, 23))
         self.pushButton_4.setObjectName("pushButton_4")
         self.label_8 = QtWidgets.QLabel(self.tab1)
-        self.label_8.setGeometry(QtCore.QRect(430, 630, 41, 21))
+        self.label_8.setGeometry(QtCore.QRect(430, 750, 41, 21))
         self.label_8.setObjectName("label_8")
         self.label_9 = QtWidgets.QLabel(self.tab1)
-        self.label_9.setGeometry(QtCore.QRect(470, 630, 51, 21))
+        self.label_9.setGeometry(QtCore.QRect(470, 750, 51, 21))
         self.label_9.setText("")
         self.label_9.setObjectName("label_9")
         self.label_10 = QtWidgets.QLabel(self.tab1)
-        self.label_10.setGeometry(QtCore.QRect(530, 630, 41, 21))
+        self.label_10.setGeometry(QtCore.QRect(530, 750, 41, 21))
         self.label_10.setObjectName("label_10")
         self.label_11 = QtWidgets.QLabel(self.tab1)
-        self.label_11.setGeometry(QtCore.QRect(570, 630, 141, 21))
+        self.label_11.setGeometry(QtCore.QRect(570, 750, 141, 21))
         self.label_11.setText("")
         self.label_11.setObjectName("label_11")
         self.label_12 = QtWidgets.QLabel(self.tab1)
@@ -119,10 +119,6 @@ class Ui_MainWindow(object):
         self.checkBox.setText("")
         self.checkBox.setChecked(True)
         self.checkBox.setObjectName("checkBox")
-        self.label_13 = QtWidgets.QLabel(self.tab1)
-        self.label_13.setGeometry(QtCore.QRect(260, 0, 881, 21))
-        self.label_13.setText("")
-        self.label_13.setObjectName("label_13")
         self.tabWidget.addTab(self.tab1, "")
         self.tab2 = QtWidgets.QWidget()
         self.tab2.setObjectName("tab2")
@@ -144,44 +140,124 @@ class Ui_MainWindow(object):
         self.tab3 = QtWidgets.QWidget()
         self.tab3.setObjectName("tab3")
         self.tab3_pushButton = QtWidgets.QPushButton(self.tab3)
-        self.tab3_pushButton.setGeometry(QtCore.QRect(80, 70, 93, 28))
+        self.tab3_pushButton.setGeometry(QtCore.QRect(1130, 0, 93, 28))
         self.tab3_pushButton.setObjectName("tab3_pushButton")
         self.tab3_tablewidget = QtWidgets.QTableWidget(self.tab3)
-        self.tab3_tablewidget.setGeometry(QtCore.QRect(260, 20, 761, 471))
+        self.tab3_tablewidget.setGeometry(QtCore.QRect(0, 140, 1241, 631))
         self.tab3_tablewidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab3_tablewidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab3_tablewidget.setAlternatingRowColors(True)
         self.tab3_tablewidget.setObjectName("tab3_tablewidget")
         self.tab3_tablewidget.setColumnCount(0)
         self.tab3_tablewidget.setRowCount(0)
+        self.tab3_label = QtWidgets.QLabel(self.tab3)
+        self.tab3_label.setGeometry(QtCore.QRect(10, 10, 51, 21))
+        self.tab3_label.setObjectName("tab3_label")
+        self.tab3_label_2 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_2.setGeometry(QtCore.QRect(10, 40, 61, 21))
+        self.tab3_label_2.setObjectName("tab3_label_2")
+        self.tab3_label_3 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_3.setGeometry(QtCore.QRect(10, 70, 61, 21))
+        self.tab3_label_3.setObjectName("tab3_label_3")
+        self.tab3_label_4 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_4.setGeometry(QtCore.QRect(450, 10, 151, 21))
+        self.tab3_label_4.setObjectName("tab3_label_4")
+        self.tab3_label_5 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_5.setGeometry(QtCore.QRect(740, 10, 51, 21))
+        self.tab3_label_5.setObjectName("tab3_label_5")
+        self.tab3_label_6 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_6.setGeometry(QtCore.QRect(450, 40, 121, 21))
+        self.tab3_label_6.setObjectName("tab3_label_6")
+        self.tab3_label_7 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_7.setGeometry(QtCore.QRect(760, 40, 101, 21))
+        self.tab3_label_7.setObjectName("tab3_label_7")
+        self.tab3_label_8 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_8.setGeometry(QtCore.QRect(10, 110, 111, 21))
+        font = QtGui.QFont()
+        font.setFamily("-윤고딕110")
+        font.setPointSize(10)
+        self.tab3_label_8.setFont(font)
+        self.tab3_label_8.setObjectName("tab3_label_8")
+        self.tab3_label_9 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_9.setGeometry(QtCore.QRect(460, 80, 121, 21))
+        self.tab3_label_9.setObjectName("tab3_label_9")
+        self.tab3_label_10 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_10.setGeometry(QtCore.QRect(630, 80, 91, 21))
+        self.tab3_label_10.setObjectName("tab3_label_10")
+        self.tab3_label_11 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_11.setGeometry(QtCore.QRect(760, 80, 161, 21))
+        self.tab3_label_11.setObjectName("tab3_label_11")
+        self.tab3_label_12 = QtWidgets.QLabel(self.tab3)
+        self.tab3_label_12.setGeometry(QtCore.QRect(960, 80, 121, 21))
+        self.tab3_label_12.setObjectName("tab3_label_12")
+        self.tab3_comboBox = QtWidgets.QComboBox(self.tab3)
+        self.tab3_comboBox.setGeometry(QtCore.QRect(610, 10, 81, 22))
+        self.tab3_comboBox.setObjectName("tab3_comboBox")
+        self.tab3_comboBox_2 = QtWidgets.QComboBox(self.tab3)
+        self.tab3_comboBox_2.setGeometry(QtCore.QRect(800, 10, 76, 22))
+        self.tab3_comboBox_2.setObjectName("tab3_comboBox_2")
+        self.tab3_comboBox_3 = QtWidgets.QComboBox(self.tab3)
+        self.tab3_comboBox_3.setGeometry(QtCore.QRect(70, 40, 321, 22))
+        self.tab3_comboBox_3.setObjectName("tab3_comboBox_3")
+        self.tab3_comboBox_4 = QtWidgets.QComboBox(self.tab3)
+        self.tab3_comboBox_4.setGeometry(QtCore.QRect(610, 40, 81, 22))
+        self.tab3_comboBox_4.setObjectName("tab3_comboBox_4")
+        self.tab3_comboBox_5 = QtWidgets.QComboBox(self.tab3)
+        self.tab3_comboBox_5.setGeometry(QtCore.QRect(70, 70, 111, 22))
+        self.tab3_comboBox_5.setObjectName("tab3_comboBox_5")
+        self.tab3_checkBox = QtWidgets.QCheckBox(self.tab3)
+        self.tab3_checkBox.setGeometry(QtCore.QRect(740, 40, 21, 21))
+        self.tab3_checkBox.setText("")
+        self.tab3_checkBox.setObjectName("tab3_checkBox")
+        self.tab3_checkBox_2 = QtWidgets.QCheckBox(self.tab3)
+        self.tab3_checkBox_2.setGeometry(QtCore.QRect(440, 80, 21, 21))
+        self.tab3_checkBox_2.setText("")
+        self.tab3_checkBox_2.setObjectName("tab3_checkBox_2")
+        self.tab3_checkBox_3 = QtWidgets.QCheckBox(self.tab3)
+        self.tab3_checkBox_3.setGeometry(QtCore.QRect(610, 80, 21, 21))
+        self.tab3_checkBox_3.setText("")
+        self.tab3_checkBox_3.setObjectName("tab3_checkBox_3")
+        self.tab3_checkBox_4 = QtWidgets.QCheckBox(self.tab3)
+        self.tab3_checkBox_4.setGeometry(QtCore.QRect(740, 80, 21, 21))
+        self.tab3_checkBox_4.setText("")
+        self.tab3_checkBox_4.setObjectName("tab3_checkBox_4")
+        self.tab3_checkBox_5 = QtWidgets.QCheckBox(self.tab3)
+        self.tab3_checkBox_5.setGeometry(QtCore.QRect(940, 80, 21, 21))
+        self.tab3_checkBox_5.setText("")
+        self.tab3_checkBox_5.setObjectName("tab3_checkBox_5")
+        self.tab3_dateEdit = QtWidgets.QDateEdit(self.tab3)
+        self.tab3_dateEdit.setGeometry(QtCore.QRect(70, 10, 91, 22))
+        self.tab3_dateEdit.setDateTime(QtCore.QDateTime(QtCore.QDate(2021, 11, 8), QtCore.QTime(0, 0, 0)))
+        self.tab3_dateEdit.setObjectName("tab3_dateEdit")
         self.tabWidget.addTab(self.tab3, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1256, 21))
         self.menubar.setObjectName("menubar")
-        self.menu = QtWidgets.QMenu(self.menubar)
-        self.menu.setObjectName("menu")
-        self.menudevelop = QtWidgets.QMenu(self.menu)
+        self.menuInfo = QtWidgets.QMenu(self.menubar)
+        self.menuInfo.setObjectName("menuInfo")
+        self.menudevelop = QtWidgets.QMenu(self.menuInfo)
         self.menudevelop.setObjectName("menudevelop")
-        self.menu_2 = QtWidgets.QMenu(self.menubar)
-        self.menu_2.setObjectName("menu_2")
+        self.menuetc = QtWidgets.QMenu(self.menubar)
+        self.menuetc.setObjectName("menuetc")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.actionInfo_site = QtWidgets.QAction(MainWindow)
-        self.actionInfo_site.setObjectName("actionInfo_site")
+        self.actioninfo_site = QtWidgets.QAction(MainWindow)
+        self.actioninfo_site.setObjectName("actioninfo_site")
         self.actionset = QtWidgets.QAction(MainWindow)
         self.actionset.setObjectName("actionset")
-        self.menudevelop.addAction(self.actionInfo_site)
-        self.menu.addAction(self.menudevelop.menuAction())
-        self.menu_2.addAction(self.actionset)
-        self.menubar.addAction(self.menu.menuAction())
-        self.menubar.addAction(self.menu_2.menuAction())
+        self.menudevelop.addAction(self.actioninfo_site)
+        self.menuInfo.addAction(self.menudevelop.menuAction())
+        self.menuetc.addAction(self.actionset)
+        self.menubar.addAction(self.menuInfo.menuAction())
+        self.menubar.addAction(self.menuetc.menuAction())
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -202,13 +278,25 @@ class Ui_MainWindow(object):
         self.tab2_pushbutton.setText(_translate("MainWindow", "조회"))
         self.tab2_tablewidget.setSortingEnabled(True)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab2), _translate("MainWindow", "API 조회"))
-        self.tab3_pushButton.setText(_translate("MainWindow", "PushButton"))
+        self.tab3_pushButton.setText(_translate("MainWindow", "조회"))
         self.tab3_tablewidget.setSortingEnabled(True)
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), _translate("MainWindow", "테스트"))
-        self.menu.setTitle(_translate("MainWindow", "개발"))
+        self.tab3_label.setText(_translate("MainWindow", "기준일"))
+        self.tab3_label_2.setText(_translate("MainWindow", "펀드코드"))
+        self.tab3_label_3.setText(_translate("MainWindow", "운용사코드"))
+        self.tab3_label_4.setText(_translate("MainWindow", "운용중/운용개시/결산/상환"))
+        self.tab3_label_5.setText(_translate("MainWindow", "잔고유무"))
+        self.tab3_label_6.setText(_translate("MainWindow", "판매/운용펀드 기준"))
+        self.tab3_label_7.setText(_translate("MainWindow", "통합펀드구분여부"))
+        self.tab3_label_8.setText(_translate("MainWindow", "펀드정보상세 내역"))
+        self.tab3_label_9.setText(_translate("MainWindow", "국외세액환급대상펀드"))
+        self.tab3_label_10.setText(_translate("MainWindow", "멀티커런시조회"))
+        self.tab3_label_11.setText(_translate("MainWindow", "펀드결제수수료면제/유예펀드"))
+        self.tab3_label_12.setText(_translate("MainWindow", "채권평가보수유예펀드"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab3), _translate("MainWindow", "펀드상세내역 조회"))
+        self.menuInfo.setTitle(_translate("MainWindow", "Info"))
         self.menudevelop.setTitle(_translate("MainWindow", "develop"))
-        self.menu_2.setTitle(_translate("MainWindow", "파일 저장경로"))
-        self.actionInfo_site.setText(_translate("MainWindow", "Info site"))
+        self.menuetc.setTitle(_translate("MainWindow", "etc"))
+        self.actioninfo_site.setText(_translate("MainWindow", "info site"))
         self.actionset.setText(_translate("MainWindow", "set"))
 
         # 클래스 변수
@@ -228,11 +316,11 @@ class Ui_MainWindow(object):
         self.tab2_comboBox.addItem('xml')
         self.tab2_comboBox.addItem('json')
         self.tableWidget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter)  # 헤더 중앙정렬
+        self.settab3_comboBox_3() # 추가할 펀드명이 너무 많아서 뒤에 작성
 
 
         # 이벤트
-        self.actionInfo_site.triggered.connect(self.menuInfo) # 코딩 참고 사이트
-        # self.menu_2.triggered.connect() # 툴바 메뉴선택
+        # self.menuetc.triggered.connect() # 툴바 메뉴선택
         self.pushButton.clicked.connect(self.createTable)  # 조회
         self.pushButton_2.clicked.connect(self.toExcel)  # 엑셀변환 버튼
         self.tableWidget.cellClicked.connect(self.cellClickEvent)  # 표 클릭시
@@ -244,7 +332,7 @@ class Ui_MainWindow(object):
         self.pushButton_4.clicked.connect(self.windowGraphic)  # 그래픽 팝업 버튼
         self.checkBox.stateChanged.connect(self.chkBox)  # 체크 변경시
         self.tab2_pushbutton.clicked.connect(self.connectAPI)  # API 자료조회
-
+        self.tab3_pushButton.clicked.connect(self.tab3_createTable)
         # -----------------------------------windowGraphic
 
     def windowGraphic(self):
@@ -516,7 +604,7 @@ class Ui_MainWindow(object):
 
     def setListWidget(self):
         """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
-        dbList = ["펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
+        dbList = ["공통코드","운용역코드","펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
                   "펀드_보수계산정보", "펀드_보수율", "펀드_보수일별집계", "펀드_설정해지결제", "펀드_설정해지내역", "펀드_설정해지보수",
                   "펀드_설정해지예정내역", "펀드_설정해지원장", "펀드_수익자정보", "펀드_운용회사변경내역", "펀드_위탁사별구조관계총괄", "펀드_위탁사별펀드정보",
                   "펀드_전체해지이체거래", "펀드_총계정원장", "펀드_판매사별보수내역", "펀드_판매사별실적",
@@ -525,7 +613,9 @@ class Ui_MainWindow(object):
                   "정보_자산분류", "정보_증권거래소", "정보_증권거래소회사업종", "정보_채권기준종류", "정보_코스콤채권종류", "정보_팀",
                   "정보_팀별운용역", "정보_판매회사펀드", "정보_펀드자체유형", "정보_펀드협회분류코드", "정보_펀드회계유형", "정보_평가회사채권분류",
                   "정보_회사", "정보_회사그룹", "평가_벤치마크지수", "평가_펀드기여손익", "평가_펀드목표수익",
-                  "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가"
+                  "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가","국가별공휴일"
+                    ,"기타_공휴일","기타_관심펀드","기타_달력일자","기타_시스템체크","기타_일자"
+
                   ]
         self.listWidget.addItems(dbList)
 
@@ -579,10 +669,9 @@ class Ui_MainWindow(object):
             else:
                 if val.isdigit()==True:
                     continue
-                elif val==".":
+                elif val=="." and basischk==0:
                     basischk=+1
-                elif basischk>=2:
-                    break
+                    continue
                 else:
                     break
 
@@ -600,7 +689,6 @@ class Ui_MainWindow(object):
                     df = pd.DataFrame(sqlValue)
                     df.columns = header
                     df.head()
-                    self.tableCount()
                     Ui_MainWindow.dfRow = len(df.index)
                     self.tableWidget.setColumnCount(len(df.columns))
                     self.tableWidget.setRowCount(len(df.index))
@@ -677,10 +765,12 @@ class Ui_MainWindow(object):
 
     def setTableData(self, df):
         """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
-        for i in range(len(df.index)):
-            for j in range(len(df.columns)):
-                self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
-
+        try:
+            for i in range(len(df.index)):
+                for j in range(len(df.columns)):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
+        except:
+            traceback.print_exc()
     def menuInfo(self):
         """찾기 귀찮아서"""
         os.system('explorer https://codetorial.net/pyqt5/index.html')
@@ -766,7 +856,7 @@ class Ui_MainWindow(object):
         dict1['등록일'] = regdate
 
         df2 = pd.DataFrame(dict1)
-        self.tab2createTable(df2)
+        self.tab2_createTable(df2)
 
     def jsonParse(self, url):
         """ json 파싱 파일 지저분한건 jsonviewer로 보기"""
@@ -786,9 +876,9 @@ class Ui_MainWindow(object):
         dict1['상품'] = prdnm
         dict1['등록일'] = regdate
         df2 = pd.DataFrame(dict1)
-        self.tab2createTable(df2)
+        self.tab2_createTable(df2)
 
-    def tab2createTable(self, df2):
+    def tab2_createTable(self, df2):
         """탭2 테이블 제작"""
         self.tab2_tablewidget.setColumnCount(len(df2.columns))
         self.tab2_tablewidget.setRowCount(len(df2.index))
@@ -799,6 +889,125 @@ class Ui_MainWindow(object):
         self.tab2_tablewidget.resizeColumnsToContents()  # 컬럼 크기 조정
 
     # ---------------------------------------tab3
+
+
+    def tab3_createTable(self):
+        try:
+            header = ['기준일','펀드코드','펀드명','수익자','펀드종류구분','펀드유형','공모사모구분','모자구분','종류형구분','펑드구분','적용법률','자통법적용일','최초설정일','다음결산일','상환일','다음보수인출일',
+                      '판매보수','운용보수','사무관리보수','수탁보수','펀드평가보수','자산관리보수','상품관리보수','성과보수','성과보수여부','Total','설정액','전일설정좌수','전일총자산','전일순자산','전일기준가','펀드약명',
+                      '영문명','운용역','운용사','수탁사','사무관리사','펀드평가사','판매사갯수','판매사','협회표준코드','금감원코드','예탁원펀드코드','예탁원종목코드','상품분류코드','상품분류2차','집합투자기구분류',
+                        '펀드결제수수료여부','분배방식','당기결산방식','시가평가여부','장단기구분','국외세액환급여부','이관일','이수일','부사무관리사','해외전용과표가격대상여부','해외전용과표가격적용일',
+                      '설정대금확정일1','설정일1','환매대금확정일1','환매일1','환매대금확정일2','환매일','위탁사자체유형','펀드결제수수료면제시작일','펀드결제수수료면제종료일','펀드결제수수료유예시작일',
+                      '펀드결제수수료유예종료일','채권평가사보수유예시작일','채권평가사보수유예종료일','수탁사코드','배당기준운용사','신주인수권증서평가기준(폐지일)','공모청약수수료기준','단위형구분','수익차등여부','사모분류',
+                      '일반투자자포함여부']
+            sqlValue = self.tab3_searchValue()
+            df3 = pd.DataFrame(sqlValue)
+            df3.columns = header
+            df3.head()
+            self.tab3_tablewidget.setColumnCount(len(df3.columns))
+            self.tab3_tablewidget.setRowCount(len(df3.index))
+            self.tab3_tablewidget.setHorizontalHeaderLabels(header)
+            self.tab3_setTableData(df3)
+            self.tab3_tablewidget.resizeColumnsToContents()  # 컬럼 크기 조정
+        except:
+            traceback.print_exc()
+
+    def tab3_setTableData(self, df3):
+        """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
+        try:
+            for i in range(len(df3.index)):
+                for j in range(len(df3.columns)):
+                    self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(str(df3.iloc[i, j])))
+        except:
+            traceback.print_exc()
+
+    def tab3_searchValue(self):
+        """ SQL 값 리턴 값 같은게 여러개 나오는건 정보_운용역담당펀드의 운용역구분코드 컬럼 때문인데 이게 어디와 매칭되는지 몰라서 join 못하고 distinct로 중복처리"""
+        try:
+            sql = "select distinct b.기준일자 , a.펀드코드, d.위탁사펀드명, "+\
+                  "(select listagg(수익자명, ',') as aa from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e "+\
+                    "where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자명"+\
+                  ", i.펀드회계유형명, "+\
+                  "(select 공통코드값명 from 공통코드 where a.집합투자기구2차분류코드=공통코드값 and 공통코드ID='000418')as 펀드유형,"+ \
+                "(select 공통코드값명 from 공통코드 where a.공모사모코드=공통코드값 and 공통코드ID='000222') as 공모사모구분"+\
+                ", ''모자구분,"+\
+                "'*'종류별구분,"+\
+                "''펀드구분, "+\
+                 "(select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률,"+\
+                 "자본시장통합법적용일자 as 자통법적용일, 최초설정일자, 다음결산일자, 상환예정일자,다음보수인출일자,c.판매회사보수율,"+\
+                 "c.운용회사보수율,사무수탁사보수율,수탁사보수율,펀드평가회사보수율,''자산관리보수,''상품관리보수,성과보수율,성과보수여부,"+\
+                 "round(c.판매회사보수율+c.운용회사보수율+사무수탁사보수율+수탁사보수율+펀드평가회사보수율,2),"+\
+                 "설정금액,''전일설정좌수,''전일총자산,''전일순자산,''전일기준가,d.위탁사펀드약어명,d.위탁사펀드영문명,"+\
+                 "(select listagg(운용역명,', ')"+\
+                "   from(select h.운용역명 from 정보_운용역담당펀드 m, 운용역코드 h"+\
+                "    where a.펀드코드=b.펀드코드 and m.펀드코드=a.펀드코드 and m.운용역코드=h.운용역코드"+\
+                "    group by 운용역명)) as 운용역명,"+\
+                " a.운용회사코드 as 운용사, " \
+                "a.수탁사코드 as 수탁사" \
+                ",g.사무수탁사명 as 사무관리사,''펀드평가사,"+\
+                "(select count(*) from 펀드_판매사별실적 where a.펀드코드=펀드코드 and b.기준일자=기준일자) as 판매사갯수,"+\
+                "(select listagg(매매처명,', ')  as aa"+\
+                "   from("+\
+                "    select 펀드판매회사코드,매매처명 from 펀드_판매사별실적 c, 정보_매매처 d"+\
+                "    where a.펀드코드=c.펀드코드 and b.기준일자=c.기준일자 and c.펀드판매회사코드=매매처코드"+\
+                "    group by 펀드판매회사코드, 매매처명"+\
+                "    )) as 판매사"+\
+                ",금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,상품분류코드,"+\
+                "''상품분류2차,"+\
+                "집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||"+\
+                "집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||"+\
+                "집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드||'?' as 집합투자기구분류"+\
+                ",펀드결제수수료계상여부,"+\
+                " (select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식,"+\
+                " ''당기결산방식,a.시가평가여부,''장단기부분,a.국외세액환급여부,''이관일,''이수일,''부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자,''설정대금확정일1,''설정일,"+\
+                "''환매대금확정일1,''환매일1,''환매대금확정일2,''환매일2,''위탁사자체유형,''펀드결제수수료면제시작일,''펀드결제수수료종료일,''펀드결제수수료유예시작일,''펀드결제수수료유예종료일,"+\
+                "''채권평가사보수유예시작일,''채권평가사보수유예종료일,"+\
+                "수탁사코드,''배당기준운용사,"+\
+                "''신주인수권증서평가기준_폐지일,"+\
+                "''공모청약수수료기준,"+\
+                "''단위형구분,''수익차등여부,"+\
+                "(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류,"+\
+                "''일반투자자포함여부 "+\
+                "from 펀드_마스터 a ,펀드_기준가격 b, 펀드_보수율 c, 펀드_위탁사별펀드정보 d, 정보_사무수탁사 g,"+\
+                " 정보_펀드회계유형 i,"+\
+                " 정보_운용역담당펀드 m,"+\
+                " 운용역코드 h "+\
+                "where a.펀드코드=b.펀드코드 "+\
+                "and a.펀드코드=c.펀드코드 "+\
+                "and a.펀드코드=d.펀드코드 "+\
+                "and a.사무수탁사코드=g.사무수탁사코드 "+\
+                "and a.펀드회계유형코드=i.펀드회계유형코드 "+\
+                "and m.운용역코드=h.운용역코드 "+\
+                "and a.펀드코드=m.펀드코드 "+\
+                "and b.기준일자='{}' ".format(self.tab3_dateEdit.text().replace('-', '/'))
+            sql+="and c.유효시작일자 <= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
+            sql+="and c.유효종료일자 >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
+
+            if self.tab3_comboBox_3.currentText()!='전체':
+                sql+="and a.펀드코드='{}'".format(self.tab3_comboBox_3.currentText()[:4])
+            print("sql:" + sql)
+            cur.execute(sql)
+            row = cur.fetchmany(Ui_MainWindow.maxSearch)
+
+            return row
+        except:
+            a = QMessageBox()
+            a.setText("데이터 조회 중 오류가 발생했습니다.")
+            a.setStandardButtons(QMessageBox.Ok)
+            a.exec_()
+            traceback.print_exc()
+
+
+    def settab3_comboBox_3(self):
+        """펀드코드 세팅"""
+        fundList=("1944","ER11","1033","1275")
+        self.tab3_comboBox_3.addItem('전체')
+        sql = "select 위탁사펀드코드, 위탁사펀드명 from 펀드_위탁사별펀드정보 where 위탁사펀드코드 in "+ str(fundList)
+        cur.execute(sql)
+        cnt = cur.fetchall()
+        for val1,val2 in cnt:
+            self.tab3_comboBox_3.addItem(val1+"::"+val2)
+
 
 # 메인
 if __name__ == '__main__':
@@ -811,17 +1020,6 @@ if __name__ == '__main__':
     MainWindow.show()
     sys.exit(app.exec_())
 
-# dbList = ["펀드_가용자금내역", "펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
-#           "펀드_보수계산정보", "펀드_보수율", "펀드_보수일별집계", "펀드_설정해지결제", "펀드_설정해지내역", "펀드_설정해지보수",
-#           "펀드_설정해지예정내역", "펀드_설정해지원장", "펀드_수익자정보", "펀드_운용회사변경내역", "펀드_위탁사별구조관계총괄", "펀드_위탁사별펀드정보",
-#           "펀드_전체해지이체거래", "펀드_채권형펀드관리", "펀드_총계정원장", "펀드_판매사별보수내역", "펀드_판매사별실적", "펀드_협회펀드마스터",
-#           "펀드_환율적용방법", "정보_거래그룹", "정보_거래유형", "정보_계정과목", "정보_국가", "정보_매매처", "정보_발행기관",
-#           "정보_발행기관예외", "정보_부실보증기관", "정보_사무수탁사", "정보_수익자", "정보_신용등급", "정보_업종", "정보_운용역담당펀드",
-#           "정보_자산분류", "정보_증권거래소", "정보_증권거래소회사업종", "정보_채권기준종류", "정보_코스콤채권종류", "정보_팀",
-#           "정보_팀별운용역", "정보_판매회사펀드", "정보_펀드자체유형", "정보_펀드협회분류코드", "정보_펀드회계유형", "정보_평가회사채권분류",
-#           "정보_헤지세부전략", "정보_헤지운용구분", "정보_회사", "정보_회사그룹""평가_벤치마크지수", "평가_펀드기여손익", "평가_펀드목표수익",
-#           "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가", "평가_펀드성과평가월간", "평가_펀드성과평가일간", "평가_펀드업종수익률"
-#           ]
 # conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
 # excelTitle = (r"C:\Users\User\Desktop/" + fileName + ".xlsx")
 # pyuic5 -x mainFrame.ui -o mainFrame.py
@@ -829,4 +1027,3 @@ if __name__ == '__main__':
 # pyuic5 -x windowQuery.ui -o windowQuery.py
 # ModuleNotFoundError: No module named 'requests': 파이참에 깔아도 위치가 다른게 딸려서 인식 못 하는거니 파이썬/scripts에 가서 pip로 requests 설치
 # 파이썬창에서 import requests를 치면 반응이 없고 그냥 requests를 쳤을 때 에러가 아니고 다른게 나오면 설치된거. 다른것도 마찬가지
-# conn = cx_Oracle.connect("system", "1234", "localhost:1521/xe")
