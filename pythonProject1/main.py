@@ -2,15 +2,15 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import decimal
-import math, os.path, sys, traceback
+import math, decimal, os.path, sys, traceback
 import cx_Oracle
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import re
 import requests, bs4
+import query
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from datetime import datetime
+from datetime import  date, timedelta
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWidgets import *
 
@@ -20,7 +20,6 @@ from matplotlib import font_manager, rc
 font_path = "C:/Windows/Fonts/NGULIM.TTF"
 font = font_manager.FontProperties(fname=font_path).get_name()
 rc('font', family=font)
-
 
 class Ui_MainWindow(object):
     def __init__(self):
@@ -141,7 +140,7 @@ class Ui_MainWindow(object):
         self.tab3 = QtWidgets.QWidget()
         self.tab3.setObjectName("tab3")
         self.tab3_pushButton = QtWidgets.QPushButton(self.tab3)
-        self.tab3_pushButton.setGeometry(QtCore.QRect(1130, 0, 93, 28))
+        self.tab3_pushButton.setGeometry(QtCore.QRect(1150, 0, 93, 28))
         self.tab3_pushButton.setObjectName("tab3_pushButton")
         self.tab3_tablewidget = QtWidgets.QTableWidget(self.tab3)
         self.tab3_tablewidget.setGeometry(QtCore.QRect(0, 120, 1241, 511))
@@ -234,6 +233,10 @@ class Ui_MainWindow(object):
         self.tab3_label_13 = QtWidgets.QLabel(self.tab3)
         self.tab3_label_13.setGeometry(QtCore.QRect(170, 10, 16, 21))
         self.tab3_label_13.setObjectName("tab3_label_13")
+        self.tab3_pushButton_2 = QtWidgets.QPushButton(self.tab3)
+        self.tab3_pushButton_2.setGeometry(QtCore.QRect(1180, 90, 61, 21))
+        self.tab3_pushButton_2.setText("")
+        self.tab3_pushButton_2.setObjectName("tab3_pushButton_2")
         self.tabWidget.addTab(self.tab3, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -306,43 +309,54 @@ class Ui_MainWindow(object):
         # 클래스 변수
         Ui_MainWindow.selectedTable = ""  # DB리스트 선택값
         Ui_MainWindow.dfRow = 0  # 검색된 자료 row
-        Ui_MainWindow.mainWindow_df = ""  # 메인 자료값 df
-        Ui_MainWindow.sqlQuery1 = ""  # 추가 조건
+        Ui_MainWindow.mainWindow_df1_0 = ""  # 메인 자료값 df
+        Ui_MainWindow.mainWindow_df3_1 = ""  # 탭3 팝업 자료값 df
+        Ui_MainWindow.sqlQuery1 = ""  # 추가 쿼리
         Ui_MainWindow.maxSearch = 1000  # 최대 조회가능 숫자
+        Ui_MainWindow.commaLength = 5  # 최소 콤마 자리 수
+        Ui_MainWindow.tab3Code = "" # 탭3 클릭값 펀드코드
+        Ui_MainWindow.tab3Name = ""  # 탭3 클릭값 펀드명
+        Ui_MainWindow.color = QtGui.QColor(255, 235, 235) # 음수표시 색상 RGB
 
         # Qt디자이너 외 구현
         self.setListWidget()  # DB리스트 생성
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 내용수정 금지
         self.tab1_newWindow1 = QDialog()  # 검색조건 팝업창
         self.tab1_newWindow2 = QDialog()  # 그래픽부분 팝업창
+        self.tab3_newWindow1 = QDialog()  # 탭3 팝업창
         self.pushButton_3.setDisabled(True)
         self.pushButton_4.setDisabled(True)
         self.tab2_comboBox.addItem('json')
         self.tab2_comboBox.addItem('xml')
         self.tableWidget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter)  # 헤더 중앙정렬
+        self.tab3_dateEdit.setDate(date.today() - timedelta(1))
+        self.tab3_dateEdit_2.setDate(date.today() - timedelta(1)) # 자료는 전일자꺼 까지만 있음
         self.setTab3() # 추가할 펀드명이 너무 많아서 뒤에 작성
+        self.tab3_createTable() # 임시 조회
 
 
         # 이벤트
         # self.menuetc.triggered.connect() # 툴바 메뉴선택
         self.pushButton.clicked.connect(self.createTable)  # 조회
-        self.pushButton_2.clicked.connect(self.toExcel)  # 엑셀변환 버튼
+        self.pushButton_2.clicked.connect(lambda: self.toExcel("1","0",self.label_5.text()))  # 엑셀변환 버튼
         self.tableWidget.cellClicked.connect(self.cellClickEvent)  # 표 클릭시
-        self.tableWidget.currentCellChanged.connect(self.cellClickEvent)  # 표 클릭시
+        self.tableWidget.currentCellChanged.connect(self.cellClickEvent)  # 표 클릭시 이벤트 둘 다 있어야 재대로 나옴
         self.listWidget.currentItemChanged.connect(self.clickListWidget)  # DB리스트 클릭시
-        # self.listWidget.doubleClicked.connect(self.createTable)  # DB리스트 더블클릭시
-        self.listWidget.itemActivated.connect(self.createTable) # DB리스트에서 엔터키 입력시. 이 이벤트를 더블클릭으로 간주
+        self.listWidget.itemActivated.connect(self.createTable) # DB리스트에서 엔터키 입력시. 더블클릭 이벤트도 적용됨
         self.pushButton_3.clicked.connect(self.windowQuery)  # 검색조건 팝업 버튼
         self.pushButton_4.clicked.connect(self.windowGraphic)  # 그래픽 팝업 버튼
         self.checkBox.stateChanged.connect(self.chkBox)  # 체크 변경시
         self.tab2_pushbutton.clicked.connect(self.connectAPI)  # API 자료조회
         self.tab3_pushButton.clicked.connect(self.tab3_createTable) # 탭3 테이블 조회
+        self.tab3_tablewidget.cellClicked.connect(self.returnCode)  # 표 클릭시
+        self.tab3_tablewidget.doubleClicked.connect(lambda: self.windowList(Ui_MainWindow.tab3Code,Ui_MainWindow.tab3Name)) # 탭3 표 더블블릭시
+        self.tab3_pushButton_2.clicked.connect(self.test) # 테스트용
+
         # -----------------------------------windowGraphic
 
     def windowGraphic(self):
         """그래프 차트 창 """
 
-        self.tab1_newWindow2.setObjectName("tab1_newWindow2")
         self.tab1_win2label = QtWidgets.QLabel(self.tab1_newWindow2)
         self.tab1_win2label.setGeometry(QtCore.QRect(10, 10, 56, 21))
         self.tab1_win2label.setObjectName("tab1_win2label")
@@ -377,7 +391,7 @@ class Ui_MainWindow(object):
         chart = ["원형차트", "선차트", "막대차트", "산포도"]
 
         try:
-            for i in Ui_MainWindow.mainWindow_df.columns.values.tolist():
+            for i in Ui_MainWindow.mainWindow_df1_0.columns.values.tolist():
                 self.tab1_win2comboBox.addItem(i)
             for i in chart:
                 self.tab1_win2comboBox_2.addItem(i)
@@ -417,7 +431,7 @@ class Ui_MainWindow(object):
         val = []  # 값
         idx = []  # 라벨
 
-        groupd = Ui_MainWindow.mainWindow_df.groupby([self.tab1_win2comboBox.currentText()]).count()
+        groupd = Ui_MainWindow.mainWindow_df1_0.groupby([self.tab1_win2comboBox.currentText()]).count()
         groupd2 = groupd.iloc[:, 0]
         idx = groupd2.index
         for i in groupd2:
@@ -564,9 +578,10 @@ class Ui_MainWindow(object):
             sql2 = self.setQuery(self.tab1_win1comboBox_2.currentText(), self.tab1_win1comboBox_4.currentIndex(),
                                  self.tab1_win1lineEdit_2.text())
         Ui_MainWindow.sqlQuery1 = sql1 + sql2
-        self.plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery1.replace("and ", "", 1))
+        self.plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery1.replace("TO_CHAR", "", 1))
         self.checkBox.setChecked(True)
         self.plainTextEdit.setEnabled(True)
+        Ui_MainWindow.mainWindow_df1_0=""
         self.createTable()
         self.tab1_newWindow1.close()
 
@@ -574,7 +589,7 @@ class Ui_MainWindow(object):
         """ 조건을 설정해 SQL에 추가 """
         str1 = [" like '%", " = '", " != '", " <= '", " >= '"]
         str2 = ["%'", "'"]
-        sql = " and " + columnText + str1[i] + lineEditText + str2[math.trunc((i + 9) / 10)]
+        sql = " and TO_CHAR(" + columnText+") " + str1[i] + lineEditText + str2[math.trunc((i + 9) / 10)] # %만 2번
         return sql
 
     def setCombobox(self):
@@ -583,7 +598,7 @@ class Ui_MainWindow(object):
         for i in comboList:
             self.tab1_win1comboBox_3.addItem(i)
             self.tab1_win1comboBox_4.addItem(i)
-        for i in Ui_MainWindow.mainWindow_df.columns.values.tolist():
+        for i in Ui_MainWindow.mainWindow_df1_0.columns.values.tolist():
             self.tab1_win1comboBox.addItem(i)
             self.tab1_win1comboBox_2.addItem(i)
 
@@ -608,7 +623,7 @@ class Ui_MainWindow(object):
 
     def setListWidget(self):
         """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
-        dbList = ["TB","FUND_BASIC","FUND_COMPANY","FUND_INTEGRATE","FUND_OPERATE","FUND_RETAIL","FUND_RETAIL_SELLER",
+        dbList = ["FUND_BASIC","FUND_COMPANY","FUND_INTEGRATE","FUND_OPERATE","FUND_RETAIL","FUND_RETAIL_SELLER",
                    "공통코드","운용역코드","펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
                   "펀드_보수계산정보", "펀드_보수율", "펀드_보수일별집계", "펀드_설정해지결제", "펀드_설정해지내역", "펀드_설정해지보수",
                   "펀드_설정해지예정내역", "펀드_설정해지원장", "펀드_수익자정보", "펀드_운용회사변경내역", "펀드_위탁사별구조관계총괄", "펀드_위탁사별펀드정보",
@@ -654,11 +669,13 @@ class Ui_MainWindow(object):
                                 tot.append(value)
 
 
-                self.label_9.setText(str(cnt))  # 선택 수량
-                self.label_11.setText(str(sum(tot)))  # 합계
+                self.label_9.setText(str(cnt))  # 수
+                total=str(sum(tot))
+                self.label_11.setText(self.setComma(total))  # 합계
         except:
-            # self.createTable()
             traceback.print_exc()
+
+
 
     def isFloat(self,str):
         """정수, 소수만 소수타입으로 변환해 부동소수점 문제 해결하고 리턴 그 외에는 0리턴"""
@@ -704,8 +721,8 @@ class Ui_MainWindow(object):
                     self.tableWidget.setColumnCount(len(df.columns))
                     self.tableWidget.setRowCount(len(df.index))
                     self.tableWidget.setHorizontalHeaderLabels(header)
-                    self.setTableData(df)
-                    Ui_MainWindow.mainWindow_df = df
+                    self.setTableData(df,"1","0")
+                    Ui_MainWindow.mainWindow_df1_0 = df
                     self.label_2.setText("")
                     self.label_5.setText(Ui_MainWindow.selectedTable)
                     self.label_7.setText(str(Ui_MainWindow.dfRow) + " / 전체:" + self.tableCount())
@@ -713,6 +730,7 @@ class Ui_MainWindow(object):
                     self.label_11.setText("")
                     self.tableWidget.resizeColumnsToContents()  # 셀 크기를 내용길이와 같게
                     self.pushButton_3.setDisabled(False)
+                    self.pushButton_4.setDisabled(False)
                     self.actpopup()
 
                 else:
@@ -723,6 +741,8 @@ class Ui_MainWindow(object):
                     self.label_7.setText("0 / 전체:0")
                     self.label_9.setText("")
                     self.label_11.setText("")
+                    self.pushButton_3.setDisabled(True)
+                    self.pushButton_4.setDisabled(True)
             else:
                 self.label_5.setText("없음")
             self.label_2.setText("")
@@ -778,17 +798,36 @@ class Ui_MainWindow(object):
             a.exec_()
             traceback.print_exc()
 
-    def setTableData(self, df):
+    def setTableData(self, df, tab, win):
         """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
         try:
             for i in range(len(df.index)):
                 for j in range(len(df.columns)):
                     val=(str(df.iloc[i, j]))
-                    if self.isFloat(val)!=0 or val=='0.0' or val=='0': #0, 0.0은 하드코딩
-                        self.tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
-                        self.tableWidget.item(i,j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-                    else:
-                        self.tableWidget.setItem(i, j, QTableWidgetItem(val))
+                    if tab=="1" and win=="0":
+                        if self.isFloat(val)!=0 or val=='0.0' or val=='0': #0, 0.0은 하드코딩
+                            self.tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
+                            self.tableWidget.item(i,j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+                            if float(val)<0:
+                                self.tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        else:
+                            self.tableWidget.setItem(i, j, QTableWidgetItem(val))
+                    elif tab == "3" and win == "0":
+                        if self.isFloat(val) != 0 or val == '0.0' or val == '0':  # 0, 0.0은 하드코딩
+                            self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
+                            self.tab3_tablewidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            if float(val)<0:
+                                self.tab3_tablewidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        else:
+                            self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(val))
+                    elif tab == "3" and win == "1":
+                        if self.isFloat(val) != 0 or val == '0.0' or val == '0':  # 0, 0.0은 하드코딩
+                            self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
+                            self.tab3_win1tableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            if float(val)<0:
+                                self.tab3_win1tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        else:
+                            self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(val))
         except:
             traceback.print_exc()
 
@@ -798,7 +837,8 @@ class Ui_MainWindow(object):
 
     def setComma(self,val):
         """1000 단위 콤마 붙여서 리턴"""
-        val=format(float(val),",")
+        if len(val)>=Ui_MainWindow.commaLength:
+            val=format(float(val),",")
         return val
 
     def delComma(self,val):
@@ -806,18 +846,25 @@ class Ui_MainWindow(object):
         val=val.replace(',','')
         return val
 
-    def toExcel(self):
-        """엑셀 변환 저장"""
-        a = QMessageBox()
-
+    def toExcel(self,tab,win,title):
+        """엑셀 변환 저장 tab은 탭, win은 창 번호(메인은 0)"""
         try:
-            if Ui_MainWindow.dfRow:
-                excelfolder = QFileDialog.getExistingDirectory(self.tab1, '폴더 지정', 'C:\\')
+            a = QMessageBox()
+            if tab == "1" and win == "0":
+                rowCount = len(Ui_MainWindow.mainWindow_df1_0)
+            if tab == "3" and win == "1":
+                rowCount = len(Ui_MainWindow.mainWindow_df3_1)
+            if rowCount>0:
+                excelfolder = QFileDialog.getExistingDirectory(self.tab1, '폴더 지정', 'C:\\Users\\User\\Desktop')
                 # excelfolder = QFileDialog.getSaveFileName(self.tab1, "저장","C:\\'", "excel File(*.xlsx)") 파일명 지정은 나중에 구현
-                filename = datetime.today().strftime("%Y%m%d%H%M%S")
-                excelTitle = (excelfolder + filename + ".xlsx")
+                filename = date.today().strftime("%Y%m%d")+"_"+title
+                excelTitle = (excelfolder+"/"+filename + ".xlsx")
                 if excelfolder:
-                    Ui_MainWindow.mainWindow_df.to_excel(excelTitle) # 엑셀 생성
+                    if tab=="1" and win=="0":
+                        Ui_MainWindow.mainWindow_df1_0.to_excel(excelTitle) # 엑셀 생성
+                    elif tab=="3" and win=="1":
+                        Ui_MainWindow.mainWindow_df3_1.to_excel(excelTitle)  # 엑셀 생성
+                            # .to_excel(excelTitle) # 엑셀 생성
                     if os.path.exists(excelTitle):
                         a.setText("경로: " + excelTitle + "\n\n엑셀파일 생성 완료")
 
@@ -830,10 +877,11 @@ class Ui_MainWindow(object):
                 a.setStandardButtons(QMessageBox.Ok)
                 a.exec_()
         except:
-            a.setText("파일 생성 중 에러가 발생했습니다.")
+            traceback.print_exc()
+            a.setText("파일 생성 중 에러가 발생했습니다. 다른 저장경로로 지정하세요")
             a.setStandardButtons(QMessageBox.Ok)
             a.exec_()
-            traceback.print_exc()
+
 
     # --------------------------------------tab2
     def connectAPI(self):
@@ -901,7 +949,6 @@ class Ui_MainWindow(object):
             regdate = []
 
             response = requests.get(url).json()
-            df3 = pd.DataFrame()
             asd = response['getProductList']['item']
             for i in asd:
                 fncistnm.append(list(i.values())[2])
@@ -948,60 +995,66 @@ class Ui_MainWindow(object):
             self.tab3_tablewidget.setColumnCount(len(df3.columns))
             self.tab3_tablewidget.setRowCount(len(df3.index))
             self.tab3_tablewidget.setHorizontalHeaderLabels(header)
-            self.tab3_setTableData(df3)
+            self.setTableData(df3,"3","0")
             self.tab3_tablewidget.resizeColumnsToContents()  # 컬럼 크기 조정
         except:
             traceback.print_exc()
 
-    def tab3_setTableData(self, df3):
-        """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
-        try:
-            for i in range(len(df3.index)):
-                for j in range(len(df3.columns)):
-                    self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(str(df3.iloc[i, j])))
-        except:
-            traceback.print_exc()
-
     def tab3_searchValue(self):
-        """ SQL 값 리턴 Hints22502 화면이고 상황끝난펀드 부분 더 구현안함. 프로시저로 만들고 호출하거나 따로 py파일에 저장해 import해도 됨"""
+        """ SQL 값 리턴 Hints 22502 화면이고 상황끝난펀드 부분은 더 구현 안 함."""
         try:
-            sql = "select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm, "\
-"(select 공통코드값명 from 공통코드 where b.fund_sintak_mm=공통코드값 and 공통코드ID='001049')수익자구분, "\
-"   (select listagg(수익자명, ',') from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자, "\
-" (select 펀드회계유형명 from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 펀드종류구분, b.fund_type as 펀드유형, '?'일임자문, b.fund_gongmo_samo as 공모사모구분, b.fund_in_foreign as 국내해외, b.fund_moja_gu as 모자구분, "\
-" '?'종류형구분, '?'펀드구분, "\
-" (select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률, a.자본시장통합법적용일자 as 자통법적용일, a.최초설정일자, "\
-" (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) as 운용개시일, "\
-"a.다음결산일자,a.상환예정일자 as 상환일,a.다음보수인출일자, "\
-"round(b.FUND_PANMEBOSU_BP,2) as 판매보수,round(b.FUND_MANBOSU_BP,2) as 운용보수,round(b.FUND_SAMUBOSU_BP,2) as 사무관리보수,round(b.FUND_SUTAKBOSU_BP,2) as 수탁보수,round(b.FUND_EVALBOSU_BP,2) as 펀드평가보수, "\
-"round(b.FUND_JAMUNBOSU_BP,2) as 자산관리보수,'?'상품관리보수,round(b.FUND_ADDBOSU_BP,2) as 성과보수율,a.성과보수여부, "\
-" '~'as total, "\
-" c.INTE_SET_VOL as 설정액, c.INTE_ORIGIN_MONEY as 설정좌수, b.FUND_TOT_JASAN as 총자산, round(c.INTE_NET_MONEY_AF,2) as 순자산,round(c.inte_basic_price,2) as 기준가,'?'누적수익지수,b.fund_nm as 펀드약명, "\
-"b.fund_eng_full_nm as 영문명,c.inte_man 운용역,a.운용회사코드 as 운용사명,b.fund_sutak_nm as 수탁은행,'?'수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, "\
-"(select count(*) from FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd) as 판매사갯수, "\
-"(select listagg(comp_sale_nm,', ') from(select x.fund_cd,x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd)) as 판매사, "\
-"금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,a.상품분류코드,'?'상품분류2차, "\
-"집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||  "\
-"집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드 as 집합투자기구구분, "\
-"a.펀드결제수수료계상여부 as 펀드결제수수료여부, "\
-"(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식, "\
-"(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 당기결산방식,a.시가평가여부,'?'장단기부분,a.국외세액환급여부,'?'이관일,d.유효시작일자 as 이수일,'?'투자자,(select 공통코드값정의 from 공통코드 where a.부사무관리펀드코드=공통코드값 and 공통코드ID='001030') as 부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자,'?'설정대금확정일1,'?'설정일1, "\
-"'?'환매대금확정일1,'?'환매일1,'?'환매대금확정일2,'?'환매일2,'?'BM명,'?'GIPS펀드유형,'?'채권평가사보수유예시작일,'?'채권평가사보수유예종료일,'?'배당기준운용사,'?'신주인수권증서평가기준_폐지일,'?'공모청약수수료기준,b.fund_danwi_gu as 단위형구분,'?'수익차등여부, "\
-"(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류, '?'일반투자자포함여부 "\
-"from 펀드_마스터 a, FUND_BASIC b, FUND_INTEGRATE c, 펀드_운용회사변경내역 d "\
-"where a.펀드코드=b.fund_cd "\
-"and a.펀드코드=c.fund_cd "\
-"and a.펀드코드=d.펀드코드(+) "\
-"and b.tr_ymd=c.tr_ymd "\
+            sql=""
+        #     sql="select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm, "\
+        # "(select 공통코드값명 from 공통코드 where b.fund_sintak_mm=공통코드값 and 공통코드ID='001049')수익자구분, "\
+        # "   (select listagg(수익자명, ',') from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자, "\
+        # " (select 펀드회계유형명 from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 펀드종류구분, b.fund_type as 펀드유형, '?'일임자문, b.fund_gongmo_samo as 공모사모구분, b.fund_in_foreign as 국내해외, b.fund_moja_gu as 모자구분, "\
+        # " '?'종류형구분, '?'펀드구분, "\
+        # " (select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률, a.자본시장통합법적용일자 as 자통법적용일, a.최초설정일자, "\
+        # " (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) as 운용개시일, "\
+        # "a.다음결산일자,a.상환예정일자 as 상환일,a.다음보수인출일자, "\
+        # "round(b.FUND_PANMEBOSU_BP,2) as 판매보수,round(b.FUND_MANBOSU_BP,2) as 운용보수,round(b.FUND_SAMUBOSU_BP,2) as 사무관리보수,round(b.FUND_SUTAKBOSU_BP,2) as 수탁보수,round(b.FUND_EVALBOSU_BP,2) as 펀드평가보수, "\
+        # "round(b.FUND_JAMUNBOSU_BP,2) as 자산관리보수,'?'상품관리보수,round(b.FUND_ADDBOSU_BP,2) as 성과보수율,a.성과보수여부, "\
+        # " '~'as total, "\
+        # " c.INTE_SET_VOL as 설정액, c.INTE_ORIGIN_MONEY as 설정좌수, b.FUND_TOT_JASAN as 총자산, round(c.INTE_NET_MONEY_AF,2) as 순자산,c.inte_modi_price as 기준가,'?'누적수익지수,b.fund_nm as 펀드약명, "\
+        # "b.fund_eng_full_nm as 영문명,c.inte_man 운용역,a.운용회사코드 as 운용사명,b.fund_sutak_nm as 수탁은행,'?'수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, "\
+        # "(select count(*) from FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd) as 판매사갯수, "\
+        # "(select listagg(comp_sale_nm,', ') from(select x.fund_cd,x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd)) as 판매사, "\
+        # "금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,a.상품분류코드,'?'상품분류2차, "\
+        # "집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||  "\
+        # "집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드 as 집합투자기구구분, "\
+        # "a.펀드결제수수료계상여부 as 펀드결제수수료여부, "\
+        # "(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식, "\
+        # "(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 당기결산방식,a.시가평가여부,'?'장단기부분,a.국외세액환급여부,'?'이관일,d.유효시작일자 as 이수일,'?'투자자, "\
+        # "(select 공통코드값정의 from 공통코드 where a.부사무관리펀드코드=공통코드값 and 공통코드ID='001030') as 부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자,'?'설정대금확정일1,'?'설정일1, "\
+        # "'?'환매대금확정일1,'?'환매일1,'?'환매대금확정일2,'?'환매일2,'?'BM명,'?'GIPS펀드유형,'?'채권평가사보수유예시작일,'?'채권평가사보수유예종료일,'?'배당기준운용사,'?'신주인수권증서평가기준_폐지일,'?'공모청약수수료기준,b.fund_danwi_gu as 단위형구분,'?'수익차등여부, "\
+        # "(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류, '?'일반투자자포함여부 "\
+        # "from 펀드_마스터 a, FUND_BASIC b, FUND_INTEGRATE c, 펀드_운용회사변경내역 d "\
+        # "where a.펀드코드=b.fund_cd "\
+        # "and a.펀드코드=c.fund_cd "\
+        # "and a.펀드코드=d.펀드코드(+) "\
+        # "and b.tr_ymd=c.tr_ymd "
+
+            sql+=query.returnSQL('tab3_searchValue')
 
             sql+="and b.tr_ymd >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
             sql+="and b.tr_ymd <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
             if self.tab3_comboBox_3.currentText()!='전체':
                 sql+="and a.펀드코드='{}'".format(self.tab3_comboBox_3.currentText()[:4])
+            elif self.tab3_comboBox.currentText() == '운용개시':# 운용개시: 기준일 내에 운용개시일이 있는 경우
+                sql += " and (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
+                sql += " and (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
+            elif self.tab3_comboBox.currentText() == '결산':# 결산: 기준일 내에 다음결산일이 있는 경우
+                sql += " and a.다음결산일자 >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
+                sql += " and a.다음결산일자 <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
+            elif self.tab3_comboBox.currentText() == '상환':# 상환: 안 맞음
+                sql += " and a.펀드종료일자 >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
+                sql += " and a.펀드종료일자 <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
             print(sql)
             cur.execute(sql)
             row = cur.fetchmany(Ui_MainWindow.maxSearch)
-
+            if len(row)==0:
+                row=[("","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",
+                     "","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","")]
             return row
         except:
             a = QMessageBox()
@@ -1010,17 +1063,12 @@ class Ui_MainWindow(object):
             a.exec_()
             traceback.print_exc()
 
-    def subCondition(self):
-        """추가 검색조건"""
-        print()
-        # 운용개시: 기준일 내에 운용개시일이 있는 경우, 결산: 기준일 내에 다음결산일이 있는 경우, 상환: 기준일 내에 상환일이 있는 경우인데 상환일 컬럼과 실제 상활일이 다름 해당 펀드컬럼 생성일이 검색일보다 이전이면 실제상환일
-    #     운용개시+상환: 2개 합친거 rollup도 있으니 안 만드는게 날듯, 상환전체는 안 만듬
-    #   판매펀드: 판매사 1이상
+     #   판매펀드: 판매사 1이상
 
     def setTab3(self):
         """항목들 세팅"""
         fundList=('1944','ER11','1033','1275','1031','D605')
-        fundState=('전체','운용중','운용개시','결산','상환','운용개시+상환','상환전체')
+        fundState=('전체','운용중','운용개시','결산','상환')
         fundType=('전체','판매펀드','운용펀드')
         self.tab3_comboBox_3.addItem('전체')
         sql = "select 위탁사펀드코드, 위탁사펀드명 from 펀드_위탁사별펀드정보 where 위탁사펀드코드 in "+ str(fundList)
@@ -1033,7 +1081,147 @@ class Ui_MainWindow(object):
         for i in fundType:
             self.tab3_comboBox_4.addItem(i)
 
-# 메인
+    def returnCode(self, row, col):
+        """ 팝업으로 넘길 펀드명,번호. 더블클릭 이벤트에는 클릭값 받는 인자가 없음"""
+        self.tab3_newWindow1.update()
+        Ui_MainWindow.tab3Code = self.tab3_tablewidget.item(row, 1).text()
+        Ui_MainWindow.tab3Name = self.tab3_tablewidget.item(row, 2).text()
+
+
+# -----------------------------------------------탭3 팝업창
+    def windowList(self,fundCode,fundName):
+        """ 탭3 팝업창"""
+        self.tab3_win1tableWidget = QtWidgets.QTableWidget(self.tab3_newWindow1)
+        self.tab3_win1tableWidget.setGeometry(QtCore.QRect(10, 30, 1031, 501))
+        self.tab3_win1tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tab3_win1tableWidget.setAlternatingRowColors(True)
+        self.tab3_win1tableWidget.setObjectName("tab3_win1tableWidget")
+        self.tab3_win1tableWidget.setColumnCount(0)
+        self.tab3_win1tableWidget.setRowCount(0)
+        self.tab3_win1label = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label.setGeometry(QtCore.QRect(10, 6, 41, 20))
+        self.tab3_win1label.setObjectName("tab3_win1label")
+        self.tab3_win1label_2 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_2.setGeometry(QtCore.QRect(70, 6, 401, 20))
+        self.tab3_win1label_2.setAutoFillBackground(True)
+        self.tab3_win1label_2.setText("")
+        self.tab3_win1label_2.setObjectName("tab3_win1label_2")
+        self.tab3_win1pushButton = QtWidgets.QPushButton(self.tab3_newWindow1)
+        self.tab3_win1pushButton.setGeometry(QtCore.QRect(960, 5, 75, 20))
+        self.tab3_win1pushButton.setObjectName("tab3_win1pushButton")
+        self.tab3_win1label_4 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_4.setGeometry(QtCore.QRect(60, 540, 221, 21))
+        self.tab3_win1label_4.setAutoFillBackground(True)
+        self.tab3_win1label_4.setText("")
+        self.tab3_win1label_4.setObjectName("tab3_win1label_4")
+        self.tab3_win1label_6 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_6.setGeometry(QtCore.QRect(60, 560, 51, 21))
+        self.tab3_win1label_6.setAutoFillBackground(True)
+        self.tab3_win1label_6.setText("")
+        self.tab3_win1label_6.setObjectName("tab3_win1label_6")
+        self.tab3_win1label_3 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_3.setGeometry(QtCore.QRect(20, 540, 41, 21))
+        self.tab3_win1label_3.setObjectName("tab3_win1label_3")
+        self.tab3_win1label_7 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_7.setGeometry(QtCore.QRect(120, 560, 41, 21))
+        self.tab3_win1label_7.setObjectName("tab3_win1label_7")
+        self.tab3_win1label_8 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_8.setGeometry(QtCore.QRect(160, 560, 141, 21))
+        self.tab3_win1label_8.setAutoFillBackground(True)
+        self.tab3_win1label_8.setText("")
+        self.tab3_win1label_8.setObjectName("tab3_win1label_8")
+        self.tab3_win1label_5 = QtWidgets.QLabel(self.tab3_newWindow1)
+        self.tab3_win1label_5.setGeometry(QtCore.QRect(20, 560, 41, 21))
+        self.tab3_win1label_5.setObjectName("tab3_win1label_5")
+
+        _translate = QtCore.QCoreApplication.translate
+
+        self.tab3_win1tableWidget.setSortingEnabled(True)
+        self.tab3_win1label.setText(_translate("tab3_win1Main", "펀드명:"))
+        self.tab3_win1pushButton.setText(_translate("tab3_win1Main", "엑셀 변환"))
+        self.tab3_win1label_3.setText(_translate("tab3_win1Main", "값:"))
+        self.tab3_win1label_7.setText(_translate("tab3_win1Main", "합계:"))
+        self.tab3_win1label_5.setText(_translate("tab3_win1Main", "갯수:"))
+
+
+        # QT디자이너 외 구현
+        self.tab3_newWindow1.destroy()
+        self.tab3_newWindow1.setWindowTitle("새창")
+        self.tab3_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
+        self.tab3_newWindow1.resize(1056, 583)
+        self.tab3_win1label_2.setText(fundName)
+        self.tab3_winCreateTable(fundCode)
+        self.tab3_newWindow1.show()
+
+        # 이벤트
+        self.tab3_win1tableWidget.cellClicked.connect(self.tab3_cellClickEvent)  # 표 클릭시
+        self.tab3_win1tableWidget.currentCellChanged.connect(self.tab3_cellClickEvent)  # 표 클릭시
+        self.tab3_win1pushButton.clicked.connect(lambda: self.toExcel("3","1",self.tab3_win1label_2.text()))  # 엑셀변환 버튼
+
+    def tab3_winCreateTable(self,fundCode):
+        """탭3 새창1용 테이블 제작"""
+        a = QMessageBox()
+        try:
+            sql=""
+            header=['기준일자', '기준가격','전일대비', '설정금액', '설정좌수', '총자산','전일대비', '순자산','전일대비']
+            sql+=query.returnSQL('tab3_winCreateTable')
+            # "select a.TR_YMD,b.inte_modi_price, " \
+            # "nvl(b.inte_modi_price - lead(b.inte_modi_price) over (order by a.TR_YMD desc),0) a " \
+            # ",a.FUND_SET_MONEY,a.FUND_SET_VOL,a.FUND_TOT_JASAN, " \
+            # "nvl(a.FUND_TOT_JASAN - lead(a.FUND_TOT_JASAN) over (order by a.TR_YMD desc),0) b, a.FUND_NET_JASAN, " \
+            # "nvl(a.FUND_NET_JASAN - lead(a.FUND_NET_JASAN) over (order by a.TR_YMD desc),0) c   " \
+            # "from FUND_BASIC a, FUND_INTEGRATE b " \
+            # "where b.fund_cd=a.fund_cd and a.TR_YMD=b.TR_YMD "
+            sql+=" and TO_CHAR(a.FUND_CD) = '{}' order by a.TR_YMD desc".format(fundCode)
+            print(sql)
+            cur.execute(sql)
+            row = cur.fetchmany(Ui_MainWindow.maxSearch)
+            df3_1 = pd.DataFrame(row)
+            df3_1.columns = header
+            self.tab3_win1tableWidget.setColumnCount(len(df3_1.columns))
+            self.tab3_win1tableWidget.setRowCount(len(df3_1.index))
+            self.tab3_win1tableWidget.setHorizontalHeaderLabels(header)
+            self.setTableData(df3_1, "3", "1")
+            Ui_MainWindow.mainWindow_df3_1 = df3_1
+            self.tab3_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+
+        except:
+            traceback.print_exc()
+
+    def tab3_cellClickEvent(self, row, col):
+        """ 셀 클릭시 계산값을 보여줌 클릭한 전 페이지를 구분하는 방법을 못 찾아 따로 구현"""
+        try:
+            if self.tab3_win1tableWidget.item(row, col).text():
+                clickCellText = self.tab3_win1tableWidget.item(row, col).text()
+                self.tab3_win1label_4.setText(clickCellText)
+                selected = self.tab3_win1tableWidget.selectedRanges()
+                cnt = 0
+                tot = []
+
+                for idx, val in enumerate(
+                        selected):  # val.columnCount(), val.topRow(), val.leftColumn(), val.bottomRow(), val.rightColumn()
+                    for i in range(int(val.topRow()), int(val.bottomRow()) + 1):
+                        for k in range(int(val.leftColumn()), int(val.rightColumn()) + 1):
+                            cnt = cnt + 1
+                            str1 = self.tab3_win1tableWidget.item(i, k).text()
+                            str1 = self.delComma(str1)
+                            value = self.isFloat(str1)
+                            if value:
+                                tot.append(value)
+
+                self.tab3_win1label_6.setText(str(cnt))  # 수
+                total=str(sum(tot))
+                self.tab3_win1label_8.setText(self.setComma(total))  # 합계
+        except:
+            traceback.print_exc()
+
+    def test(self):
+        try:
+         print(__name__)
+        except:
+            traceback.print_exc()
+
+            # 메인
 if __name__ == '__main__':
     conn = cx_Oracle.connect("system", "1234", "localhost:1521/xe")
     cur = conn.cursor()
@@ -1045,10 +1233,12 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 # conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
-# excelTitle = (r"C:\Users\User\Desktop/" + fileName + ".xlsx")
 # pyuic5 -x mainFrame.ui -o mainFrame.py
 # pyuic5 -x windowGraphic.ui -o windowGraphic.py
 # pyuic5 -x windowQuery.ui -o windowQuery.py
+# pyuic5 -x windowList.ui -o windowList.py
 # ModuleNotFoundError: No module named 'requests': 파이참에 깔아도 위치가 다른게 딸려서 인식 못 하는거니 파이썬/scripts에 가서 pip로 requests 설치
 # 파이썬창에서 import requests를 치면 반응이 없고 그냥 requests를 쳤을 때 에러가 아니고 다른게 나오면 설치된거. 다른것도 마찬가지
 # conn = cx_Oracle.connect("system", "1234", "localhost:1521/xe")
+# gcc -c clang.c
+# gcc -o clang.so -shared -f PIC clang.c
