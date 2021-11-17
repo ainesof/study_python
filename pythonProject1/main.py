@@ -4,7 +4,7 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import math, decimal, os.path, sys, traceback
 import cx_Oracle
-import numpy as np
+import time
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests, bs4
@@ -194,13 +194,13 @@ class Ui_MainWindow(object):
         self.tab3_comboBox_2.setGeometry(QtCore.QRect(800, 10, 76, 22))
         self.tab3_comboBox_2.setObjectName("tab3_comboBox_2")
         self.tab3_comboBox_3 = QtWidgets.QComboBox(self.tab3)
-        self.tab3_comboBox_3.setGeometry(QtCore.QRect(70, 40, 321, 22))
+        self.tab3_comboBox_3.setGeometry(QtCore.QRect(170, 40, 231, 22))
         self.tab3_comboBox_3.setObjectName("tab3_comboBox_3")
         self.tab3_comboBox_4 = QtWidgets.QComboBox(self.tab3)
         self.tab3_comboBox_4.setGeometry(QtCore.QRect(610, 40, 81, 22))
         self.tab3_comboBox_4.setObjectName("tab3_comboBox_4")
         self.tab3_comboBox_5 = QtWidgets.QComboBox(self.tab3)
-        self.tab3_comboBox_5.setGeometry(QtCore.QRect(70, 70, 111, 22))
+        self.tab3_comboBox_5.setGeometry(QtCore.QRect(70, 70, 161, 22))
         self.tab3_comboBox_5.setObjectName("tab3_comboBox_5")
         self.tab3_checkBox = QtWidgets.QCheckBox(self.tab3)
         self.tab3_checkBox.setGeometry(QtCore.QRect(740, 40, 21, 21))
@@ -237,6 +237,9 @@ class Ui_MainWindow(object):
         self.tab3_pushButton_2.setGeometry(QtCore.QRect(1180, 90, 61, 21))
         self.tab3_pushButton_2.setText("")
         self.tab3_pushButton_2.setObjectName("tab3_pushButton_2")
+        self.tab3_win1lineEdit = QtWidgets.QLineEdit(self.tab3)
+        self.tab3_win1lineEdit.setGeometry(QtCore.QRect(70, 40, 91, 21))
+        self.tab3_win1lineEdit.setObjectName("tab3_win1lineEdit")
         self.tabWidget.addTab(self.tab3, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -312,8 +315,8 @@ class Ui_MainWindow(object):
         Ui_MainWindow.mainWindow_df1_0 = ""  # 메인 자료값 df
         Ui_MainWindow.mainWindow_df3_1 = ""  # 탭3 팝업 자료값 df
         Ui_MainWindow.sqlQuery1 = ""  # 추가 쿼리
-        Ui_MainWindow.maxSearch = 1000  # 최대 조회가능 숫자
-        Ui_MainWindow.commaLength = 5  # 최소 콤마 자리 수
+        Ui_MainWindow.maxSearch = 100000  # 최대 조회가능 숫자
+        Ui_MainWindow.commaLength = 1  # 최소 콤마 자리 수
         Ui_MainWindow.tab3Code = "" # 탭3 클릭값 펀드코드
         Ui_MainWindow.tab3Name = ""  # 탭3 클릭값 펀드명
         Ui_MainWindow.color = QtGui.QColor(255, 235, 235) # 음수표시 색상 RGB
@@ -350,7 +353,7 @@ class Ui_MainWindow(object):
         self.tab3_pushButton.clicked.connect(self.tab3_createTable) # 탭3 테이블 조회
         self.tab3_tablewidget.cellClicked.connect(self.returnCode)  # 표 클릭시
         self.tab3_tablewidget.doubleClicked.connect(lambda: self.windowList(Ui_MainWindow.tab3Code,Ui_MainWindow.tab3Name)) # 탭3 표 더블블릭시
-        self.tab3_pushButton_2.clicked.connect(self.test) # 테스트용
+        self.tab3_pushButton_2.clicked.connect(self.setTableData) # 테스트용
 
         # -----------------------------------windowGraphic
 
@@ -677,12 +680,12 @@ class Ui_MainWindow(object):
 
 
 
-    def isFloat(self,str):
+    def isFloat(self,par):
         """정수, 소수만 소수타입으로 변환해 부동소수점 문제 해결하고 리턴 그 외에는 0리턴"""
         basischk=0
         numeric=False
         returnvalue=0
-        value=list(str)
+        value=list(str(par))
 
         for idx,val in enumerate(value):
             if idx==0:
@@ -704,7 +707,7 @@ class Ui_MainWindow(object):
                     break
 
         if numeric==True:
-            returnvalue=decimal.Decimal(str)
+            returnvalue=decimal.Decimal(par)
         return returnvalue
 
     def createTable(self):
@@ -718,6 +721,7 @@ class Ui_MainWindow(object):
                     df.columns = header
                     df.head()
                     Ui_MainWindow.dfRow = len(df.index)
+                    self.tableWidget.clear()
                     self.tableWidget.setColumnCount(len(df.columns))
                     self.tableWidget.setRowCount(len(df.index))
                     self.tableWidget.setHorizontalHeaderLabels(header)
@@ -798,9 +802,11 @@ class Ui_MainWindow(object):
             a.exec_()
             traceback.print_exc()
 
-    def setTableData(self, df, tab, win):
+    def setTableData2(self, df, tab, win):
         """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
         try:
+            start = time.time()
+
             for i in range(len(df.index)):
                 for j in range(len(df.columns)):
                     val=(str(df.iloc[i, j]))
@@ -828,8 +834,47 @@ class Ui_MainWindow(object):
                                 self.tab3_win1tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
                         else:
                             self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(val))
+            end = time.time()
+            print(end - start)
         except:
             traceback.print_exc()
+
+    def setTableData(self, df, tab, win):
+        """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
+        try:
+            start = time.time()
+            nArray = df.to_numpy()
+            for i, arr in enumerate(nArray):
+                for j, val in enumerate(arr):
+                    if tab=="1" and win=="0":
+                        if self.isFloat(val)!=0 or val=='0.0' or val=='0': #0, 0.0은 하드코딩
+                            self.tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
+                            self.tableWidget.item(i,j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+                            if float(val)<0:
+                                self.tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        else:
+                            self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                    elif tab=="3" and win=="0":
+                        if self.isFloat(val)!=0 or val=='0.0' or val=='0': #0, 0.0은 하드코딩
+                            self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
+                            self.tab3_tablewidget.item(i,j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+                            if float(val)<0:
+                                self.tab3_tablewidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        else:
+                            self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(str(val)))
+                    elif tab=="3" and win=="1":
+                        if self.isFloat(val)!=0 or val=='0.0' or val=='0': #0, 0.0은 하드코딩
+                            self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
+                            self.tab3_win1tableWidget.item(i,j).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+                            if float(val)<0:
+                                self.tab3_win1tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        else:
+                            self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+            end = time.time()
+            print(end - start)
+        except:
+            traceback.print_exc()
+
 
     def menuInfo(self):
         """찾기 귀찮아서"""
@@ -837,9 +882,12 @@ class Ui_MainWindow(object):
 
     def setComma(self,val):
         """1000 단위 콤마 붙여서 리턴"""
-        if len(val)>=Ui_MainWindow.commaLength:
-            val=format(float(val),",")
-        return val
+        try:
+            if len(str(val))>=Ui_MainWindow.commaLength:
+                num=format(float(val),",")
+            return num
+        except:
+            traceback.print_exc()
 
     def delComma(self,val):
         """1000 단위 콤마 제거해서 리턴"""
@@ -980,7 +1028,7 @@ class Ui_MainWindow(object):
 
     def tab3_createTable(self):
         try:
-            header = ['기준일','펀드코드','펀드명','수익자구분','수익자','펀드종류구분','펀드유형','일임_자문','공모사모구분','모자구분','국내/해외','종류형구분','펀드구분','적용법률','자통법적용일','최초설정일자','운용개시일',
+            header = ['기준일','펀드코드','펀드명','수익자구분','수익자','펀드종류구분','펀드유형','일임_자문','공모사모구분','국내/해외','모자구분','종류형구분','펀드구분','적용법률','자통법적용일','최초설정일자','운용개시일',
                       '다음결산일','상환일','다음보수인출일',
                       '판매보수','운용보수','사무관리보수','수탁보수','펀드평가보수','자산관리보수','상품관리보수','성과보수','성과보수여부','Total','설정액','설정좌수','총자산','순자산','기준가','누적수익지수','펀드약명',
                       '영문명','운용역','운용사명','수탁은행','수탁사명','사무수탁사명','펀드평가사','판매사갯수','판매사명','협회표준코드','금감원코드','예탁원펀드코드','예탁원종목코드','상품분류코드',
@@ -1004,51 +1052,38 @@ class Ui_MainWindow(object):
         """ SQL 값 리턴 Hints 22502 화면이고 상황끝난펀드 부분은 더 구현 안 함."""
         try:
             sql=""
-        #     sql="select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm, "\
-        # "(select 공통코드값명 from 공통코드 where b.fund_sintak_mm=공통코드값 and 공통코드ID='001049')수익자구분, "\
-        # "   (select listagg(수익자명, ',') from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자, "\
-        # " (select 펀드회계유형명 from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 펀드종류구분, b.fund_type as 펀드유형, '?'일임자문, b.fund_gongmo_samo as 공모사모구분, b.fund_in_foreign as 국내해외, b.fund_moja_gu as 모자구분, "\
-        # " '?'종류형구분, '?'펀드구분, "\
-        # " (select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률, a.자본시장통합법적용일자 as 자통법적용일, a.최초설정일자, "\
-        # " (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) as 운용개시일, "\
-        # "a.다음결산일자,a.상환예정일자 as 상환일,a.다음보수인출일자, "\
-        # "round(b.FUND_PANMEBOSU_BP,2) as 판매보수,round(b.FUND_MANBOSU_BP,2) as 운용보수,round(b.FUND_SAMUBOSU_BP,2) as 사무관리보수,round(b.FUND_SUTAKBOSU_BP,2) as 수탁보수,round(b.FUND_EVALBOSU_BP,2) as 펀드평가보수, "\
-        # "round(b.FUND_JAMUNBOSU_BP,2) as 자산관리보수,'?'상품관리보수,round(b.FUND_ADDBOSU_BP,2) as 성과보수율,a.성과보수여부, "\
-        # " '~'as total, "\
-        # " c.INTE_SET_VOL as 설정액, c.INTE_ORIGIN_MONEY as 설정좌수, b.FUND_TOT_JASAN as 총자산, round(c.INTE_NET_MONEY_AF,2) as 순자산,c.inte_modi_price as 기준가,'?'누적수익지수,b.fund_nm as 펀드약명, "\
-        # "b.fund_eng_full_nm as 영문명,c.inte_man 운용역,a.운용회사코드 as 운용사명,b.fund_sutak_nm as 수탁은행,'?'수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, "\
-        # "(select count(*) from FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd) as 판매사갯수, "\
-        # "(select listagg(comp_sale_nm,', ') from(select x.fund_cd,x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd)) as 판매사, "\
-        # "금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,a.상품분류코드,'?'상품분류2차, "\
-        # "집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||  "\
-        # "집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드 as 집합투자기구구분, "\
-        # "a.펀드결제수수료계상여부 as 펀드결제수수료여부, "\
-        # "(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식, "\
-        # "(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 당기결산방식,a.시가평가여부,'?'장단기부분,a.국외세액환급여부,'?'이관일,d.유효시작일자 as 이수일,'?'투자자, "\
-        # "(select 공통코드값정의 from 공통코드 where a.부사무관리펀드코드=공통코드값 and 공통코드ID='001030') as 부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자,'?'설정대금확정일1,'?'설정일1, "\
-        # "'?'환매대금확정일1,'?'환매일1,'?'환매대금확정일2,'?'환매일2,'?'BM명,'?'GIPS펀드유형,'?'채권평가사보수유예시작일,'?'채권평가사보수유예종료일,'?'배당기준운용사,'?'신주인수권증서평가기준_폐지일,'?'공모청약수수료기준,b.fund_danwi_gu as 단위형구분,'?'수익차등여부, "\
-        # "(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류, '?'일반투자자포함여부 "\
-        # "from 펀드_마스터 a, FUND_BASIC b, FUND_INTEGRATE c, 펀드_운용회사변경내역 d "\
-        # "where a.펀드코드=b.fund_cd "\
-        # "and a.펀드코드=c.fund_cd "\
-        # "and a.펀드코드=d.펀드코드(+) "\
-        # "and b.tr_ymd=c.tr_ymd "
-
             sql+=query.returnSQL('tab3_searchValue')
-
             sql+="and b.tr_ymd >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
             sql+="and b.tr_ymd <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
-            if self.tab3_comboBox_3.currentText()!='전체':
-                sql+="and a.펀드코드='{}'".format(self.tab3_comboBox_3.currentText()[:4])
+
+            if self.tab3_win1lineEdit.text(): #펀드코드
+                self.tab3_win1lineEdit.setText(self.tab3_win1lineEdit.text().upper())
+                sql+="and a.펀드코드='{}'".format(self.tab3_win1lineEdit.text())
+            else:
+                if self.tab3_comboBox_3.currentText()!='전체':
+                    sql+="and a.펀드코드='{}'".format(self.tab3_comboBox_3.currentText()[:4])
+
+            if self.tab3_comboBox.currentText() == '운용중':# 운용중: 기준일이 상환일보다 이전
+                sql += " and a.상환예정일자 >= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
             elif self.tab3_comboBox.currentText() == '운용개시':# 운용개시: 기준일 내에 운용개시일이 있는 경우
                 sql += " and (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
                 sql += " and (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
             elif self.tab3_comboBox.currentText() == '결산':# 결산: 기준일 내에 다음결산일이 있는 경우
                 sql += " and a.다음결산일자 >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
                 sql += " and a.다음결산일자 <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
-            elif self.tab3_comboBox.currentText() == '상환':# 상환: 안 맞음
+            elif self.tab3_comboBox.currentText() == '상환':# 상환: 현재 조건이 안 맞음
                 sql += " and a.펀드종료일자 >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
                 sql += " and a.펀드종료일자 <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
+
+            if self.tab3_comboBox_5.currentText() != '전체': # 운용사코드
+                sql += " and a.운용회사코드 = '{}'".format(self.tab3_comboBox_5.currentText()[:3])
+
+            if self.tab3_checkBox_2.isChecked(): # 국외세액환급대상펀드 체크
+                sql += " and b.FUND_FOREIGN_TAX='비대상'"
+
+            if self.tab3_checkBox_3.isChecked(): # 멀티커런시 체크
+                sql += " and a.멀티통화여부='Y'"
+
             print(sql)
             cur.execute(sql)
             row = cur.fetchmany(Ui_MainWindow.maxSearch)
@@ -1070,6 +1105,7 @@ class Ui_MainWindow(object):
         fundList=('1944','ER11','1033','1275','1031','D605')
         fundState=('전체','운용중','운용개시','결산','상환')
         fundType=('전체','판매펀드','운용펀드')
+        fundManage = ('전체','224 흥국자산운용', '207 교보악사자산운용', '216 DB자산운용', '363 트러스톤자산운용', '368 하이자산운용')
         self.tab3_comboBox_3.addItem('전체')
         sql = "select 위탁사펀드코드, 위탁사펀드명 from 펀드_위탁사별펀드정보 where 위탁사펀드코드 in "+ str(fundList)
         cur.execute(sql)
@@ -1080,6 +1116,8 @@ class Ui_MainWindow(object):
             self.tab3_comboBox.addItem(i)
         for i in fundType:
             self.tab3_comboBox_4.addItem(i)
+        for i in fundManage:
+            self.tab3_comboBox_5.addItem(i)
 
     def returnCode(self, row, col):
         """ 팝업으로 넘길 펀드명,번호. 더블클릭 이벤트에는 클릭값 받는 인자가 없음"""
@@ -1165,19 +1203,13 @@ class Ui_MainWindow(object):
             sql=""
             header=['기준일자', '기준가격','전일대비', '설정금액', '설정좌수', '총자산','전일대비', '순자산','전일대비']
             sql+=query.returnSQL('tab3_winCreateTable')
-            # "select a.TR_YMD,b.inte_modi_price, " \
-            # "nvl(b.inte_modi_price - lead(b.inte_modi_price) over (order by a.TR_YMD desc),0) a " \
-            # ",a.FUND_SET_MONEY,a.FUND_SET_VOL,a.FUND_TOT_JASAN, " \
-            # "nvl(a.FUND_TOT_JASAN - lead(a.FUND_TOT_JASAN) over (order by a.TR_YMD desc),0) b, a.FUND_NET_JASAN, " \
-            # "nvl(a.FUND_NET_JASAN - lead(a.FUND_NET_JASAN) over (order by a.TR_YMD desc),0) c   " \
-            # "from FUND_BASIC a, FUND_INTEGRATE b " \
-            # "where b.fund_cd=a.fund_cd and a.TR_YMD=b.TR_YMD "
             sql+=" and TO_CHAR(a.FUND_CD) = '{}' order by a.TR_YMD desc".format(fundCode)
             print(sql)
             cur.execute(sql)
             row = cur.fetchmany(Ui_MainWindow.maxSearch)
             df3_1 = pd.DataFrame(row)
             df3_1.columns = header
+            self.tab3_win1tableWidget.clear()
             self.tab3_win1tableWidget.setColumnCount(len(df3_1.columns))
             self.tab3_win1tableWidget.setRowCount(len(df3_1.index))
             self.tab3_win1tableWidget.setHorizontalHeaderLabels(header)
@@ -1217,9 +1249,34 @@ class Ui_MainWindow(object):
 
     def test(self):
         try:
-         print(__name__)
+            print("~~")
+            pp=[('1','2','3','4'),
+                ('5','6','7','8'),
+                ('9','10','11','12')]
+            df11=pd.DataFrame(pp)
+            self.asd(df11)
+            self.asd2(df11)
+            print("끝")
+
         except:
             traceback.print_exc()
+    def asd(self,df11):
+        start=time.time()
+        for i in range(len(df11.index)):
+            for j in range(len(df11.columns)):
+                print(str(df11.iloc[i, j]))
+        end=time.time()
+        print(end-start)
+
+
+    def asd2(self,df11):
+        start2=time.time()
+        np2 = df11.to_numpy()
+        for i, a in enumerate(np2):
+            for b, c in enumerate(a):
+                print(str(i) + "," + str(b))
+        end2 = time.time()
+        print(end2 - start2)
 
             # 메인
 if __name__ == '__main__':
@@ -1232,6 +1289,8 @@ if __name__ == '__main__':
     MainWindow.show()
     sys.exit(app.exec_())
 
+# 현재 setcomma에서 length 값 이하는 표시가 안되고 그걸 내리면 더블클릭시 코드값을 잘못 가져감
+# 코드값 같은 특정 헤더명으로 콤마를 안 걸게 하는 방법 찾아야함
 # conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
 # pyuic5 -x mainFrame.ui -o mainFrame.py
 # pyuic5 -x windowGraphic.ui -o windowGraphic.py
