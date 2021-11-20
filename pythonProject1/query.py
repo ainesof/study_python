@@ -1,8 +1,8 @@
 def returnSQL(para):
-    if para == 'tab3_winCreateTable':
-        sql = tab3_winCreateTable()
-    elif para == 'tab3_searchValue':
-        sql = tab3_searchValue()
+    if para == 'tab3_win1SearchQuery':
+        sql = tab3_win1SearchQuery()
+    elif para == 'tab3_SearchQuery':
+        sql = tab3_SearchQuery()
 
     return sql
 
@@ -11,7 +11,7 @@ def returnSQL(para):
 # 펀드구조구분코드 IN ('01','03','04','06')--일반펀드,자펀드,클래스운용,클래스운용(자)
 # 펀드구조구분코드 IN ('01','02','04')     --일반펀드,모펀드,클래스운용
 
-def tab3_searchValue():
+def tab3_SearchQuery():
     """탭3 메인부분"""
     str = \
         "select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm, " \
@@ -48,7 +48,7 @@ def tab3_searchValue():
     return str
 
 
-def tab3_winCreateTable():
+def tab3_win1SearchQuery():
     """탭3 새창 더블클릭시 내용읽는 부분"""
     str = \
         "select a.TR_YMD,b.inte_modi_price, " \

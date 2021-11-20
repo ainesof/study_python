@@ -361,12 +361,11 @@ class Ui_MainWindow(object):
 
         # 클래스 변수
         Ui_MainWindow.selectedTable = ""  # DB리스트 선택값
-        Ui_MainWindow.dfRow = 0  # 검색된 자료 row
         Ui_MainWindow.mainWindow_df1_0 = ""  # 메인 자료값
         Ui_MainWindow.mainWindow_df3_1 = ""  # 탭3 팝업 자료값
         Ui_MainWindow.mainWindow_df3_1Re = ""  # 탭3 팝업 가공자료값
         Ui_MainWindow.sqlQuery1 = ""  # 추가 쿼리
-        Ui_MainWindow.maxSearch = 10000  # 최대 조회가능 숫자
+        Ui_MainWindow.maxSearch = 100000  # 최대 조회가능 숫자
         Ui_MainWindow.commaLength = 5  # 최소 콤마 자리 수
         Ui_MainWindow.tab3Code = ""  # 탭3 클릭값 펀드코드
         Ui_MainWindow.tab3Name = ""  # 탭3 클릭값 펀드명
@@ -397,11 +396,11 @@ class Ui_MainWindow(object):
             self.tab1_pushButton_2.clicked.connect(lambda: self.toExcel("1", "0", self.tab1_label_5.text()))  # 엑셀변환 버튼
             self.tab1_tableWidget.cellClicked.connect(self.cellClickEvent)  # 표 클릭시
             self.tab1_tableWidget.currentCellChanged.connect(self.cellClickEvent)  # 표 클릭시 이벤트 둘 다 있어야 재대로 나옴
-            self.tab1_listWidget.currentItemChanged.connect(self.clickListWidget)  # DB리스트 클릭시
-            self.tab1_listWidget.itemActivated.connect(self.createTable)  # DB리스트에서 엔터키 입력시. 더블클릭 이벤트도 적용됨
+            self.tab1_listWidget.currentItemChanged.connect(self.clearPlaintext)  # DB리스트 클릭시
             self.tab1_pushButton_3.clicked.connect(self.windowQuery)  # 검색조건 팝업 버튼
             self.tab1_pushButton_4.clicked.connect(lambda: self.windowGraphic("1", "0"))  # 그래픽 팝업 버튼
             self.tab1_checkBox.stateChanged.connect(self.chkBox)  # 체크 변경시
+            self.tab2_comboBox.currentIndexChanged.connect(self.tab2_tablewidget.clear) # 위젯 값 지움
             self.tab2_pushbutton.clicked.connect(self.connectAPI)  # API 자료조회
             self.tab3_pushButton.clicked.connect(self.tab3_createTable)  # 탭3 테이블 조회
             self.tab3_tablewidget.cellClicked.connect(self.returnCode)  # 표 클릭시
@@ -478,7 +477,6 @@ class Ui_MainWindow(object):
             layout = QVBoxLayout(self.tab1_win2widget)
             layout.addWidget(self.canvas)
 
-            # self.tab1_win2widget.addToolBar(NavigationToolbar(self.canvas, self.tab1_win2widget)) # 툴바 추가가 안됨
             self.tab1_newWindow2.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
             self.tab1_newWindow2.show()
             plt.close(self.fig)  # 종료시 차트 지움
@@ -558,7 +556,7 @@ class Ui_MainWindow(object):
             if self.tab1_win2comboBox_2.currentText() == chart[1]:  # 선 차트
                 ax.plot(xval, yval, marker=".", linestyle="-", color="g")
             elif self.tab1_win2comboBox_2.currentText() == chart[2]:  # 막대 차트
-                ax.bar(xval, yval, alpha=0.4)
+                ax.bar(xval, yval, alpha=0.4, width=0.3)
             elif self.tab1_win2comboBox_2.currentText() == chart[3]:  # 산포도
                 ax.scatter(xval, yval)
             elif self.tab1_win2comboBox_2.currentText() == chart[4]:  # 산포도
@@ -645,7 +643,7 @@ class Ui_MainWindow(object):
         # 이벤트
         try:
             self.tab1_win1pushButton.clicked.connect(self.submitQuery)  # 확인버튼 누를시
-            self.tab1_win1checkBox.stateChanged.connect(self.ableQuery1)  # 체크박스 변화시
+            self.tab1_win1checkBox.stateChanged.connect(self.ableQuery1)
             self.tab1_win1checkBox_2.stateChanged.connect(self.ableQuery2)
         except:
             traceback.print_exc()
@@ -689,6 +687,8 @@ class Ui_MainWindow(object):
         self.tab1_plainTextEdit.setEnabled(True)
         Ui_MainWindow.mainWindow_df1_0 = ""
         self.createTable()
+        self.tab1_plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery1)
+        print(Ui_MainWindow.sqlQuery1)
         self.tab1_newWindow1.close()
 
     def setQuery(self, columnText, i, lineEditText):
@@ -707,14 +707,8 @@ class Ui_MainWindow(object):
 
     # -----------------------------------------------tab1
 
-    def actpopup(self):
-        """ 특정 테이블만 팝업 사용가능"""
-        # accessGraphic=["FUND_COMPANY"]
-        # if Ui_MainWindow.selectedTable in actGraphic:
-        #     self.tab1_pushButton_4.setDisabled(False)
-        # else:
-        #     self.tab1_pushButton_4.setDisabled(True)
-        self.tab1_pushButton_4.setDisabled(False)
+
+
 
     def chkBox(self):
         """조건 비활성화 유무 표시"""
@@ -726,7 +720,7 @@ class Ui_MainWindow(object):
 
     def setListWidget(self):
         """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
-        dbList = ["FUND_BASIC", "FUND_COMPANY", "FUND_INTEGRATE", "FUND_OPERATE", "FUND_RETAIL", "FUND_RETAIL_SELLER",
+        dbList = ["정보_회사","FUND_BASIC", "FUND_COMPANY", "FUND_INTEGRATE", "FUND_OPERATE", "FUND_RETAIL", "FUND_RETAIL_SELLER",
                   "공통코드", "운용역코드", "펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
                   "펀드_보수계산정보", "펀드_보수율", "펀드_보수일별집계", "펀드_설정해지결제", "펀드_설정해지내역", "펀드_설정해지보수",
                   "펀드_설정해지예정내역", "펀드_설정해지원장", "펀드_수익자정보", "펀드_운용회사변경내역", "펀드_위탁사별구조관계총괄", "펀드_위탁사별펀드정보",
@@ -736,19 +730,10 @@ class Ui_MainWindow(object):
                   "정보_자산분류", "정보_증권거래소", "정보_증권거래소회사업종", "정보_채권기준종류", "정보_코스콤채권종류", "정보_팀",
                   "정보_팀별운용역", "정보_판매회사펀드", "정보_펀드자체유형", "정보_펀드협회분류코드", "정보_펀드회계유형", "정보_평가회사채권분류",
                   "정보_회사", "정보_회사그룹", "평가_벤치마크지수", "평가_펀드기여손익", "평가_펀드목표수익",
-                  "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가", "국가별공휴일"
-            , "기타_공휴일", "기타_관심펀드", "기타_달력일자", "기타_시스템체크", "기타_일자"
-
+                  "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가", "국가별공휴일",
+                  "기타_공휴일", "기타_관심펀드", "기타_달력일자", "기타_시스템체크", "기타_일자"
                   ]
         self.tab1_listWidget.addItems(dbList)
-
-    def clickListWidget(self):
-        """ DB리스트 클릭시 클래스 변수에 값을 저장 """
-        Ui_MainWindow.selectedTable = self.tab1_listWidget.currentItem().text()
-        Ui_MainWindow.sqlQuery1 = ""
-        self.tab1_plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery1)
-        self.tab1_pushButton_3.setDisabled(True)
-        self.tab1_pushButton_4.setDisabled(True)
 
     def cellClickEvent(self, row, col):
         """ 셀 클릭시 계산값을 보여줌"""
@@ -777,6 +762,7 @@ class Ui_MainWindow(object):
                     self.tab1_label_11.setText(self.setComma(total))  # 합계
         except:
             traceback.print_exc()
+
 
     def isFloat(self, par):
         """정수, 소수만 소수타입으로 변환해 부동소수점 문제 해결하고 리턴 그 외에는 0리턴"""
@@ -808,9 +794,16 @@ class Ui_MainWindow(object):
             returnvalue = decimal.Decimal(par)
         return returnvalue
 
+    def clearPlaintext(self):
+        """조건검색 내용 지우고 검색"""
+        self.tab1_plainTextEdit.setPlainText("")
+        Ui_MainWindow.sqlQuery1=""
+        self.createTable()
+
     def createTable(self):
         """ 테이블 컬럼, 로우 수, 컬럼명 설정을 함"""
         try:
+            Ui_MainWindow.selectedTable = self.tab1_listWidget.currentItem().text()
             start = time.time()
             sqlValue = self.searchValue()
             if Ui_MainWindow.selectedTable:
@@ -818,8 +811,6 @@ class Ui_MainWindow(object):
                     header = self.searchColumn()
                     df = pd.DataFrame(sqlValue)
                     df.columns = header
-                    # df.head()
-                    Ui_MainWindow.dfRow = len(df.index)
                     self.tab1_tableWidget.clear()
                     self.tab1_tableWidget.setColumnCount(len(df.columns))
                     self.tab1_tableWidget.setRowCount(len(df.index))
@@ -828,13 +819,13 @@ class Ui_MainWindow(object):
                     Ui_MainWindow.mainWindow_df1_0 = df
                     self.tab1_label_2.setText("")
                     self.tab1_label_5.setText(Ui_MainWindow.selectedTable)
-                    self.tab1_label_7.setText(str(Ui_MainWindow.dfRow) + " / 전체:" + self.tableCount())
+                    self.tab1_label_7.setText(str(len(df.index)) + " / 전체:" + self.tableCount())
                     self.tab1_label_9.setText("")
                     self.tab1_label_11.setText("")
                     self.tab1_tableWidget.resizeColumnsToContents()  # 셀 크기를 내용길이와 같게
                     self.tab1_pushButton_3.setDisabled(False)
                     self.tab1_pushButton_4.setDisabled(False)
-                    self.actpopup()
+                    self.tab1_pushButton_4.setDisabled(False)
 
                 else:
                     self.tab1_tableWidget.clear()
@@ -901,68 +892,28 @@ class Ui_MainWindow(object):
             a.exec_()
             traceback.print_exc()
 
-    # def setTableData2(self, df, tab, win):  # 삭제 예정
-    #     """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
-    #     try:
-    #         start = time.time()
-    #
-    #         for i in range(len(df.index)):
-    #             for j in range(len(df.columns)):
-    #                 val = (str(df.iloc[i, j]))
-    #                 if tab == "1" and win == "0":
-    #                     if self.isFloat(val) != 0 or val == '0.0' or val == '0':  # 0, 0.0은 하드코딩
-    #                         self.tab1_tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
-    #                         self.tab1_tableWidget.item(i, j).setTextAlignment(
-    #                             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-    #                         if float(val) < 0:
-    #                             self.tab1_tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
-    #                     else:
-    #                         self.tab1_tableWidget.setItem(i, j, QTableWidgetItem(val))
-    #                 elif tab == "3" and win == "0":
-    #                     if self.isFloat(val) != 0 or val == '0.0' or val == '0':  # 0, 0.0은 하드코딩
-    #                         self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
-    #                         self.tab3_tablewidget.item(i, j).setTextAlignment(
-    #                             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-    #                         if float(val) < 0:
-    #                             self.tab3_tablewidget.item(i, j).setBackground(Ui_MainWindow.color)
-    #                     else:
-    #                         self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(val))
-    #                 elif tab == "3" and win == "1":
-    #                     if self.isFloat(val) != 0 or val == '0.0' or val == '0':  # 0, 0.0은 하드코딩
-    #                         self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(val)))
-    #                         self.tab3_win1tableWidget.item(i, j).setTextAlignment(
-    #                             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-    #                         if float(val) < 0:
-    #                             self.tab3_win1tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
-    #                     else:
-    #                         self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(val))
-    #         end = time.time()
-    #         print(end - start)
-    #     except:
-    #         traceback.print_exc()
-
     def setTableData(self, df, tab, win, start):
         """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
         try:
             nArray = df.to_numpy()
             for i, arr in enumerate(nArray):
                 for j, val in enumerate(arr):
-                    if tab == "1" and win == "0":
-                        if self.isFloat(val) != 0 or val == 0:
-                            self.tab1_tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(str(val))))
-                            self.tab1_tableWidget.item(i, j).setTextAlignment(
-                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-                            if float(val) < 0:
-                                self.tab1_tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
-                        else:
-                            self.tab1_tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-                    elif tab == "3" and win == "0":
+                    if tab == "1" and win == "0": # 숫자구분, 음수처리, 정렬, 콤마처리 빼면 정보_회사 조회시간 6.5->3.5초로 줄어듦
+                        # if self.isFloat(val) != 0 or val == 0:
+                        #     self.tab1_tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(str(val))))
+                            # self.tab1_tableWidget.item(i, j).setTextAlignment(
+                            #     QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            # if float(val) < 0:
+                            #     self.tab1_tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                        # else:
+                        self.tab1_tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                    elif tab == "3" and win == "0": # 음수처리 할 필요없음
                         if self.isFloat(val) != 0 or val == 0:
                             self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(self.setComma(str(val))))
                             self.tab3_tablewidget.item(i, j).setTextAlignment(
                                 QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-                            if float(val) < 0:
-                                self.tab3_tablewidget.item(i, j).setBackground(Ui_MainWindow.color)
+                            # if float(val) < 0:
+                            #     self.tab3_tablewidget.item(i, j).setBackground(Ui_MainWindow.color)
                         else:
                             self.tab3_tablewidget.setItem(i, j, QTableWidgetItem(str(val)))
                     elif tab == "3" and win == "1":
@@ -994,7 +945,7 @@ class Ui_MainWindow(object):
 
     def menuInfo(self):
         """찾기 귀찮아서"""
-        os.system('explorer https://codetorial.net/pyqt5/index.html')
+        os.system('explorer https://doc.qt.io/qtforpython/PySide6/QtWidgets/QTableWidget.html')
 
     def setComma(self, val):
         """1000 단위 콤마 붙여서 리턴"""
@@ -1030,13 +981,10 @@ class Ui_MainWindow(object):
                         Ui_MainWindow.mainWindow_df3_1Re.to_excel(excelPath)
                     if os.path.exists(excelPath):
                         a.setText("경로: " + excelPath + "\n\n엑셀파일 생성 완료")
-
                     else:
                         a.setText("파일이 생성되지 않았습니다")
                     a.setStandardButtons(QMessageBox.Ok)
                     a.exec_()
-
-
             else:
                 a.setText("변환할 자료가 없습니다")
                 a.setStandardButtons(QMessageBox.Ok)
@@ -1174,7 +1122,7 @@ class Ui_MainWindow(object):
         """ SQL 값 리턴 Hints 22502 화면이고 상황끝난펀드 부분은 더 구현 안 함."""
         try:
             sql = ""
-            sql += query.returnSQL('tab3_searchValue')
+            sql += query.returnSQL('tab3_SearchQuery')
             sql += "and b.tr_ymd >= '{}'".format(self.tab3_dateEdit.text().replace('-', '/'))
             sql += "and b.tr_ymd <= '{}'".format(self.tab3_dateEdit_2.text().replace('-', '/'))
 
@@ -1367,6 +1315,9 @@ class Ui_MainWindow(object):
         self.tab3_newWindow1.resize(1169, 558)
         self.tab3_win1label_2.setText(fundName)
         self.tab3_winCreateTable(fundCode)
+        if Ui_MainWindow.version != "xe":
+            self.tab3_win1dateEdit.setDate(Ui_MainWindow.mainWindow_df3_1['기준일자'].min())
+        self.tab3_win1dateEdit_2.setDate(date.today() - timedelta(1))
         self.tab3_newWindow1.show()
 
         # 이벤트
@@ -1376,9 +1327,6 @@ class Ui_MainWindow(object):
             self.tab3_win1pushButton.clicked.connect(
                 lambda: self.toExcel("3", "1", self.tab3_win1label_2.text()))  # 엑셀변환 버튼
             self.tab3_win1pushButton_2.clicked.connect(lambda: self.windowGraphic("3", "1"))  # 탭3 새창 그래픽 팝업 버튼
-            if Ui_MainWindow.version != "xe":
-                self.tab3_win1dateEdit.setDate(date.today() - timedelta(1))
-            self.tab3_win1dateEdit_2.setDate(date.today() - timedelta(1))
             self.tab3_win1checkBox.stateChanged.connect(self.ckeckedTab3_Win1checkBox)
             self.tab3_win1checkBox_2.stateChanged.connect(self.ckeckedTab3_Win1checkBox)
             self.tab3_win1pushButton_3.clicked.connect(self.dataReSearch) # 조회
@@ -1403,7 +1351,7 @@ class Ui_MainWindow(object):
             start = time.time()
             sql = ""
             header = ['기준일자', '기준가격', '전일대비', '설정금액', '설정좌수', '당일설정좌수', '당일해지좌수', '좌수증감', '총자산', '총자산일간변동', '순자산', '순자산일간변동']
-            sql += query.returnSQL('tab3_winCreateTable')
+            sql += query.returnSQL('tab3_win1SearchQuery')
             sql += " and TO_CHAR(a.FUND_CD) = '{}' order by a.TR_YMD desc".format(fundCode)
             print(sql)
             cur.execute(sql)
@@ -1487,17 +1435,27 @@ class Ui_MainWindow(object):
         try:
             for i in range(len(df11.index)):
                 for j in range(len(df11.columns)):
-                    print(str(df11.iloc[i, j]))
+                    print(i,j)
 
         except:
             traceback.print_exc()
 
     def asd2(self, df11):
         try:
+            print('---------------')
             np2 = df11.to_numpy()
-            for i, a in enumerate(np2):
-                for b, c in enumerate(a):
-                    print(str(i) + "," + str(b))
+            row,col=np2.shape
+            np2=np2.reshape(-1)
+            i=0
+            j=-1
+            for val in np2:
+                j+=1
+                if(j==row+1):
+                    j=0
+                    i+=1
+                if(i==col+1):
+                    break
+                print(i,j)
         except:
             traceback.print_exc()
 
