@@ -25,7 +25,8 @@ def tab3_SearchQuery():
         "round(b.FUND_PANMEBOSU_BP,2) as 판매보수,round(b.FUND_MANBOSU_BP,2) as 운용보수,round(b.FUND_SAMUBOSU_BP,2) as 사무관리보수,round(b.FUND_SUTAKBOSU_BP,2) as 수탁보수,round(b.FUND_EVALBOSU_BP,2) as 펀드평가보수, " \
         "round(b.FUND_JAMUNBOSU_BP,2) as 자산관리보수,'?'상품관리보수,round(b.FUND_ADDBOSU_BP,2) as 성과보수율,a.성과보수여부, " \
         " round(b.FUND_PANMEBOSU_BP,2)+round(b.FUND_MANBOSU_BP,2)+round(b.FUND_SAMUBOSU_BP,2)+round(b.FUND_SUTAKBOSU_BP,2)+round(b.FUND_EVALBOSU_BP,2)+nvl(round(b.FUND_JAMUNBOSU_BP,2),0)+nvl(round(b.FUND_ADDBOSU_BP,2),0) as total," \
-        " c.INTE_SET_VOL as 설정액, c.INTE_ORIGIN_MONEY as 설정좌수, b.FUND_TOT_JASAN as 총자산, round(c.INTE_NET_MONEY_AF,2) as 순자산,e.OPER_RAT_PRICE as 기준가,'?'누적수익지수,b.fund_nm as 펀드약명, " \
+        "  to_char(c.INTE_SET_VOL, '999,999,999,999,999') as 설정액, to_char(c.INTE_ORIGIN_MONEY, '999,999,999,999,999') as 설정좌수, to_char(b.FUND_TOT_JASAN, '999,999,999,999,999') as 총자산, " \
+        " to_char(round(c.INTE_NET_MONEY_AF,2), '999,999,999,999,999') as 순자산,to_char(round(e.OPER_RAT_PRICE), '999,999,999,999,999') as 기준가,'?'누적수익지수,b.fund_nm as 펀드약명, " \
         "b.fund_eng_full_nm as 영문명,c.inte_man 운용역,(select 공통코드값명 from 공통코드 where a.운용회사코드=공통코드값정의 and 공통코드ID='001128') as 운용사명,b.fund_sutak_nm as 수탁은행,'?'수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, " \
         "(select count(*) from FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd) as 판매사갯수, " \
         "(select listagg(comp_sale_nm,', ') from(select x.fund_cd,x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd and b.tr_ymd=x.tr_ymd)) as 판매사, " \
