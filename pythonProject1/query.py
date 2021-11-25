@@ -3,13 +3,9 @@ def returnSQL(para):
         sql = tab3_win1SearchQuery()
     elif para == 'tab3_SearchQuery':
         sql = tab3_SearchQuery()
-
+    elif para == 'tab3_win3SearchQuery':
+        sql = tab3_win3SearchQuery()
     return sql
-
-
-# 펀드구조구분코드 IN ('01','02','04','06')--일반펀드,모펀드,클래스운용,클래스운용(자)
-# 펀드구조구분코드 IN ('01','03','04','06')--일반펀드,자펀드,클래스운용,클래스운용(자)
-# 펀드구조구분코드 IN ('01','02','04')     --일반펀드,모펀드,클래스운용
 
 def tab3_SearchQuery():
     """탭3 메인부분"""
@@ -67,6 +63,13 @@ def tab3_win1SearchQuery():
         "where b.fund_cd=a.fund_cd and a.TR_YMD=b.TR_YMD  and b.fund_cd=c.펀드코드 and a.tr_ymd=c.기준일자 "
     return str
 
+def tab3_win3SearchQuery():
+    str = \
+        "select tr_ymd,suik_group,suik_name,suik_seq,suik_set_money, "\
+"nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a,suik_set_vol, "\
+"nvl(suik_set_vol - lag(suik_set_vol) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as b,suik_sale_comp "\
+"from SUIKJA_INFO where 1=1 "
+    return str
 
 def tab_searchValue():
     """하나펀드에서 보내주는 테이블 위주로 사용시"""
