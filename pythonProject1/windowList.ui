@@ -30,7 +30,7 @@
      <bool>true</bool>
     </property>
     <property name="sortingEnabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QLabel" name="tab3_win1label">
@@ -250,6 +250,9 @@
     <property name="text">
      <string/>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QCheckBox" name="tab3_win1checkBox">
     <property name="geometry">
@@ -263,10 +266,13 @@
     <property name="text">
      <string/>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QDateEdit" name="tab3_win1dateEdit_2">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -295,7 +301,7 @@
    </widget>
    <widget class="QDateEdit" name="tab3_win1dateEdit">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
