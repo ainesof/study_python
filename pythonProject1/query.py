@@ -5,6 +5,10 @@ def returnSQL(para):
         sql = tab3_SearchQuery()
     elif para == 'tab3_win3SearchQuery':
         sql = tab3_win3SearchQuery()
+    elif para == 'tab4_searchQuery':
+        sql = tab4_searchQuery()
+    elif para == 'tab5_searchQuery':
+        sql = tab5_searchQuery()
     return sql
 
 def tab3_SearchQuery():
@@ -71,7 +75,52 @@ def tab3_win3SearchQuery():
 "from SUIKJA_INFO where 1=1 "
     return str
 
-def tab_searchValue():
+def tab4_searchQuery():
+    str = \
+        "select * "\
+"from( select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a, "\
+"suik_mg_bu,suik_gubun_type,suik_fund_type "\
+"from SUIKJA_INFO "\
+"minus "\
+"select * "\
+"from (select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a, "\
+"suik_mg_bu,suik_gubun_type,suik_fund_type "\
+"from SUIKJA_INFO) "\
+"where suik_set_money=0 and a=0 "\
+")where 1=1 "
+    return str
+
+def tab5_searchQuery():
+    str = \
+    "select a.suik_mg_bu,a.suik_group,nvl(floor(a.suik_set_money/100000000),0) as suik_set_money1,b.suik_mg_bu,b.suik_group,nvl(floor(b.suik_set_money/100000000),0) as suik_set_money2 "\
+"from (select suik_mg_bu,suik_group,sum(suik_set_money) as suik_set_money "\
+"from SUIKJA_INFO a where 1=1 and suik_set_money>0 and suik_group<>'MMF' and suik_mg_bu='1본부' and suik_cd<>'PN_NPS' "\
+"and tr_ymd='2021/11/28' "\
+"group by suik_mg_bu,suik_group "\
+"union "\
+"select suik_mg_bu,'NPS' as suik_group,sum(suik_set_money) as suik_set_money "\
+"from SUIKJA_INFO a where 1=1 and suik_set_money>0 and suik_group<>'MMF' and suik_mg_bu='1본부' and suik_cd='PN_NPS' "\
+"and tr_ymd='2021/11/28' "\
+"group by suik_mg_bu,suik_group) a full outer join "\
+"(select suik_mg_bu,suik_group,sum(suik_set_money) as suik_set_money "\
+"from SUIKJA_INFO a where 1=1 and suik_set_money>0 and suik_group<>'MMF' and suik_mg_bu='2본부' and suik_cd<>'PN_NPS' "\
+"and tr_ymd='2021/11/28' "\
+"group by suik_mg_bu,suik_group "\
+"union "\
+"select suik_mg_bu,'NPS' as suik_group,sum(suik_set_money) as suik_set_money "\
+"from SUIKJA_INFO a where 1=1 and suik_set_money>0 and suik_group<>'MMF' and suik_mg_bu='2본부' and suik_cd='PN_NPS' "\
+"and tr_ymd='2021/11/28' "\
+"group by suik_mg_bu,suik_group) b "\
+"on a.suik_group=b.suik_group"
+    return str
+
+def testQuery():
+    str = \
+        "select tr_ymd,suik_name,suik_seq, suik_set_money,0 from SUIKJA_INFO"
+    return str
+
+
+def tab_hanaSearchQuery():
     """하나펀드에서 보내주는 테이블 위주로 사용시"""
     print("하나펀드")
 #     str= \
