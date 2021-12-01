@@ -19,65 +19,68 @@ def returnSQL(para):
         sql = tab4_searchQuery()
     elif para == 'tab5_searchQuery':
         sql = tab5_searchQuery()
+    elif para == 'tab5_win1searchQuery':
+        sql = tab5_win1searchQuery()
+
     return sql
 
 def tableCount():
     """테이블 자료수 조회"""
     str = \
-        "select count(*) from {}"
+"select count(*) from {}"
     return str
 
 def searchColumn():
     """ 테이블 컬럼을 가지고와서 DB리스트에 입력"""
     str = \
-        "select column_name from cols where table_name = '{}' order by COLUMN_ID ASC"
+"select column_name from cols where table_name = '{}' order by COLUMN_ID ASC"
     return str
 
 def searchValue():
     """ SQL 값 리턴"""
     str = \
-        "select * from {} where 1=1"
+"select * from {} where 1=1"
     return str
 
 def tab3_SearchQuery():
     """탭3 메인부분"""
     str = \
-        "select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm, " \
-        "(select 공통코드값명 from 공통코드 where b.fund_sintak_mm=공통코드값 and 공통코드ID='001049')수익자구분, " \
-        "   (select listagg(수익자명, ',') from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자, " \
-        " (select 펀드회계유형명 from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 펀드종류구분, b.fund_type as 펀드유형," \
-        "(select decode(substr(펀드회계유형명,3,2),'신탁','','일임','일임',substr(펀드회계유형명,3,2)) from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 일임_자문, b.fund_gongmo_samo as 공모사모구분, b.fund_in_foreign as 국내해외, b.fund_moja_gu as 모자구분, " \
-        "  decode(a.펀드구조구분코드,'04','클래스운용펀드','05','클래스펀드','06','클래스운용펀드','') 종류형구분, '?' as 펀드구분, " \
-        " (select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률, a.자본시장통합법적용일자 as 자통법적용일, a.최초설정일자, " \
-        " (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) as 운용개시일, " \
-        "a.다음결산일자,a.상환예정일자 as 상환일,a.다음보수인출일자, " \
-        "nvl(round(b.FUND_PANMEBOSU_BP,2),0) as 판매보수,nvl(round(b.FUND_MANBOSU_BP,2),0) as 운용보수,nvl(round(b.FUND_SAMUBOSU_BP,2),0) as 사무관리보수,nvl(round(b.FUND_SUTAKBOSU_BP,2),0) as 수탁보수,nvl(round(b.FUND_EVALBOSU_BP,2),0) as 펀드평가보수, "\
-        "nvl(round(b.FUND_JAMUNBOSU_BP,2),0) as 자산관리보수,'?'상품관리보수,nvl(round(b.FUND_ADDBOSU_BP,2),0) as 성과보수율,a.성과보수여부, "\
-        " round(b.FUND_PANMEBOSU_BP,2)+round(b.FUND_MANBOSU_BP,2)+round(b.FUND_SAMUBOSU_BP,2)+round(b.FUND_SUTAKBOSU_BP,2)+round(b.FUND_EVALBOSU_BP,2)+nvl(round(b.FUND_JAMUNBOSU_BP,2),0)+nvl(round(b.FUND_ADDBOSU_BP,2),0) as total," \
-        "  to_char(c.INTE_SET_VOL, '999,999,999,999,999') as 설정액, to_char(c.INTE_ORIGIN_MONEY, '999,999,999,999,999') as 설정좌수, to_char(b.FUND_TOT_JASAN, '999,999,999,999,999') as 총자산, " \
-        " to_char(round(c.INTE_NET_MONEY_AF,2), '999,999,999,999,999') as 순자산,to_char(round(e.OPER_RAT_PRICE), '999,999,999,999,999') as 기준가,c.inte_modi_price as 누적수익지수,b.fund_nm as 펀드약명, " \
-        "b.fund_eng_full_nm as 영문명,c.inte_man 운용역,(select 공통코드값명 from 공통코드 where a.운용회사코드=공통코드값정의 and 공통코드ID='001128') as 운용사명,(select 공통코드값명 from 공통코드 where a.증권예탁원수탁사코드=공통코드값 and 공통코드ID='000976') as 수탁은행,b.fund_sutak_nm as 수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, " \
-        "(select count(*) from(select x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd group by x.comp_sale_nm)) as 판매사갯수, "\
-        "(select listagg(comp_sale_nm,', ') from(select x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd group by x.comp_sale_nm)) as 판매사, "\
-        "금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,a.상품분류코드,'?'상품분류2차, " \
-        "집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||  " \
-        "집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드 as 집합투자기구구분, " \
-        "a.펀드결제수수료계상여부 as 펀드결제수수료여부, " \
-        "(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식, " \
-        "(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 당기결산방식,a.시가평가여부,'?'장단기부분,a.국외세액환급여부,(select d.유효시작일자 from 펀드_운용회사변경내역 d where a.펀드코드=d.펀드코드(+) and 변경이전운용회사코드=244)이관일, " \
-        "(select d.유효시작일자 from 펀드_운용회사변경내역 d where a.펀드코드=d.펀드코드(+) and 운용회사코드=244) as 이수일,'?'투자자,(select 공통코드값정의 from 공통코드 where a.부사무관리펀드코드=공통코드값 and 공통코드ID='001030') as 부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자," \
-        "(select 공통코드값명 from 공통코드 where a.이전설정확정일구분코드=공통코드값 and 공통코드ID='000139')설정대금확정일1,(select 공통코드값명 from 공통코드 where a.이전설정일구분코드=공통코드값 and 공통코드ID='000139')설정일1, "\
-        "(select 공통코드값명 from 공통코드 where a.이전환매일구분코드=공통코드값 and 공통코드ID='000139')환매대금확정일1,(select 공통코드값명 from 공통코드 where a.이전환매일구분코드=공통코드값 and 공통코드ID='000139')환매일1," \
-        "(select 공통코드값명 from 공통코드 where a.이후환매일구분코드=공통코드값 and 공통코드ID='000139')환매대금확정일2,(select 공통코드값명 from 공통코드 where a.이후환매일구분코드=공통코드값 and 공통코드ID='000139')환매일2," \
-        "e.oper_bm_way as BM명,'?'GIPS펀드유형,'?'채권평가사보수유예시작일,'?'채권평가사보수유예종료일,'?'배당기준운용사,'?'신주인수권증서평가기준_폐지일," \
-        "'?'공모청약수수료기준,b.fund_danwi_gu as 단위형구분,'?'수익차등여부, " \
-        "(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류, '?'일반투자자포함여부 " \
-        "from 펀드_마스터 a, FUND_BASIC b, FUND_INTEGRATE c, FUND_OPERATE e " \
-        "where a.펀드코드=b.fund_cd " \
-        "and a.펀드코드=c.fund_cd " \
-        "and a.펀드코드 = e.fund_cd " \
-        "and b.tr_ymd = e.tr_ymd " \
-        "and b.tr_ymd=c.tr_ymd "
+"select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm, " \
+"(select 공통코드값명 from 공통코드 where b.fund_sintak_mm=공통코드값 and 공통코드ID='001049')수익자구분, " \
+"(select listagg(수익자명, ',') from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자, " \
+" (select 펀드회계유형명 from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 펀드종류구분, b.fund_type as 펀드유형," \
+"(select decode(substr(펀드회계유형명,3,2),'신탁','','일임','일임',substr(펀드회계유형명,3,2)) from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 일임_자문, b.fund_gongmo_samo as 공모사모구분, b.fund_in_foreign as 국내해외, b.fund_moja_gu as 모자구분, " \
+"  decode(a.펀드구조구분코드,'04','클래스운용펀드','05','클래스펀드','06','클래스운용펀드','') 종류형구분, '?' as 펀드구분, " \
+" (select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률, a.자본시장통합법적용일자 as 자통법적용일, a.최초설정일자, " \
+" (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) as 운용개시일, " \
+"a.다음결산일자,a.상환예정일자 as 상환일,a.다음보수인출일자, " \
+"nvl(round(b.FUND_PANMEBOSU_BP,2),0) as 판매보수,nvl(round(b.FUND_MANBOSU_BP,2),0) as 운용보수,nvl(round(b.FUND_SAMUBOSU_BP,2),0) as 사무관리보수,nvl(round(b.FUND_SUTAKBOSU_BP,2),0) as 수탁보수,nvl(round(b.FUND_EVALBOSU_BP,2),0) as 펀드평가보수, "\
+"nvl(round(b.FUND_JAMUNBOSU_BP,2),0) as 자산관리보수,'?'상품관리보수,nvl(round(b.FUND_ADDBOSU_BP,2),0) as 성과보수율,a.성과보수여부, "\
+" round(b.FUND_PANMEBOSU_BP,2)+round(b.FUND_MANBOSU_BP,2)+round(b.FUND_SAMUBOSU_BP,2)+round(b.FUND_SUTAKBOSU_BP,2)+round(b.FUND_EVALBOSU_BP,2)+nvl(round(b.FUND_JAMUNBOSU_BP,2),0)+nvl(round(b.FUND_ADDBOSU_BP,2),0) as total," \
+"  to_char(c.INTE_SET_VOL, '999,999,999,999,999') as 설정액, to_char(c.INTE_ORIGIN_MONEY, '999,999,999,999,999') as 설정좌수, to_char(b.FUND_TOT_JASAN, '999,999,999,999,999') as 총자산, " \
+" to_char(round(c.INTE_NET_MONEY_AF,2), '999,999,999,999,999') as 순자산,to_char(round(e.OPER_RAT_PRICE), '999,999,999,999,999') as 기준가,c.inte_modi_price as 누적수익지수,b.fund_nm as 펀드약명, " \
+"b.fund_eng_full_nm as 영문명,c.inte_man 운용역,(select 공통코드값명 from 공통코드 where a.운용회사코드=공통코드값정의 and 공통코드ID='001128') as 운용사명,(select 공통코드값명 from 공통코드 where a.증권예탁원수탁사코드=공통코드값 and 공통코드ID='000976') as 수탁은행,b.fund_sutak_nm as 수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, " \
+"(select count(*) from(select x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd group by x.comp_sale_nm)) as 판매사갯수, "\
+"(select listagg(comp_sale_nm,', ') from(select x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd group by x.comp_sale_nm)) as 판매사, "\
+"금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,a.상품분류코드,'?'상품분류2차, " \
+"집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||  " \
+"집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드 as 집합투자기구구분, " \
+"a.펀드결제수수료계상여부 as 펀드결제수수료여부, " \
+"(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식, " \
+"(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 당기결산방식,a.시가평가여부,'?'장단기부분,a.국외세액환급여부,(select d.유효시작일자 from 펀드_운용회사변경내역 d where a.펀드코드=d.펀드코드(+) and 변경이전운용회사코드=244)이관일, " \
+"(select d.유효시작일자 from 펀드_운용회사변경내역 d where a.펀드코드=d.펀드코드(+) and 운용회사코드=244) as 이수일,'?'투자자,(select 공통코드값정의 from 공통코드 where a.부사무관리펀드코드=공통코드값 and 공통코드ID='001030') as 부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자," \
+"(select 공통코드값명 from 공통코드 where a.이전설정확정일구분코드=공통코드값 and 공통코드ID='000139')설정대금확정일1,(select 공통코드값명 from 공통코드 where a.이전설정일구분코드=공통코드값 and 공통코드ID='000139')설정일1, "\
+"(select 공통코드값명 from 공통코드 where a.이전환매일구분코드=공통코드값 and 공통코드ID='000139')환매대금확정일1,(select 공통코드값명 from 공통코드 where a.이전환매일구분코드=공통코드값 and 공통코드ID='000139')환매일1," \
+"(select 공통코드값명 from 공통코드 where a.이후환매일구분코드=공통코드값 and 공통코드ID='000139')환매대금확정일2,(select 공통코드값명 from 공통코드 where a.이후환매일구분코드=공통코드값 and 공통코드ID='000139')환매일2," \
+"e.oper_bm_way as BM명,'?'GIPS펀드유형,'?'채권평가사보수유예시작일,'?'채권평가사보수유예종료일,'?'배당기준운용사,'?'신주인수권증서평가기준_폐지일," \
+"'?'공모청약수수료기준,b.fund_danwi_gu as 단위형구분,'?'수익차등여부, " \
+"(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류, '?'일반투자자포함여부 " \
+"from 펀드_마스터 a, FUND_BASIC b, FUND_INTEGRATE c, FUND_OPERATE e " \
+"where a.펀드코드=b.fund_cd " \
+"and a.펀드코드=c.fund_cd " \
+"and a.펀드코드 = e.fund_cd " \
+"and b.tr_ymd = e.tr_ymd " \
+"and b.tr_ymd=c.tr_ymd "
 
     return str
 
@@ -85,93 +88,205 @@ def tab3_SearchQuery():
 def tab3_win1SearchQuery():
     """탭3 새창 더블클릭시 내용읽는 부분"""
     str = \
-        "select a.TR_YMD,b.inte_modi_price, " \
-        "nvl(b.inte_modi_price - lead(b.inte_modi_price) over (order by a.TR_YMD desc),0) a, " \
-        "a.FUND_SET_MONEY,a.FUND_SET_VOL, " \
-        "c.당일설정좌수,c.당일해지좌수,nvl(a.FUND_SET_VOL - lead(a.FUND_SET_VOL) over (order by a.TR_YMD desc),0) as aa, " \
-        "a.FUND_TOT_JASAN, nvl(a.FUND_TOT_JASAN - lead(a.FUND_TOT_JASAN) over (order by a.TR_YMD desc),0) b, " \
-        "a.FUND_NET_JASAN, nvl(a.FUND_NET_JASAN - lead(a.FUND_NET_JASAN) over (order by a.TR_YMD desc),0) c   " \
-        "from FUND_BASIC a, FUND_INTEGRATE b, 펀드_설정해지원장 c " \
-        "where b.fund_cd=a.fund_cd and a.TR_YMD=b.TR_YMD  and b.fund_cd=c.펀드코드 and a.tr_ymd=c.기준일자 and TO_CHAR(a.FUND_CD) = '{}' order by a.TR_YMD desc"
+"select a.TR_YMD,b.inte_modi_price, " \
+"nvl(b.inte_modi_price - lead(b.inte_modi_price) over (order by a.TR_YMD desc),0) a, " \
+"a.FUND_SET_MONEY,a.FUND_SET_VOL, " \
+"c.당일설정좌수,c.당일해지좌수,nvl(a.FUND_SET_VOL - lead(a.FUND_SET_VOL) over (order by a.TR_YMD desc),0) as aa, " \
+"a.FUND_TOT_JASAN, nvl(a.FUND_TOT_JASAN - lead(a.FUND_TOT_JASAN) over (order by a.TR_YMD desc),0) b, " \
+"a.FUND_NET_JASAN, nvl(a.FUND_NET_JASAN - lead(a.FUND_NET_JASAN) over (order by a.TR_YMD desc),0) c   " \
+"from FUND_BASIC a, FUND_INTEGRATE b, 펀드_설정해지원장 c " \
+"where b.fund_cd=a.fund_cd and a.TR_YMD=b.TR_YMD  and b.fund_cd=c.펀드코드 and a.tr_ymd=c.기준일자 and TO_CHAR(a.FUND_CD) = '{}' order by a.TR_YMD desc"
     return str
 
 def tab3_win2SearchQuery():
     str = \
-        "select 펀드코드, 위탁사펀드명 from 펀드_위탁사별펀드정보"
+"select 펀드코드, 위탁사펀드명 from 펀드_위탁사별펀드정보"
     return str
 
 def tab3_win3ChangeSelectComboBox():
     """콤보박스 값 동적입력"""
     str = \
-        "select suik_seq from SUIKJA_INFO where fund_cd='{}' and suik_name='{}' group by suik_name,suik_seq"
+"select suik_seq from SUIKJA_INFO where fund_cd='{}' and suik_name='{}' group by suik_name,suik_seq"
     return str
 
 def tab3_win3SearchQuery():
     """새창 특정컬럼 더블클릭시"""
     str = \
-        "select tr_ymd,suik_group,suik_name,suik_seq,suik_set_money, "\
-        "nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a,suik_set_vol, "\
-        "nvl(suik_set_vol - lag(suik_set_vol) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as b,suik_sale_comp "\
-        "from SUIKJA_INFO where 1=1 and fund_cd='{}'"
+"select tr_ymd,suik_group,suik_name,suik_seq,suik_set_money, "\
+"nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a,suik_set_vol, "\
+"nvl(suik_set_vol - lag(suik_set_vol) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as b,suik_sale_comp "\
+"from SUIKJA_INFO where 1=1 and fund_cd='{}'"
     return str
 
 def tab4_searchQuery():
     """탭4"""
     str = \
-        "select * "\
-        "from( select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a, "\
-        "suik_mg_bu,suik_gubun_type,suik_fund_type "\
-        "from SUIKJA_INFO "\
-        "minus "\
-        "select * "\
-        "from (select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a, "\
-        "suik_mg_bu,suik_gubun_type,suik_fund_type "\
-        "from SUIKJA_INFO) "\
-        "where suik_set_money=0 and a=0 "\
-        ")where 1=1 and tr_ymd >= '{}' and tr_ymd <= '{}'"
+"select * "\
+"from( select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a, "\
+"suik_mg_bu,suik_gubun_type,suik_fund_type "\
+"from SUIKJA_INFO "\
+"minus "\
+"select * "\
+"from (select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a, "\
+"suik_mg_bu,suik_gubun_type,suik_fund_type "\
+"from SUIKJA_INFO) "\
+"where suik_set_money=0 and a=0 "\
+")where 1=1 and tr_ymd >= '{}' and tr_ymd <= '{}'"
     return str
 
 def tab5_searchQuery():
     """탭5"""
     str = \
-        "select nvl(SUIK_GROUP,'합계'),sum(TODAYSUM),decode(sum(TODAY),'','-',sum(TODAY)) TODAY,decode(sum(LASTMONTHSUM),'','-',sum(LASTMONTHSUM)) LASTMONTHSUM," \
-        "decode(sum(LASTQUATERSUM),'','-',sum(LASTMONTHSUM)) LASTQUATERSUM,decode(sum(LASTYEARSUM),'','-',sum(LASTYEARSUM)) LASTYEARSUM,''," \
-        "decode(sum(TODAY2),'','-',sum(TODAY2)) TODAY2,decode(sum(LASTMONTHSUM2),'','-',sum(LASTMONTHSUM2)) LASTMONTHSUM2," \
-        "decode(sum(LASTQUATERSUM2),'','-',sum(LASTMONTHSUM2)) LASTQUATERSUM2,decode(sum(LASTYEARSUM2),'','-',sum(LASTYEARSUM2)) LASTYEARSUM2 " \
-            "from( "\
-        "select nvl(A.suik_group,B.suik_group) as suik_group,nvl(A.today,0)+nvl(B.today2,0) as todaySUM,A.today,A.today-A.lastmonth as lastmonthSUM,A.today-A.lastquater as lastquaterSUM, "\
-        "A.today-A.lastyear as lastyearSUM,'',B.today2,B.today2-B.lastmonth2 as lastmonthSUM2,B.today2-B.lastquater2 as lastquaterSUM2,B.today2-B.lastyear2 as lastyearSUM2 "\
-        "from( select a.suik_group, a.today, b.lastmonth, c.lastquater, d.lastyear from "\
-        "(select suik_group,floor(sum(suik_set_money)/100000000) as today "\
-        "from SUIKJA_INFO where tr_ymd='{}' and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
-        "group by suik_group) a,(select suik_group,floor(sum(suik_set_money)/100000000) as lastmonth from SUIKJA_INFO "\
-        "where tr_ymd=last_day(to_date('{}','yyyy-mm-dd')-(interval'1'month)) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
-        "group by suik_group) b, "\
-        "(select suik_group,floor(sum(suik_set_money)/100000000) as lastquater from SUIKJA_INFO "\
-        "where tr_ymd=last_day(to_date('2021'||decode(substr('20211128',5,2),'01','01','02','01','03','01', '04','04','05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
-        "group by suik_group) c,(select suik_group,floor(sum(suik_set_money)/100000000) as lastyear from SUIKJA_INFO "\
-        "where tr_ymd=to_date(substr('{}',0,4)-1||'/12/31') and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
-        "group by suik_group) d where a.suik_group=b.suik_group and a.suik_group=c.suik_group and a.suik_group=d.suik_group) A full outer join "\
-        "(select decode(a.suik_group,'연기금','NPS',a.suik_group) as suik_group, a.today2, b.lastmonth2, c.lastquater2, d.lastyear2 from "\
-        "(select suik_group,floor(sum(suik_set_money)/100000000) today2 from SUIKJA_INFO "\
-        "where tr_ymd='{}' and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부'group by suik_group) a, "\
-        "(select suik_group,floor(sum(suik_set_money)/100000000) as lastmonth2 from SUIKJA_INFO "\
-        "where tr_ymd=last_day(to_date('{}','yyyy-mm-dd')-(interval'1'month)) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부' "\
-        "group by suik_group) b, "\
-        "(select suik_group,floor(sum(suik_set_money)/100000000) as lastquater2 from SUIKJA_INFO "\
-        "where tr_ymd=last_day(to_date('2021'||decode(substr('20211128',5,2),'01','01','02','01','03','01', '04','04','05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부' "\
-        "group by suik_group) c, "\
-        "(select suik_group,floor(sum(suik_set_money)/100000000) as lastyear2 from SUIKJA_INFO "\
-        "where tr_ymd=to_date(substr('{}',0,4)-1||'/12/31') and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부' "\
-        "group by suik_group) d "\
-        "where a.suik_group=b.suik_group and a.suik_group=c.suik_group and a.suik_group=d.suik_group) B on A.suik_group=B.suik_group "\
-        ")group by rollup(SUIK_GROUP)"
+"select nvl(SUIK_GROUP,'합계'),sum(TODAYSUM),decode(sum(TODAY),'',0,sum(TODAY)) TODAY,decode(sum(LASTMONTHSUM),'',0,sum(LASTMONTHSUM)) LASTMONTHSUM, "\
+"decode(sum(LASTQUATERSUM),'',0,sum(LASTMONTHSUM)) LASTQUATERSUM,decode(sum(LASTYEARSUM),'',0,sum(LASTYEARSUM)) LASTYEARSUM,'', "\
+"decode(sum(TODAY2),'',0,sum(TODAY2)) TODAY2,decode(sum(LASTMONTHSUM2),'',0,sum(LASTMONTHSUM2)) LASTMONTHSUM2, "\
+"decode(sum(LASTQUATERSUM2),'',0,sum(LASTMONTHSUM2)) LASTQUATERSUM2,decode(sum(LASTYEARSUM2),'',0,sum(LASTYEARSUM2)) LASTYEARSUM2 "\
+"from( "\
+"select nvl(A.suik_group,B.suik_group) as suik_group,nvl(A.today,0)+nvl(B.today2,0) as todaySUM,A.today,A.today-A.lastmonth as lastmonthSUM,A.today-A.lastquater as lastquaterSUM, "\
+"A.today-A.lastyear as lastyearSUM,'',B.today2,B.today2-B.lastmonth2 as lastmonthSUM2,B.today2-B.lastquater2 as lastquaterSUM2,B.today2-B.lastyear2 as lastyearSUM2 "\
+"from(  "\
+"select a.suik_group, a.today, b.lastmonth, c.lastquater, d.lastyear from( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as today "\
+"from SUIKJA_INFO where tr_ymd='{}' and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
+"group by suik_group "\
+") a,( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as lastmonth from SUIKJA_INFO "\
+"where tr_ymd=last_day(to_date('{}','yyyy-mm-dd')-(interval'1'month)) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
+"group by suik_group "\
+") b,( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as lastquater from SUIKJA_INFO "\
+"where tr_ymd=last_day(to_date(substr('{}',0,4)||decode(substr('{}',6,2),'01','01','02','01','03','01', '04','04','05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
+"group by suik_group "\
+") c,( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as lastyear from SUIKJA_INFO "\
+"where tr_ymd=to_date(substr('{}',0,4)-1||'/12/31') and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='1본부' "\
+"group by suik_group "\
+") d where a.suik_group=b.suik_group(+) and a.suik_group=c.suik_group(+) and a.suik_group=d.suik_group(+) "\
+") A full outer join( "\
+"select decode(a.suik_group,'연기금','NPS',a.suik_group) as suik_group, a.today2, b.lastmonth2, c.lastquater2, d.lastyear2 from "\
+"(select suik_group,floor(sum(suik_set_money)/100000000) today2 from SUIKJA_INFO "\
+"where tr_ymd='{}' and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부'group by suik_group "\
+") a,( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as lastmonth2 from SUIKJA_INFO "\
+"where tr_ymd=last_day(to_date('{}','yyyy-mm-dd')-(interval'1'month)) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부' "\
+"group by suik_group "\
+") b,( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as lastquater2 from SUIKJA_INFO "\
+"where tr_ymd=last_day(to_date(substr('{}',0,4)||decode(substr('{}',6,2),'01','01','02','01','03','01', '04','04','05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부' "\
+"group by suik_group "\
+") c,( "\
+"select suik_group,floor(sum(suik_set_money)/100000000) as lastyear2 from SUIKJA_INFO "\
+"where tr_ymd=to_date(substr('{}',0,4)-1||'/12/31') and fund_cd<>'1522' and suik_group<>'MMF' and suik_mg_bu='2본부' "\
+"group by suik_group "\
+") d "\
+"where a.suik_group=b.suik_group(+) and a.suik_group=c.suik_group(+) and a.suik_group=d.suik_group(+) "\
+") B on A.suik_group=B.suik_group "\
+")group by rollup(SUIK_GROUP) "
+
+    return str
+
+def tab5_win1searchQuery():
+    """탭5 클릭시 팝업"""
+    str = \
+"select nvl(inte_fund_type,'합계'),sum(suik_set_money),sum(suik_net_money),sum(suik_net_moneySUM),sum(suik_net_moneySUM2),sum(suik_net_moneySUM3), "\
+"sum(suik_net_moneySUM4),'',sum(suik_set_money1),sum(suik_set_money2),sum(suik_set_money3),sum(suik_set_money4) "\
+"from( "\
+"select nvl(A.suik_name,B.suik_name) as suik_name,nvl(A.inte_fund_type,B.inte_fund_type) as inte_fund_type,nvl(suik_set_money,0) as suik_set_money, nvl(suik_net_money,0) as suik_net_money, "\
+"nvl(suik_net_moneySUM,0) as suik_net_moneySUM,nvl(suik_net_moneySUM2,0) as suik_net_moneySUM2, "\
+"nvl(suik_net_moneySUM3,0) as suik_net_moneySUM3,nvl(suik_net_moneySUM4,0) as suik_net_moneySUM4, "\
+"nvl(suik_set_money1,0) as suik_set_money1,nvl(suik_set_money2,0) as suik_set_money2,nvl(suik_set_money3,0) as suik_set_money3,nvl(suik_set_money4,0) as suik_set_money4 from( "\
+"select a.suik_name,a.inte_fund_type,a.suik_net_money,a.suik_net_money-nvl(b.suik_net_money,0) as suik_net_moneySUM,a.suik_net_money-nvl(c.suik_net_money,0) as suik_net_moneySUM2, "\
+"a.suik_net_money-nvl(d.suik_net_money,0) as suik_net_moneySUM3,a.suik_net_money-nvl(e.suik_net_money,0) as suik_net_moneySUM4  "\
+"from( "\
+"select tr_ymd,suik_name,inte_fund_type,floor(sum(suik_net_money)/100000000) as suik_net_money "\
+"from(select a.tr_ymd,a.suik_name,b.inte_fund_type,a.suik_set_vol*b.inte_basic_price/1000 as suik_net_money "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd='{}'and a.suik_group='{}' and a.suik_mg_bu='{}') "\
+"group by tr_ymd,suik_name,inte_fund_type "\
+") a,( "\
+"select tr_ymd,suik_name,inte_fund_type,floor(sum(suik_net_money)/100000000) as suik_net_money "\
+"from(select a.tr_ymd,a.suik_name,b.inte_fund_type,a.suik_set_vol*b.inte_basic_price/1000 as suik_net_money "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=last_day(to_date('{}','yyyy-mm-dd')-(interval'1'month)) and a.suik_group='{}' and a.suik_mg_bu='{}') "\
+"group by tr_ymd,suik_name,inte_fund_type "\
+") b,( "\
+"select tr_ymd,suik_name,inte_fund_type,floor(sum(suik_net_money)/100000000) as suik_net_money "\
+"from(select a.tr_ymd,a.suik_name,b.inte_fund_type,a.suik_set_vol*b.inte_basic_price/1000 as suik_net_money "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=last_day(to_date(substr('{}',0,4)||decode(substr('{}',6,2),'01','01','02','01','03','01', '04','04','05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) "\
+"and a.suik_group='{}' and a.suik_mg_bu='{}') "\
+"group by tr_ymd,suik_name,inte_fund_type "\
+") c,( "\
+"select tr_ymd,suik_name,inte_fund_type,floor(sum(suik_net_money)/100000000) as suik_net_money "\
+"from(select a.tr_ymd,a.suik_name,b.inte_fund_type,a.suik_set_vol*b.inte_basic_price/1000 as suik_net_money "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=to_date(substr('{}',0,4)-1||'/12/31')and a.suik_group='{}' and a.suik_mg_bu='{}') "\
+"group by tr_ymd,suik_name,inte_fund_type "\
+") d,( "\
+"select tr_ymd,suik_name,inte_fund_type,floor(sum(suik_net_money)/100000000) as suik_net_money "\
+"from(select a.tr_ymd,a.suik_name,b.inte_fund_type,a.suik_set_vol*b.inte_basic_price/1000 as suik_net_money "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=to_date(substr('{}',0,4)-2||'/12/31')and a.suik_group='{}' and a.suik_mg_bu='{}') "\
+"group by tr_ymd,suik_name,inte_fund_type "\
+") e "\
+"where 1=1  "\
+"and a.suik_name=b.suik_name(+) and a.inte_fund_type=b.inte_fund_type(+) "\
+"and a.suik_name=c.suik_name(+) and a.inte_fund_type=c.inte_fund_type(+) "\
+"and a.suik_name=d.suik_name(+) and a.inte_fund_type=d.inte_fund_type(+) "\
+"and a.suik_name=e.suik_name(+) and a.inte_fund_type=e.inte_fund_type(+) "\
+") A full outer join( "\
+"select a.suik_name,a.inte_fund_type,a.suik_set_money,b.suik_set_money1,c.suik_set_money2,d.suik_set_money3,e.suik_set_money4 from( "\
+"select a.tr_ymd,suik_name,b.inte_fund_type,floor(sum(a.suik_set_money)/100000000) as suik_set_money "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where a.fund_cd=b.fund_cd(+) and a.tr_ymd=b.tr_ymd(+) and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd='{}'and a.suik_group='{}' and a.suik_mg_bu='{}' "\
+"group by a.tr_ymd,a.suik_name,b.inte_fund_type "\
+") a,( "\
+"select a.tr_ymd,a.suik_name,b.inte_fund_type,floor(sum(a.suik_set_money)/100000000) as suik_set_money1 "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where a.fund_cd=b.fund_cd(+) and a.tr_ymd=b.tr_ymd(+) and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=last_day(to_date('{}','yyyy-mm-dd')-(interval'1'month)) and a.suik_group='{}' and a.suik_mg_bu='{}' "\
+"group by a.tr_ymd,a.suik_name,b.inte_fund_type "\
+") b,( "\
+"select a.tr_ymd,a.suik_name,b.inte_fund_type,floor(sum(a.suik_set_money)/100000000) as suik_set_money2 "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where a.fund_cd=b.fund_cd(+) and a.tr_ymd=b.tr_ymd(+) and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=last_day(to_date(substr('{}',0,4)||decode(substr('{}',6,2),'01','01','02','01','03','01', '04','04','05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) "\
+"and suik_group='{}' and suik_mg_bu='{}' "\
+"group by a.tr_ymd,a.suik_name,b.inte_fund_type "\
+") c,( "\
+"select a.tr_ymd,a.suik_name,b.inte_fund_type,floor(sum(suik_set_money)/100000000) as suik_set_money3 "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where a.fund_cd=b.fund_cd(+) and a.tr_ymd=b.tr_ymd(+) and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=to_date(substr('{}',0,4)-1||'/12/31')and suik_group='{}' and suik_mg_bu='{}' "\
+"group by a.tr_ymd,a.suik_name,b.inte_fund_type "\
+") d,( "\
+"select a.tr_ymd,a.suik_name,b.inte_fund_type,floor(sum(suik_set_money)/100000000) as suik_set_money4 "\
+"from SUIKJA_INFO a, FUND_INTEGRATE b "\
+"where a.fund_cd=b.fund_cd(+) and a.tr_ymd=b.tr_ymd(+) and a.fund_cd<>'1522' and a.suik_cd<>'PN_NPS' "\
+"and a.tr_ymd=to_date(substr('{}',0,4)-2||'/12/31')and suik_group='{}' and suik_mg_bu='{}'  "\
+"group by a.tr_ymd,a.suik_name,b.inte_fund_type "\
+") e "\
+"where 1=1 "\
+"and a.suik_name=b.suik_name(+) and a.inte_fund_type=b.inte_fund_type(+) "\
+"and a.suik_name=c.suik_name(+) and a.inte_fund_type=c.inte_fund_type(+) "\
+"and a.suik_name=d.suik_name(+) and a.inte_fund_type=d.inte_fund_type(+) "\
+"and a.suik_name=e.suik_name(+) and a.inte_fund_type=e.inte_fund_type(+) "\
+") B "\
+"on A.suik_name=B.suik_name and A.inte_fund_type=B.inte_fund_type "\
+") "\
+"group by rollup(inte_fund_type)"
     return str
 
 def testQuery():
     """테스트용"""
     str = \
-        "select tr_ymd,suik_name,suik_seq, suik_set_money,0 from SUIKJA_INFO"
+"select tr_ymd,suik_name,suik_seq, suik_set_money,0 from SUIKJA_INFO"
     return str
 
 
