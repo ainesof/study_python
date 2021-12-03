@@ -9,6 +9,7 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests, bs4
+from dateutil.parser import parse
 import multiprocessing as mp
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from datetime import date, timedelta
@@ -23,6 +24,7 @@ font_path = "C:/Windows/Fonts/NGULIM.TTF"
 font = font_manager.FontProperties(fname=font_path).get_name()
 rc('font', family=font)
 
+
 # 리소스 상대경로로 변환용
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -33,14 +35,17 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+
 class process(mp.Process):
     """멀티프로세싱 테스트"""
-    def __init__(self,id):
+
+    def __init__(self, id):
         super(process, self).__init__()
-        self.id=id
+        self.id = id
 
     def run(self):
         print('...//?')
+
 
 class Ui_MainWindow(object):
     def __init__(self):
@@ -48,17 +53,17 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(751, 520)
+        MainWindow.resize(789, 581)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setEnabled(True)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 751, 481))
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 791, 541))
         self.tabWidget.setObjectName("tabWidget")
         self.tab5 = QtWidgets.QWidget()
         self.tab5.setObjectName("tab5")
         self.tab5_tableWidget = QtWidgets.QTableWidget(self.tab5)
-        self.tab5_tableWidget.setGeometry(QtCore.QRect(0, 80, 741, 381))
+        self.tab5_tableWidget.setGeometry(QtCore.QRect(0, 80, 781, 441))
         self.tab5_tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab5_tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab5_tableWidget.setAlternatingRowColors(True)
@@ -75,7 +80,7 @@ class Ui_MainWindow(object):
         self.tab5_label.setGeometry(QtCore.QRect(10, 10, 51, 21))
         self.tab5_label.setObjectName("tab5_label")
         self.tab5_label_2 = QtWidgets.QLabel(self.tab5)
-        self.tab5_label_2.setGeometry(QtCore.QRect(687, 60, 61, 21))
+        self.tab5_label_2.setGeometry(QtCore.QRect(726, 40, 61, 21))
         self.tab5_label_2.setObjectName("tab5_label_2")
         self.tab5_label_3 = QtWidgets.QLabel(self.tab5)
         self.tab5_label_3.setGeometry(QtCore.QRect(650, 540, 71, 21))
@@ -87,22 +92,22 @@ class Ui_MainWindow(object):
         self.tab5_label_3.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.tab5_label_3.setObjectName("tab5_label_3")
         self.tab5_pushButton = QtWidgets.QPushButton(self.tab5)
-        self.tab5_pushButton.setGeometry(QtCore.QRect(690, 0, 51, 21))
+        self.tab5_pushButton.setGeometry(QtCore.QRect(730, 0, 51, 21))
         self.tab5_pushButton.setObjectName("tab5_pushButton")
-        self.tab5_label_4 = QtWidgets.QLabel(self.tab5)
-        self.tab5_label_4.setGeometry(QtCore.QRect(190, 50, 91, 21))
-        font = QtGui.QFont()
-        font.setFamily("-윤고딕110")
-        font.setPointSize(11)
-        self.tab5_label_4.setFont(font)
-        self.tab5_label_4.setObjectName("tab5_label_4")
-        self.tab5_label_5 = QtWidgets.QLabel(self.tab5)
-        self.tab5_label_5.setGeometry(QtCore.QRect(520, 50, 91, 21))
-        font = QtGui.QFont()
-        font.setFamily("-윤고딕110")
-        font.setPointSize(11)
-        self.tab5_label_5.setFont(font)
-        self.tab5_label_5.setObjectName("tab5_label_5")
+        self.tab5_win1lineEdit_4 = QtWidgets.QLineEdit(self.tab5)
+        self.tab5_win1lineEdit_4.setGeometry(QtCore.QRect(420, 60, 361, 21))
+        self.tab5_win1lineEdit_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab5_win1lineEdit_4.setReadOnly(True)
+        self.tab5_win1lineEdit_4.setObjectName("tab5_win1lineEdit_4")
+        self.tab5_win1lineEdit_3 = QtWidgets.QLineEdit(self.tab5)
+        self.tab5_win1lineEdit_3.setGeometry(QtCore.QRect(140, 60, 281, 21))
+        self.tab5_win1lineEdit_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab5_win1lineEdit_3.setReadOnly(True)
+        self.tab5_win1lineEdit_3.setObjectName("tab5_win1lineEdit_3")
+        self.tab5_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab5)
+        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 60, 141, 21))
+        self.tab5_win1lineEdit_2.setReadOnly(True)
+        self.tab5_win1lineEdit_2.setObjectName("tab5_win1lineEdit_2")
         self.tabWidget.addTab(self.tab5, "")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -111,11 +116,11 @@ class Ui_MainWindow(object):
         self.tab1.setEnabled(True)
         self.tab1.setObjectName("tab1")
         self.tab1_label_7 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_7.setGeometry(QtCore.QRect(250, 430, 181, 20))
+        self.tab1_label_7.setGeometry(QtCore.QRect(250, 477, 181, 20))
         self.tab1_label_7.setText("")
         self.tab1_label_7.setObjectName("tab1_label_7")
         self.tab1_tableWidget = QtWidgets.QTableWidget(self.tab1)
-        self.tab1_tableWidget.setGeometry(QtCore.QRect(180, 30, 561, 381))
+        self.tab1_tableWidget.setGeometry(QtCore.QRect(174, 30, 611, 421))
         self.tab1_tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab1_tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab1_tableWidget.setAlternatingRowColors(True)
@@ -123,24 +128,24 @@ class Ui_MainWindow(object):
         self.tab1_tableWidget.setColumnCount(0)
         self.tab1_tableWidget.setRowCount(0)
         self.tab1_label_2 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_2.setGeometry(QtCore.QRect(450, 410, 171, 21))
+        self.tab1_label_2.setGeometry(QtCore.QRect(450, 457, 171, 21))
         self.tab1_label_2.setText("")
         self.tab1_label_2.setObjectName("tab1_label_2")
         self.tab1_label_5 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_5.setGeometry(QtCore.QRect(250, 410, 181, 21))
+        self.tab1_label_5.setGeometry(QtCore.QRect(250, 457, 181, 21))
         self.tab1_label_5.setText("")
         self.tab1_label_5.setObjectName("tab1_label_5")
         self.tab1_label_6 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_6.setGeometry(QtCore.QRect(180, 430, 71, 21))
+        self.tab1_label_6.setGeometry(QtCore.QRect(180, 477, 71, 21))
         self.tab1_label_6.setObjectName("tab1_label_6")
         self.tab1_label = QtWidgets.QLabel(self.tab1)
-        self.tab1_label.setGeometry(QtCore.QRect(430, 410, 21, 21))
+        self.tab1_label.setGeometry(QtCore.QRect(430, 457, 21, 21))
         self.tab1_label.setObjectName("tab1_label")
         self.tab1_pushButton_2 = QtWidgets.QPushButton(self.tab1)
-        self.tab1_pushButton_2.setGeometry(QtCore.QRect(666, 4, 75, 23))
+        self.tab1_pushButton_2.setGeometry(QtCore.QRect(710, 4, 75, 23))
         self.tab1_pushButton_2.setObjectName("tab1_pushButton_2")
         self.tab1_label_4 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_4.setGeometry(QtCore.QRect(180, 410, 71, 21))
+        self.tab1_label_4.setGeometry(QtCore.QRect(180, 457, 71, 21))
         self.tab1_label_4.setObjectName("tab1_label_4")
         self.tab1_pushButton = QtWidgets.QPushButton(self.tab1)
         self.tab1_pushButton.setEnabled(True)
@@ -168,17 +173,17 @@ class Ui_MainWindow(object):
         self.tab1_pushButton_4.setGeometry(QtCore.QRect(180, 0, 75, 23))
         self.tab1_pushButton_4.setObjectName("tab1_pushButton_4")
         self.tab1_label_8 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_8.setGeometry(QtCore.QRect(430, 430, 31, 21))
+        self.tab1_label_8.setGeometry(QtCore.QRect(430, 477, 31, 21))
         self.tab1_label_8.setObjectName("tab1_label_8")
         self.tab1_label_9 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_9.setGeometry(QtCore.QRect(470, 430, 51, 21))
+        self.tab1_label_9.setGeometry(QtCore.QRect(470, 477, 51, 21))
         self.tab1_label_9.setText("")
         self.tab1_label_9.setObjectName("tab1_label_9")
         self.tab1_label_10 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_10.setGeometry(QtCore.QRect(530, 430, 41, 21))
+        self.tab1_label_10.setGeometry(QtCore.QRect(530, 477, 41, 21))
         self.tab1_label_10.setObjectName("tab1_label_10")
         self.tab1_label_11 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_11.setGeometry(QtCore.QRect(570, 430, 141, 21))
+        self.tab1_label_11.setGeometry(QtCore.QRect(570, 477, 141, 21))
         self.tab1_label_11.setText("")
         self.tab1_label_11.setObjectName("tab1_label_11")
         self.tab1_label_12 = QtWidgets.QLabel(self.tab1)
@@ -194,7 +199,7 @@ class Ui_MainWindow(object):
         self.tab1_checkBox.setChecked(True)
         self.tab1_checkBox.setObjectName("tab1_checkBox")
         self.tab1_label_13 = QtWidgets.QLabel(self.tab1)
-        self.tab1_label_13.setGeometry(QtCore.QRect(671, 410, 71, 21))
+        self.tab1_label_13.setGeometry(QtCore.QRect(710, 476, 71, 21))
         font = QtGui.QFont()
         font.setFamily("-윤고딕110")
         font.setPointSize(8)
@@ -210,10 +215,10 @@ class Ui_MainWindow(object):
         self.tab2 = QtWidgets.QWidget()
         self.tab2.setObjectName("tab2")
         self.tab2_pushbutton = QtWidgets.QPushButton(self.tab2)
-        self.tab2_pushbutton.setGeometry(QtCore.QRect(690, 5, 51, 23))
+        self.tab2_pushbutton.setGeometry(QtCore.QRect(730, 5, 51, 23))
         self.tab2_pushbutton.setObjectName("tab2_pushbutton")
         self.tab2_tableWidget = QtWidgets.QTableWidget(self.tab2)
-        self.tab2_tableWidget.setGeometry(QtCore.QRect(0, 30, 741, 411))
+        self.tab2_tableWidget.setGeometry(QtCore.QRect(0, 30, 781, 461))
         self.tab2_tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab2_tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab2_tableWidget.setAlternatingRowColors(True)
@@ -221,10 +226,10 @@ class Ui_MainWindow(object):
         self.tab2_tableWidget.setColumnCount(0)
         self.tab2_tableWidget.setRowCount(0)
         self.tab2_comboBox = QtWidgets.QComboBox(self.tab2)
-        self.tab2_comboBox.setGeometry(QtCore.QRect(20, 0, 61, 22))
+        self.tab2_comboBox.setGeometry(QtCore.QRect(10, 0, 61, 22))
         self.tab2_comboBox.setObjectName("tab2_comboBox")
         self.tab2_label = QtWidgets.QLabel(self.tab2)
-        self.tab2_label.setGeometry(QtCore.QRect(670, 470, 71, 21))
+        self.tab2_label.setGeometry(QtCore.QRect(710, 490, 71, 21))
         font = QtGui.QFont()
         font.setFamily("-윤고딕110")
         font.setPointSize(8)
@@ -236,10 +241,10 @@ class Ui_MainWindow(object):
         self.tab3 = QtWidgets.QWidget()
         self.tab3.setObjectName("tab3")
         self.tab3_pushButton = QtWidgets.QPushButton(self.tab3)
-        self.tab3_pushButton.setGeometry(QtCore.QRect(690, 90, 51, 21))
+        self.tab3_pushButton.setGeometry(QtCore.QRect(730, 96, 51, 21))
         self.tab3_pushButton.setObjectName("tab3_pushButton")
         self.tab3_tableWidget = QtWidgets.QTableWidget(self.tab3)
-        self.tab3_tableWidget.setGeometry(QtCore.QRect(0, 120, 741, 321))
+        self.tab3_tableWidget.setGeometry(QtCore.QRect(0, 120, 781, 371))
         self.tab3_tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab3_tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab3_tableWidget.setAlternatingRowColors(True)
@@ -295,7 +300,7 @@ class Ui_MainWindow(object):
         self.tab3_comboBox_4.setGeometry(QtCore.QRect(460, 40, 81, 22))
         self.tab3_comboBox_4.setObjectName("tab3_comboBox_4")
         self.tab3_comboBox_5 = QtWidgets.QComboBox(self.tab3)
-        self.tab3_comboBox_5.setGeometry(QtCore.QRect(70, 70, 161, 22))
+        self.tab3_comboBox_5.setGeometry(QtCore.QRect(71, 70, 161, 22))
         self.tab3_comboBox_5.setObjectName("tab3_comboBox_5")
         self.tab3_checkBox = QtWidgets.QCheckBox(self.tab3)
         self.tab3_checkBox.setGeometry(QtCore.QRect(590, 40, 21, 21))
@@ -334,7 +339,7 @@ class Ui_MainWindow(object):
         self.tab3_lineEdit.setGeometry(QtCore.QRect(70, 40, 91, 21))
         self.tab3_lineEdit.setObjectName("tab3_lineEdit")
         self.tab3_label_13 = QtWidgets.QLabel(self.tab3)
-        self.tab3_label_13.setGeometry(QtCore.QRect(670, 439, 71, 21))
+        self.tab3_label_13.setGeometry(QtCore.QRect(710, 491, 71, 21))
         font = QtGui.QFont()
         font.setFamily("-윤고딕110")
         font.setPointSize(8)
@@ -352,10 +357,10 @@ class Ui_MainWindow(object):
         self.tab3_label_14.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.tab3_label_14.setObjectName("tab3_label_14")
         self.tab3_label_15 = QtWidgets.QLabel(self.tab3)
-        self.tab3_label_15.setGeometry(QtCore.QRect(0, 440, 41, 21))
+        self.tab3_label_15.setGeometry(QtCore.QRect(0, 492, 41, 21))
         self.tab3_label_15.setObjectName("tab3_label_15")
         self.tab3_label_16 = QtWidgets.QLabel(self.tab3)
-        self.tab3_label_16.setGeometry(QtCore.QRect(50, 440, 41, 21))
+        self.tab3_label_16.setGeometry(QtCore.QRect(50, 492, 41, 21))
         font = QtGui.QFont()
         font.setFamily("굴림")
         font.setPointSize(9)
@@ -376,7 +381,7 @@ class Ui_MainWindow(object):
         self.tab4 = QtWidgets.QWidget()
         self.tab4.setObjectName("tab4")
         self.tab4_tableWidget = QtWidgets.QTableWidget(self.tab4)
-        self.tab4_tableWidget.setGeometry(QtCore.QRect(0, 70, 741, 371))
+        self.tab4_tableWidget.setGeometry(QtCore.QRect(0, 70, 781, 421))
         self.tab4_tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab4_tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab4_tableWidget.setAlternatingRowColors(True)
@@ -384,7 +389,7 @@ class Ui_MainWindow(object):
         self.tab4_tableWidget.setColumnCount(0)
         self.tab4_tableWidget.setRowCount(0)
         self.tab4_pushButton = QtWidgets.QPushButton(self.tab4)
-        self.tab4_pushButton.setGeometry(QtCore.QRect(690, 40, 51, 21))
+        self.tab4_pushButton.setGeometry(QtCore.QRect(730, 48, 51, 21))
         self.tab4_pushButton.setObjectName("tab4_pushButton")
         self.tab4_dateEdit = QtWidgets.QDateEdit(self.tab4)
         self.tab4_dateEdit.setGeometry(QtCore.QRect(63, 10, 91, 22))
@@ -411,7 +416,7 @@ class Ui_MainWindow(object):
         self.tab4_lineEdit.setGeometry(QtCore.QRect(62, 38, 91, 21))
         self.tab4_lineEdit.setObjectName("tab4_lineEdit")
         self.tab4_label_4 = QtWidgets.QLabel(self.tab4)
-        self.tab4_label_4.setGeometry(QtCore.QRect(670, 440, 71, 21))
+        self.tab4_label_4.setGeometry(QtCore.QRect(710, 491, 71, 21))
         font = QtGui.QFont()
         font.setFamily("-윤고딕110")
         font.setPointSize(8)
@@ -420,10 +425,10 @@ class Ui_MainWindow(object):
         self.tab4_label_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.tab4_label_4.setObjectName("tab4_label_4")
         self.tab4_label_5 = QtWidgets.QLabel(self.tab4)
-        self.tab4_label_5.setGeometry(QtCore.QRect(0, 440, 41, 21))
+        self.tab4_label_5.setGeometry(QtCore.QRect(0, 491, 41, 21))
         self.tab4_label_5.setObjectName("tab4_label_5")
         self.tab4_label_6 = QtWidgets.QLabel(self.tab4)
-        self.tab4_label_6.setGeometry(QtCore.QRect(50, 440, 41, 21))
+        self.tab4_label_6.setGeometry(QtCore.QRect(50, 491, 41, 21))
         font = QtGui.QFont()
         font.setFamily("굴림")
         font.setPointSize(9)
@@ -435,7 +440,7 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab4, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 751, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 789, 21))
         self.menubar.setObjectName("menubar")
         self.menuInfo = QtWidgets.QMenu(self.menubar)
         self.menuInfo.setObjectName("menuInfo")
@@ -468,11 +473,11 @@ class Ui_MainWindow(object):
         self.tab5_label.setText(_translate("MainWindow", "기준일"))
         self.tab5_label_2.setText(_translate("MainWindow", "(단위: 억)"))
         self.tab5_pushButton.setText(_translate("MainWindow", "조회"))
-        self.tab5_label_4.setText(_translate("MainWindow", "홀세일 1본부"))
-        self.tab5_label_5.setText(_translate("MainWindow", "홀세일 2본부"))
+        self.tab5_win1lineEdit_4.setText(_translate("MainWindow", "홀세일 2본부"))
+        self.tab5_win1lineEdit_3.setText(_translate("MainWindow", "홀세일 1본부"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab5), _translate("MainWindow", "수탁고 현황"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow",
-                                                                               "                                                                                                                                                            "))
+                                                                               "                                                                                                                                                                      "))
         self.tab1_tableWidget.setSortingEnabled(False)
         self.tab1_label_6.setText(_translate("MainWindow", "조회데이터:"))
         self.tab1_label.setText(_translate("MainWindow", "값:"))
@@ -520,7 +525,7 @@ class Ui_MainWindow(object):
         self.actionset.setText(_translate("MainWindow", "version"))
 
         # 클래스 변수
-        Ui_MainWindow.updateDate="2021/11/30" # 최신 업데이트
+        Ui_MainWindow.updateDate = "2021/11/30"  # 최신 업데이트
 
         Ui_MainWindow.selectedTable = ""  # DB리스트 선택값
         Ui_MainWindow.mainWindow_df1_0 = ""  # 메인 자료값
@@ -532,7 +537,10 @@ class Ui_MainWindow(object):
         Ui_MainWindow.mainWindow_df3_3Re = ""  # 탭3 수익자정보 가공값
         Ui_MainWindow.mainWindow_df4_0 = ""  # 탭4 수익자현황 자료값
         Ui_MainWindow.mainWindow_df5_0 = ""  # 탭5 수탁고현황 자료값
-        Ui_MainWindow.mainWindow_df5_1 = "" # 수익자 그룹현황 자료값
+        Ui_MainWindow.mainWindow_df5_1 = ""  # 수익자 그룹현황 자료값
+        Ui_MainWindow.mainWindow_df5_1Re = ""  # 수익자 그룹현황 가공값
+        Ui_MainWindow.mainWindow_df5_2 = ""  # 수익자 항목현황 자료값
+        Ui_MainWindow.mainWindow_df5_2Re = ""  # 수익자 항목현황 가공값
         Ui_MainWindow.sqlQuery = ""  # 추가 쿼리
         Ui_MainWindow.maxSearch = 10000  # 최대 조회가능 숫자
         Ui_MainWindow.commaLength = 5  # 최소 콤마찍는 자리 수
@@ -541,46 +549,42 @@ class Ui_MainWindow(object):
         Ui_MainWindow.tab3Col = ""  # 탭3 클릭 확인값
         Ui_MainWindow.tab3Value = ""  # 탭3 클릭 확인값
         Ui_MainWindow.tab3SelectCode = ""  # 탭3 펀드검색 검색명
-        Ui_MainWindow.tab5group = "" # 탭5 고객그룹
-        Ui_MainWindow.tab5team = "" # 탭5 홀세일본부구분
+        Ui_MainWindow.tab5group = ""  # 탭5 고객그룹
+        Ui_MainWindow.tab5team = ""  # 탭5 홀세일본부구분
+        Ui_MainWindow.tab5win1Item = ""  # 탭5 창1 항목값
         Ui_MainWindow.version  # 현재 접속DB 구분
-        Ui_MainWindow.color = QtGui.QColor(255, 225, 225)  # 음수표시 색상 RGB
+        Ui_MainWindow.minus = QtGui.QColor(255, 225, 225)  # 음수표시 색상 RGB
+        Ui_MainWindow.bold = QtGui.QColor(225, 225, 225)  # 강조 색상 RGB
 
         # Qt디자이너 외 구현
         self.setListWidget()  # DB리스트 생성
         self.tab1_tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 내용수정 금지
         self.tab1_newWindow1 = QDialog()  # 세부검색조건 팝업창
         self.tab1_newWindow2 = QDialog()  # 그래픽부분 팝업창
-        self.tab3_newWindow1 = QDialog()  # 탭3 팝업창
-        self.tab3_newWindow2 = QDialog()  # 탭3 펀드검색 팝업창
-        self.tab3_newWindow3 = QDialog()  # 탭3 수익자 팝업창
-        self.tab5_newWindow1 = QDialog() # 탭5 수탁고 팝업창
         self.popup_version = QDialog()  # 탭3 수익자 팝업창
         self.tab1_pushButton_3.setDisabled(True)
         self.tab1_pushButton_4.setDisabled(True)
-        self.tab2_comboBox.addItem('json')
-        self.tab2_comboBox.addItem('xml')
+
         self.tab1_tableWidget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter)  # 헤더 중앙정렬
-        self.tab3_comboBox.addItems(('전체', '운용중', '운용개시', '결산', '상환'))
-        self.tab3_comboBox_2.addItems(('전체', '유', '무'))
-        self.tab3_comboBox_4.addItems(('전체', '판매펀드', '운용펀드'))
-        self.tab3_comboBox_5.addItems(('전체', '224 흥국자산운용', '207 교보악사자산운용', '216 DB자산운용', '363 트러스톤자산운용', '368 하이자산운용'))
-        if Ui_MainWindow.version != "xe": # xe 계정만 날짜 다르게
-            self.tab3_dateEdit.setDate(date.today() - timedelta(4))
-            self.tab4_dateEdit.setDate(date.today() - timedelta(4))
-            self.tab5_dateEdit.setDate(date.today() - timedelta(4))
+        self.tab2_layout()  # 탭2 레이아웃
+        self.tab3_layout()  # 탭3 레이아웃
+        self.tab4_layout()  # 탭4 레이아웃
+        self.tab5_layout()  # 탭5 레이아웃
+
+        if Ui_MainWindow.version != "xe":  # xe 계정만 날짜 다르게
+            self.tab3_dateEdit.setDate(date.today() - timedelta(1))
+            self.tab4_dateEdit.setDate(date.today() - timedelta(1))
+            self.tab5_dateEdit.setDate(date.today() - timedelta(1))
         self.tab3_dateEdit_2.setDate(date.today() - timedelta(1))  # 자료는 전일자꺼 까지만 있음
         self.tab4_dateEdit_2.setDate(date.today() - timedelta(1))  # 자료는 전일자꺼 까지만 있음
-        self.newcreateTable(5,0,'','','','','') # 임시로 시작시 설정
-        self.tab3_toolButton.setIcon(QIcon(resource_path('find.png'))) # 돋보기 아이콘
-        # self.tab3_label_17.setText('////')
+        self.newcreateTable(5, 0, '', '', '', '', '')  # 시작시 설정(임시)
         # processes= process(0),process(1),process(2),process(3)
         # [p.start() for p in processes]
 
         # 이벤트
         try:
-            self.menuetc.triggered.connect(lambda: self.popup1(Ui_MainWindow.updateDate)) # 툴바:업데이트쪽
-            self.tab1_pushButton.clicked.connect(lambda: self.newcreateTable(1,0,'','','','',''))  # 탭1 조회
+            self.menuetc.triggered.connect(lambda: self.popup1(Ui_MainWindow.updateDate))  # 툴바:업데이트쪽
+            self.tab1_pushButton.clicked.connect(lambda: self.newcreateTable(1, 0, '', '', '', '', ''))  # 탭1 조회
             self.tab1_pushButton_2.clicked.connect(lambda: self.toExcel("1", "0", self.tab1_label_5.text()))  # 엑셀변환 버튼
             self.tab1_tableWidget.cellClicked.connect(self.cellClickEvent)  # 표 클릭시
             self.tab1_tableWidget.currentCellChanged.connect(self.cellClickEvent)  # 표 클릭시 이벤트 둘 다 있어야 재대로 나옴
@@ -588,23 +592,261 @@ class Ui_MainWindow(object):
             self.tab1_pushButton_3.clicked.connect(self.windowQuery)  # 검색조건 팝업 버튼
             self.tab1_pushButton_4.clicked.connect(lambda: self.windowGraphic("1", "0"))  # 그래픽 팝업 버튼
             self.tab1_checkBox.stateChanged.connect(self.chkBox)  # 체크 변경시
-            self.tab2_comboBox.currentIndexChanged.connect(self.connectAPI)  # API 자료조회
-            self.tab2_pushbutton.clicked.connect(self.connectAPI)  # API 자료조회
-            self.tab3_pushButton.clicked.connect(lambda: self.newcreateTable(3,0,'','','','','')) # 탭3 테이블 조회
-            self.tab3_tableWidget.cellClicked.connect(self.tab3_returnCode)  # 탭3 표 클릭시
-            self.tab3_toolButton.clicked.connect(self.windowCode)  # 탭3 펀드검색
-            self.tab3_tableWidget.doubleClicked.connect(lambda: self.tab3_selectWindow(Ui_MainWindow.tab3Col,
-                  Ui_MainWindow.tab3Value,Ui_MainWindow.tab3Code,Ui_MainWindow.tab3Name))  # 탭3 표 더블블릭시
-            self.tab4_pushButton.clicked.connect(lambda: self.newcreateTable(4,0,'','','','','')) #탭4 조회
-            self.tab5_pushButton.clicked.connect(lambda: self.newcreateTable(5,0,'','','','',''))  # 탭5 조회
-            self.tab5_dateEdit.dateChanged.connect(lambda: self.newcreateTable(5,0,'','','','',''))  # 탭5 조회
-            self.tab5_tableWidget.cellClicked.connect(self.tab5_returnCode)  # 탭5 표 클릭시
-            self.tab5_tableWidget.doubleClicked.connect(self.tab5_win1SearchValue)  # 탭5 펀드검색
             self.tab1_pushButton_5.clicked.connect(self.test)  # 테스트용
         except:
             traceback.print_exc()
 
-        # -----------------------------------windowGraphic
+    # -----------------------------------------------tab1
+
+    def chkBox(self):
+        """조건 비활성화 유무 표시"""
+        self.newcreateTable(1, 0, '', '', '', '', '')
+        if self.tab1_checkBox.isChecked():
+            self.tab1_plainTextEdit.setEnabled(True)
+        else:
+            self.tab1_plainTextEdit.setEnabled(False)
+
+    def setListWidget(self):
+        """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
+        dbList = ["정보_회사", "SUIKJA_INFO", "SUIKJA_COM", "FUND_BASIC", "FUND_COMPANY", "FUND_INTEGRATE", "FUND_OPERATE",
+                  "FUND_RETAIL",
+                  "FUND_RETAIL_SELLER",
+                  "공통코드", "운용역코드", "펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
+                  "펀드_보수계산정보", "펀드_보수율", "펀드_보수일별집계", "펀드_설정해지결제", "펀드_설정해지내역", "펀드_설정해지보수",
+                  "펀드_설정해지예정내역", "펀드_설정해지원장", "펀드_수익자정보", "펀드_운용회사변경내역", "펀드_위탁사별구조관계총괄", "펀드_위탁사별펀드정보",
+                  "펀드_전체해지이체거래", "펀드_총계정원장", "펀드_판매사별보수내역", "펀드_판매사별실적",
+                  "펀드_환율적용방법", "정보_거래그룹", "정보_거래유형", "정보_계정과목", "정보_국가", "정보_매매처", "정보_발행기관",
+                  "정보_발행기관예외", "정보_부실보증기관", "정보_사무수탁사", "정보_수익자", "정보_신용등급", "정보_업종", "정보_운용역담당펀드",
+                  "정보_자산분류", "정보_증권거래소", "정보_증권거래소회사업종", "정보_채권기준종류", "정보_코스콤채권종류", "정보_팀",
+                  "정보_팀별운용역", "정보_판매회사펀드", "정보_펀드자체유형", "정보_펀드협회분류코드", "정보_펀드회계유형", "정보_평가회사채권분류",
+                  "정보_회사", "정보_회사그룹", "평가_벤치마크지수", "평가_펀드기여손익", "평가_펀드목표수익",
+                  "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가", "국가별공휴일",
+                  "기타_공휴일", "기타_관심펀드", "기타_달력일자", "기타_시스템체크", "기타_일자", "----------", "SELL_COMPANY",
+                  "HKCL.FUND_PANCOM_VIEW", "hkcl.FUND_REPORT_VIEW", "hkcl.FUND_RETAIL_VIEW", "hkcl.FUND_SUIK_VIEW",
+                  "hkcl.FUND_SUTAK_VIEW"
+                  ]
+        self.tab1_listWidget.addItems(dbList)
+
+    def cellClickEvent(self, row, col):
+        """ 셀 클릭시 계산값을 보여줌"""
+        try:
+            if row != -1 and col != -1:  # 표를 클릭하고 다른걸 클릭하면 좌표값이 -1이 찍힘
+                if self.tab1_tableWidget.item(row, col).text():
+                    clickCellText = self.tab1_tableWidget.item(row, col).text()
+                    self.tab1_label_2.setText(clickCellText)
+                    selected = self.tab1_tableWidget.selectedRanges()
+                    cnt = 0
+                    tot = []
+
+                    for idx, val in enumerate(
+                            selected):  # val.columnCount(), val.topRow(), val.leftColumn(), val.bottomRow(), val.rightColumn()
+                        for i in range(int(val.topRow()), int(val.bottomRow()) + 1):
+                            for k in range(int(val.leftColumn()), int(val.rightColumn()) + 1):
+                                cnt = cnt + 1
+                                str1 = self.tab1_tableWidget.item(i, k).text()
+                                str1 = self.delComma(str1)
+                                value = self.isFloat(str1)
+                                if value:
+                                    tot.append(value)
+
+                    self.tab1_label_9.setText(str(cnt))  # 수
+                    total = str(sum(tot))
+                    self.tab1_label_11.setText(self.setComma(total))  # 합계
+        except:
+            traceback.print_exc()
+
+    def clearPlaintext(self):
+        """조건검색 내용 지우고 검색"""
+        self.tab1_plainTextEdit.setPlainText("")
+        Ui_MainWindow.sqlQuery = ""
+        self.newcreateTable(1, 0, '', '', '', '', '')
+
+    def tableCount(self):
+        """테이블 자료수 조회"""
+        try:
+            sql = query.returnSQL('tableCount').format(Ui_MainWindow.selectedTable)
+            cur.execute(sql)
+            cnt = cur.fetchall()
+            a = list(cnt[0])[0]
+        except:
+            traceback.print_exc()
+        return str(a)
+
+    def searchColumn(self):
+        """ 테이블 컬럼을 가지고와서 DB리스트에 입력"""
+        str1 = []
+        try:
+            if Ui_MainWindow.selectedTable:
+                sql = query.returnSQL('searchColumn').format(Ui_MainWindow.selectedTable)
+                cur.execute(sql)
+                idx = cur.fetchall()
+                [str1.append(''.join(idx[i])) for i in range(len(idx))]
+        except:
+            traceback.print_exc()
+        return str1
+
+    def searchValue(self):
+        """ SQL 값 리턴"""
+        try:
+            row = ""
+            subSql = ""
+            if self.tab1_checkBox.isChecked():
+                subSql = Ui_MainWindow.sqlQuery
+            else:
+                subSql = ""
+            if Ui_MainWindow.selectedTable:  # 값 있는 경우
+                sql = query.returnSQL('searchValue').format(Ui_MainWindow.selectedTable) + subSql
+                print(sql)
+                cur.execute(sql)
+                row = cur.fetchmany(Ui_MainWindow.maxSearch)
+            else:  # 값 없는 경우
+                sql = ""
+            return row
+        except:
+            a = QMessageBox()
+            a.setText("데이터 조회 중 오류가 발생했습니다.")
+            a.setStandardButtons(QMessageBox.Ok)
+            a.exec_()
+            traceback.print_exc()
+
+    def menuInfo(self):
+        """찾기 귀찮아서"""
+        os.system('explorer https://doc.qt.io/qtforpython/PySide6/QtWidgets/QTableWidget.html')
+
+        # -------------------------------------------- 탭1 창1 windowQuery
+
+    def windowQuery(self):
+        """ 검색조건 추가 창 """
+        self.tab1_win1label = QtWidgets.QLabel(self.tab1_newWindow1)
+        self.tab1_win1label.setGeometry(QtCore.QRect(0, 40, 51, 21))
+        self.tab1_win1label.setObjectName("tab1_win1label")
+        self.tab1_win1comboBox = QtWidgets.QComboBox(self.tab1_newWindow1)
+        self.tab1_win1comboBox.setGeometry(QtCore.QRect(40, 70, 151, 22))
+        self.tab1_win1comboBox.setObjectName("tab1_win1comboBox")
+        self.tab1_win1label_2 = QtWidgets.QLabel(self.tab1_newWindow1)
+        self.tab1_win1label_2.setGeometry(QtCore.QRect(90, 40, 51, 21))
+        self.tab1_win1label_2.setObjectName("tab1_win1label_2")
+        self.tab1_win1comboBox_3 = QtWidgets.QComboBox(self.tab1_newWindow1)
+        self.tab1_win1comboBox_3.setGeometry(QtCore.QRect(200, 70, 71, 22))
+        self.tab1_win1comboBox_3.setObjectName("tab1_win1comboBox_3")
+        self.tab1_win1lineEdit = QtWidgets.QLineEdit(self.tab1_newWindow1)
+        self.tab1_win1lineEdit.setGeometry(QtCore.QRect(280, 70, 121, 21))
+        self.tab1_win1lineEdit.setObjectName("tab1_win1lineEdit")
+        self.tab1_win1pushButton = QtWidgets.QPushButton(self.tab1_newWindow1)
+        self.tab1_win1pushButton.setGeometry(QtCore.QRect(340, 10, 75, 23))
+        self.tab1_win1pushButton.setObjectName("tab1_win1pushButton")
+        self.tab1_win1checkBox = QtWidgets.QCheckBox(self.tab1_newWindow1)
+        self.tab1_win1checkBox.setEnabled(True)
+        self.tab1_win1checkBox.setGeometry(QtCore.QRect(20, 70, 21, 20))
+        self.tab1_win1checkBox.setText("")
+        self.tab1_win1checkBox.setChecked(True)
+        self.tab1_win1checkBox.setObjectName("tab1_win1checkBox")
+        self.tab1_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab1_newWindow1)
+        self.tab1_win1lineEdit_2.setEnabled(False)
+        self.tab1_win1lineEdit_2.setGeometry(QtCore.QRect(280, 100, 121, 21))
+        self.tab1_win1lineEdit_2.setReadOnly(False)
+        self.tab1_win1lineEdit_2.setObjectName("tab1_win1lineEdit_2")
+        self.tab1_win1comboBox_4 = QtWidgets.QComboBox(self.tab1_newWindow1)
+        self.tab1_win1comboBox_4.setGeometry(QtCore.QRect(200, 100, 71, 22))
+        self.tab1_win1comboBox_4.setObjectName("tab1_win1comboBox_4")
+        self.tab1_win1checkBox_2 = QtWidgets.QCheckBox(self.tab1_newWindow1)
+        self.tab1_win1checkBox_2.setEnabled(True)
+        self.tab1_win1checkBox_2.setGeometry(QtCore.QRect(20, 100, 21, 20))
+        self.tab1_win1checkBox_2.setText("")
+        self.tab1_win1checkBox_2.setObjectName("tab1_win1checkBox_2")
+        self.tab1_win1comboBox_2 = QtWidgets.QComboBox(self.tab1_newWindow1)
+        self.tab1_win1comboBox_2.setGeometry(QtCore.QRect(40, 100, 151, 22))
+        self.tab1_win1comboBox_2.setObjectName("tab1_win1comboBox_2")
+        self.tab1_win1label_3 = QtWidgets.QLabel(self.tab1_newWindow1)
+        self.tab1_win1label_3.setGeometry(QtCore.QRect(210, 40, 51, 21))
+        self.tab1_win1label_3.setObjectName("tab1_win1label_3")
+        self.tab1_win1label_4 = QtWidgets.QLabel(self.tab1_newWindow1)
+        self.tab1_win1label_4.setGeometry(QtCore.QRect(330, 40, 51, 21))
+        self.tab1_win1label_4.setObjectName("tab1_win1label_4")
+
+        _translate = QtCore.QCoreApplication.translate
+        self.tab1_win1label.setText(_translate("MainWindow", "사용여부"))
+        self.tab1_win1label_2.setText(_translate("MainWindow", "검색 항목"))
+        self.tab1_win1pushButton.setText(_translate("MainWindow", "확인"))
+        self.tab1_win1label_3.setText(_translate("MainWindow", "검색 조건"))
+        self.tab1_win1label_4.setText(_translate("MainWindow", "값"))
+
+        # QT디자이너 외 구현
+        self.tab1_newWindow1.sqlQuery = ""
+        self.tab1_newWindow1.setWindowTitle("조건검색창")
+        self.tab1_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
+        self.tab1_newWindow1.resize(426, 298)
+        self.tab1_win1pushButton.setDisabled(False)  # 쿼리추가 버튼 비활성화
+        self.tab1_win1comboBox_3.addItems(["부분일치", "일치", "제외", "이상", "이하"])
+        self.tab1_win1comboBox_4.addItems(["부분일치", "일치", "제외", "이상", "이하"])
+        self.setCombobox()
+        self.tab1_newWindow1.show()
+
+        # 이벤트
+        try:
+            self.tab1_win1pushButton.clicked.connect(self.submitQuery)  # 확인버튼 누를시
+            self.tab1_win1checkBox.stateChanged.connect(self.ableQuery1)  # 추가조건 활성/비활성화
+            self.tab1_win1checkBox_2.stateChanged.connect(self.ableQuery2)  # 추가조건 활성/비활성화
+        except:
+            traceback.print_exc()
+
+    def ableQuery1(self):
+        """ 체크시 옆에 텍스트박스 활성화, 해제시 비활성화+값 지움"""
+        if self.tab1_win1checkBox.isChecked():
+            self.tab1_win1lineEdit.setEnabled(True)  # 입력문 활성화
+            self.tab1_win1pushButton.setDisabled(False)
+        else:
+            self.tab1_win1lineEdit.setEnabled(False)
+            self.tab1_win1lineEdit.setText("")
+
+    def ableQuery2(self):
+        """ 체크시 옆에 텍스트박스 활성화, 해제시 비활성화+값 지움"""
+        if self.tab1_win1checkBox_2.isChecked():
+            self.tab1_win1lineEdit_2.setEnabled(True)  # 입력문 활성화
+            self.tab1_win1pushButton.setDisabled(False)
+        else:
+            self.tab1_win1lineEdit_2.setEnabled(False)
+            self.tab1_win1lineEdit_2.setText("")
+
+    def submitQuery(self):
+        """ 추가검색조건 SQL에 추가"""
+        sql1 = ""
+        sql2 = ""
+        if self.tab1_win1lineEdit.text() == "":
+            self.tab1_win1lineEdit.setEnabled(False)
+            self.tab1_win1checkBox.setChecked(False)
+        else:
+            sql1 = self.setQuery(self.tab1_win1comboBox.currentText(), self.tab1_win1comboBox_3.currentIndex(),
+                                 self.tab1_win1lineEdit.text())
+        if self.tab1_win1lineEdit_2.text() == "":
+            self.tab1_win1lineEdit_2.setEnabled(False)
+            self.tab1_win1checkBox_2.setChecked(False)
+        else:
+            sql2 = self.setQuery(self.tab1_win1comboBox_2.currentText(), self.tab1_win1comboBox_4.currentIndex(),
+                                 self.tab1_win1lineEdit_2.text())
+        Ui_MainWindow.sqlQuery = sql1 + sql2
+        self.tab1_plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery.replace("TO_CHAR", "", 1))
+        self.tab1_checkBox.setChecked(True)
+        self.tab1_plainTextEdit.setEnabled(True)
+        Ui_MainWindow.mainWindow_df1_0 = ""
+        self.newcreateTable(1, 0, '', '', '', '', '')
+        self.tab1_plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery)
+        self.tab1_newWindow1.close()
+
+    def setQuery(self, columnText, i, lineEditText):
+        """ 조건을 설정해 SQL에 추가 """
+        str1 = [" like '%", " = '", " != '", " <= '", " >= '"]
+        str2 = ["%'", "'"]
+        sql = " and TO_CHAR(" + columnText + ") " + str1[i] + lineEditText + str2[math.trunc((i + 9) / 10)]  # %만 2번
+        return sql
+
+    def setCombobox(self):
+        """ 콤보박스값들 설정 """
+        for i in Ui_MainWindow.mainWindow_df1_0.columns.values.tolist():
+            self.tab1_win1comboBox.addItem(i)
+            self.tab1_win1comboBox_2.addItem(i)
+
+        # ----------------------------------- 탭1 창2 windowGraphic
 
     def windowGraphic(self, tab, win):
         """그래프 차트 창 """
@@ -783,255 +1025,16 @@ class Ui_MainWindow(object):
             a.exec_()
             traceback.print_exc()
 
-    # --------------------------------------------windowQuery
-    def windowQuery(self):
-        """ 검색조건 추가 창 """
-        self.tab1_win1label = QtWidgets.QLabel(self.tab1_newWindow1)
-        self.tab1_win1label.setGeometry(QtCore.QRect(0, 40, 51, 21))
-        self.tab1_win1label.setObjectName("tab1_win1label")
-        self.tab1_win1comboBox = QtWidgets.QComboBox(self.tab1_newWindow1)
-        self.tab1_win1comboBox.setGeometry(QtCore.QRect(40, 70, 151, 22))
-        self.tab1_win1comboBox.setObjectName("tab1_win1comboBox")
-        self.tab1_win1label_2 = QtWidgets.QLabel(self.tab1_newWindow1)
-        self.tab1_win1label_2.setGeometry(QtCore.QRect(90, 40, 51, 21))
-        self.tab1_win1label_2.setObjectName("tab1_win1label_2")
-        self.tab1_win1comboBox_3 = QtWidgets.QComboBox(self.tab1_newWindow1)
-        self.tab1_win1comboBox_3.setGeometry(QtCore.QRect(200, 70, 71, 22))
-        self.tab1_win1comboBox_3.setObjectName("tab1_win1comboBox_3")
-        self.tab1_win1lineEdit = QtWidgets.QLineEdit(self.tab1_newWindow1)
-        self.tab1_win1lineEdit.setGeometry(QtCore.QRect(280, 70, 121, 21))
-        self.tab1_win1lineEdit.setObjectName("tab1_win1lineEdit")
-        self.tab1_win1pushButton = QtWidgets.QPushButton(self.tab1_newWindow1)
-        self.tab1_win1pushButton.setGeometry(QtCore.QRect(340, 10, 75, 23))
-        self.tab1_win1pushButton.setObjectName("tab1_win1pushButton")
-        self.tab1_win1checkBox = QtWidgets.QCheckBox(self.tab1_newWindow1)
-        self.tab1_win1checkBox.setEnabled(True)
-        self.tab1_win1checkBox.setGeometry(QtCore.QRect(20, 70, 21, 20))
-        self.tab1_win1checkBox.setText("")
-        self.tab1_win1checkBox.setChecked(True)
-        self.tab1_win1checkBox.setObjectName("tab1_win1checkBox")
-        self.tab1_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab1_newWindow1)
-        self.tab1_win1lineEdit_2.setEnabled(False)
-        self.tab1_win1lineEdit_2.setGeometry(QtCore.QRect(280, 100, 121, 21))
-        self.tab1_win1lineEdit_2.setReadOnly(False)
-        self.tab1_win1lineEdit_2.setObjectName("tab1_win1lineEdit_2")
-        self.tab1_win1comboBox_4 = QtWidgets.QComboBox(self.tab1_newWindow1)
-        self.tab1_win1comboBox_4.setGeometry(QtCore.QRect(200, 100, 71, 22))
-        self.tab1_win1comboBox_4.setObjectName("tab1_win1comboBox_4")
-        self.tab1_win1checkBox_2 = QtWidgets.QCheckBox(self.tab1_newWindow1)
-        self.tab1_win1checkBox_2.setEnabled(True)
-        self.tab1_win1checkBox_2.setGeometry(QtCore.QRect(20, 100, 21, 20))
-        self.tab1_win1checkBox_2.setText("")
-        self.tab1_win1checkBox_2.setObjectName("tab1_win1checkBox_2")
-        self.tab1_win1comboBox_2 = QtWidgets.QComboBox(self.tab1_newWindow1)
-        self.tab1_win1comboBox_2.setGeometry(QtCore.QRect(40, 100, 151, 22))
-        self.tab1_win1comboBox_2.setObjectName("tab1_win1comboBox_2")
-        self.tab1_win1label_3 = QtWidgets.QLabel(self.tab1_newWindow1)
-        self.tab1_win1label_3.setGeometry(QtCore.QRect(210, 40, 51, 21))
-        self.tab1_win1label_3.setObjectName("tab1_win1label_3")
-        self.tab1_win1label_4 = QtWidgets.QLabel(self.tab1_newWindow1)
-        self.tab1_win1label_4.setGeometry(QtCore.QRect(330, 40, 51, 21))
-        self.tab1_win1label_4.setObjectName("tab1_win1label_4")
+    # --------------------------------------tab2
 
-        _translate = QtCore.QCoreApplication.translate
-        self.tab1_win1label.setText(_translate("MainWindow", "사용여부"))
-        self.tab1_win1label_2.setText(_translate("MainWindow", "검색 항목"))
-        self.tab1_win1pushButton.setText(_translate("MainWindow", "확인"))
-        self.tab1_win1label_3.setText(_translate("MainWindow", "검색 조건"))
-        self.tab1_win1label_4.setText(_translate("MainWindow", "값"))
-
-        # QT디자이너 외 구현
-        self.tab1_newWindow1.sqlQuery = ""
-        self.tab1_newWindow1.setWindowTitle("조건검색창")
-        self.tab1_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
-        self.tab1_newWindow1.resize(426, 298)
-        self.tab1_win1pushButton.setDisabled(False)  # 쿼리추가 버튼 비활성화
-        self.tab1_win1comboBox_3.addItems(["부분일치", "일치", "제외", "이상", "이하"])
-        self.tab1_win1comboBox_4.addItems(["부분일치", "일치", "제외", "이상", "이하"])
-        self.setCombobox()
-        self.tab1_newWindow1.show()
+    def tab2_layout(self):
+        self.tab2_comboBox.addItem('json')
+        self.tab2_comboBox.addItem('xml')
 
         # 이벤트
-        try:
-            self.tab1_win1pushButton.clicked.connect(self.submitQuery)  # 확인버튼 누를시
-            self.tab1_win1checkBox.stateChanged.connect(self.ableQuery1) #추가조건 활성/비활성화
-            self.tab1_win1checkBox_2.stateChanged.connect(self.ableQuery2) #추가조건 활성/비활성화
-        except:
-            traceback.print_exc()
+        self.tab2_comboBox.currentIndexChanged.connect(self.connectAPI)  # API 자료조회
+        self.tab2_pushbutton.clicked.connect(self.connectAPI)  # API 자료조회
 
-    def ableQuery1(self):
-        """ 체크시 옆에 텍스트박스 활성화, 해제시 비활성화+값 지움"""
-        if self.tab1_win1checkBox.isChecked():
-            self.tab1_win1lineEdit.setEnabled(True)  # 입력문 활성화
-            self.tab1_win1pushButton.setDisabled(False)
-        else:
-            self.tab1_win1lineEdit.setEnabled(False)
-            self.tab1_win1lineEdit.setText("")
-
-    def ableQuery2(self):
-        """ 체크시 옆에 텍스트박스 활성화, 해제시 비활성화+값 지움"""
-        if self.tab1_win1checkBox_2.isChecked():
-            self.tab1_win1lineEdit_2.setEnabled(True)  # 입력문 활성화
-            self.tab1_win1pushButton.setDisabled(False)
-        else:
-            self.tab1_win1lineEdit_2.setEnabled(False)
-            self.tab1_win1lineEdit_2.setText("")
-
-    def submitQuery(self):
-        """ 추가검색조건 SQL에 추가"""
-        sql1 = ""
-        sql2 = ""
-        if self.tab1_win1lineEdit.text() == "":
-            self.tab1_win1lineEdit.setEnabled(False)
-            self.tab1_win1checkBox.setChecked(False)
-        else:
-            sql1 = self.setQuery(self.tab1_win1comboBox.currentText(), self.tab1_win1comboBox_3.currentIndex(),
-                                 self.tab1_win1lineEdit.text())
-        if self.tab1_win1lineEdit_2.text() == "":
-            self.tab1_win1lineEdit_2.setEnabled(False)
-            self.tab1_win1checkBox_2.setChecked(False)
-        else:
-            sql2 = self.setQuery(self.tab1_win1comboBox_2.currentText(), self.tab1_win1comboBox_4.currentIndex(),
-                                 self.tab1_win1lineEdit_2.text())
-        Ui_MainWindow.sqlQuery = sql1 + sql2
-        self.tab1_plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery.replace("TO_CHAR", "", 1))
-        self.tab1_checkBox.setChecked(True)
-        self.tab1_plainTextEdit.setEnabled(True)
-        Ui_MainWindow.mainWindow_df1_0 = ""
-        self.newcreateTable(1, 0, '', '', '','','')
-        self.tab1_plainTextEdit.setPlainText(Ui_MainWindow.sqlQuery)
-        self.tab1_newWindow1.close()
-
-    def setQuery(self, columnText, i, lineEditText):
-        """ 조건을 설정해 SQL에 추가 """
-        str1 = [" like '%", " = '", " != '", " <= '", " >= '"]
-        str2 = ["%'", "'"]
-        sql = " and TO_CHAR(" + columnText + ") " + str1[i] + lineEditText + str2[math.trunc((i + 9) / 10)]  # %만 2번
-        return sql
-
-    def setCombobox(self):
-        """ 콤보박스값들 설정 """
-        for i in Ui_MainWindow.mainWindow_df1_0.columns.values.tolist():
-            self.tab1_win1comboBox.addItem(i)
-            self.tab1_win1comboBox_2.addItem(i)
-
-    # -----------------------------------------------tab1
-
-    def chkBox(self):
-        """조건 비활성화 유무 표시"""
-        self.newcreateTable(1, 0, '', '', '','','')
-        if self.tab1_checkBox.isChecked():
-            self.tab1_plainTextEdit.setEnabled(True)
-        else:
-            self.tab1_plainTextEdit.setEnabled(False)
-
-    def setListWidget(self):
-        """ 왼쪽 리스트에 DB리스트 생성. 리스트는 하드코딩 약 8만건 기준 조회시간 30초 """
-        dbList = ["정보_회사","SUIKJA_INFO", "SUIKJA_COM", "FUND_BASIC", "FUND_COMPANY", "FUND_INTEGRATE", "FUND_OPERATE", "FUND_RETAIL",
-                  "FUND_RETAIL_SELLER",
-                  "공통코드", "운용역코드", "펀드_결산기준가격", "펀드_기준가격", "펀드_기준가격회계", "펀드_마스터", "펀드_민감도내역",
-                  "펀드_보수계산정보", "펀드_보수율", "펀드_보수일별집계", "펀드_설정해지결제", "펀드_설정해지내역", "펀드_설정해지보수",
-                  "펀드_설정해지예정내역", "펀드_설정해지원장", "펀드_수익자정보", "펀드_운용회사변경내역", "펀드_위탁사별구조관계총괄", "펀드_위탁사별펀드정보",
-                  "펀드_전체해지이체거래", "펀드_총계정원장", "펀드_판매사별보수내역", "펀드_판매사별실적",
-                  "펀드_환율적용방법", "정보_거래그룹", "정보_거래유형", "정보_계정과목", "정보_국가", "정보_매매처", "정보_발행기관",
-                  "정보_발행기관예외", "정보_부실보증기관", "정보_사무수탁사", "정보_수익자", "정보_신용등급", "정보_업종", "정보_운용역담당펀드",
-                  "정보_자산분류", "정보_증권거래소", "정보_증권거래소회사업종", "정보_채권기준종류", "정보_코스콤채권종류", "정보_팀",
-                  "정보_팀별운용역", "정보_판매회사펀드", "정보_펀드자체유형", "정보_펀드협회분류코드", "정보_펀드회계유형", "정보_평가회사채권분류",
-                  "정보_회사", "정보_회사그룹", "평가_벤치마크지수", "평가_펀드기여손익", "평가_펀드목표수익",
-                  "평가_펀드부문손익", "평가_펀드부문손익률", "평가_펀드성과평가", "국가별공휴일",
-                  "기타_공휴일", "기타_관심펀드", "기타_달력일자", "기타_시스템체크", "기타_일자", "----------", "SELL_COMPANY",
-                  "HKCL.FUND_PANCOM_VIEW", "hkcl.FUND_REPORT_VIEW", "hkcl.FUND_RETAIL_VIEW", "hkcl.FUND_SUIK_VIEW",
-                  "hkcl.FUND_SUTAK_VIEW"
-                  ]
-        self.tab1_listWidget.addItems(dbList)
-
-    def cellClickEvent(self, row, col):
-        """ 셀 클릭시 계산값을 보여줌"""
-        try:
-            if row != -1 and col != -1:  # 표를 클릭하고 다른걸 클릭하면 좌표값이 -1이 찍힘
-                if self.tab1_tableWidget.item(row, col).text():
-                    clickCellText = self.tab1_tableWidget.item(row, col).text()
-                    self.tab1_label_2.setText(clickCellText)
-                    selected = self.tab1_tableWidget.selectedRanges()
-                    cnt = 0
-                    tot = []
-
-                    for idx, val in enumerate(
-                            selected):  # val.columnCount(), val.topRow(), val.leftColumn(), val.bottomRow(), val.rightColumn()
-                        for i in range(int(val.topRow()), int(val.bottomRow()) + 1):
-                            for k in range(int(val.leftColumn()), int(val.rightColumn()) + 1):
-                                cnt = cnt + 1
-                                str1 = self.tab1_tableWidget.item(i, k).text()
-                                str1 = self.delComma(str1)
-                                value = self.isFloat(str1)
-                                if value:
-                                    tot.append(value)
-
-                    self.tab1_label_9.setText(str(cnt))  # 수
-                    total = str(sum(tot))
-                    self.tab1_label_11.setText(self.setComma(total))  # 합계
-        except:
-            traceback.print_exc()
-
-    def clearPlaintext(self):
-        """조건검색 내용 지우고 검색"""
-        self.tab1_plainTextEdit.setPlainText("")
-        Ui_MainWindow.sqlQuery = ""
-        self.newcreateTable(1, 0, '', '', '','','')
-
-    def tableCount(self):
-        """테이블 자료수 조회"""
-        try:
-            sql = query.returnSQL('tableCount').format(Ui_MainWindow.selectedTable)
-            cur.execute(sql)
-            cnt = cur.fetchall()
-            a = list(cnt[0])[0]
-        except:
-            traceback.print_exc()
-        return str(a)
-
-    def searchColumn(self):
-        """ 테이블 컬럼을 가지고와서 DB리스트에 입력"""
-        str1 = []
-        try:
-            if Ui_MainWindow.selectedTable:
-                sql = query.returnSQL('searchColumn').format(Ui_MainWindow.selectedTable)
-                cur.execute(sql)
-                idx = cur.fetchall()
-                [str1.append(''.join(idx[i])) for i in range(len(idx))]
-        except:
-            traceback.print_exc()
-        return str1
-
-    def searchValue(self):
-        """ SQL 값 리턴"""
-        try:
-            row = ""
-            subSql = ""
-            if self.tab1_checkBox.isChecked():
-                subSql = Ui_MainWindow.sqlQuery
-            else:
-                subSql = ""
-            if Ui_MainWindow.selectedTable:  # 값 있는 경우
-                sql = query.returnSQL('searchValue').format(Ui_MainWindow.selectedTable) + subSql
-                print(sql)
-                cur.execute(sql)
-                row = cur.fetchmany(Ui_MainWindow.maxSearch)
-            else:  # 값 없는 경우
-                sql = ""
-            return row
-        except:
-            a = QMessageBox()
-            a.setText("데이터 조회 중 오류가 발생했습니다.")
-            a.setStandardButtons(QMessageBox.Ok)
-            a.exec_()
-            traceback.print_exc()
-
-    def menuInfo(self):
-        """찾기 귀찮아서"""
-        os.system('explorer https://doc.qt.io/qtforpython/PySide6/QtWidgets/QTableWidget.html')
-
-    # --------------------------------------tab2
     def connectAPI(self):
         """API 받아와서 표에 넣음 key값에 {}는 제거"""
 
@@ -1083,7 +1086,7 @@ class Ui_MainWindow(object):
             dict1['등록일'] = regdate
 
             df2 = pd.DataFrame(dict1)
-            self.newcreateTable(2, 0, '', df2, '', '','')
+            self.newcreateTable(2, 0, '', df2, '', '', '')
             # self.tab2_createTable(df2)
         except:
             traceback.print_exc()
@@ -1106,11 +1109,52 @@ class Ui_MainWindow(object):
             dict1['상품'] = prdnm
             dict1['등록일'] = regdate
             df2 = pd.DataFrame(dict1)
-            self.newcreateTable(2,0, '', df2, '', '','')
+            self.newcreateTable(2, 0, '', df2, '', '', '')
         except:
             traceback.print_exc()
 
     # ---------------------------------------tab3
+
+    def tab3_layout(self):
+        self.tab3_newWindow1 = QDialog()  # 탭3 팝업창
+        self.tab3_newWindow2 = QDialog()  # 탭3 펀드검색 팝업창
+        self.tab3_newWindow3 = QDialog()  # 탭3 수익자 팝업창
+        self.tab3_comboBox.addItems(('전체', '운용중', '운용개시', '결산', '상환'))
+        self.tab3_comboBox_2.addItems(('전체', '유', '무'))
+        self.tab3_comboBox_4.addItems(('전체', '판매펀드', '운용펀드'))
+        self.tab3_comboBox_5.addItems(('전체', '224 흥국자산운용', '207 교보악사자산운용', '216 DB자산운용', '363 트러스톤자산운용', '368 하이자산운용'))
+        self.tab3_toolButton.setIcon(QIcon(resource_path('find.png')))  # 돋보기 아이콘
+        # self.tab3_label_17.setText('////')
+
+        # 이벤트
+        self.tab3_pushButton.clicked.connect(lambda: self.newcreateTable(3, 0, '', '', '', '', ''))  # 탭3 테이블 조회
+        self.tab3_tableWidget.cellClicked.connect(self.tab3_returnCode)  # 탭3 표 클릭시
+        self.tab3_toolButton.clicked.connect(self.windowCode)  # 탭3 펀드검색
+        self.tab3_tableWidget.doubleClicked.connect(lambda: self.tab3_selectWindow(Ui_MainWindow.tab3Col,
+                                                                                   Ui_MainWindow.tab3Value,
+                                                                                   Ui_MainWindow.tab3Code,
+                                                                                   Ui_MainWindow.tab3Name))  # 탭3 표 더블블릭시
+
+    def tab3_selectWindow(self, col, val, fundCode, fundName):
+        """클릭 위치에 따라 다른 팝업"""
+        try:
+            if col == 4 and val != "None":  # null 필터링 하면 여기도 변경 필요
+                sql = query.returnSQL('tab3_win3SearchQuery').format(fundCode)
+                sql += "and rownum=1"
+                cur.execute(sql)
+                row = cur.fetchall()
+                if row:
+                    self.windowEarn(fundCode, fundName)
+
+                else:
+                    a = QMessageBox()
+                    a.setText("자료가 없습니다.")
+                    a.setStandardButtons(QMessageBox.Ok)
+                    a.exec_()
+            else:
+                self.windowList(fundCode, fundName)
+        except:
+            traceback.print_exc()
 
     def tab3_searchValue(self):
         """ SQL 값 리턴 Hints 22502 화면이고 상황끝난펀드 부분은 더 구현 안 함."""
@@ -1159,7 +1203,7 @@ class Ui_MainWindow(object):
                 row = [("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
                         "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
                         "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-                        "","", "", "", "", "", "", "", "", "")]
+                        "", "", "", "", "", "", "", "", "", "")]
             return row
         except:
             a = QMessageBox()
@@ -1176,7 +1220,7 @@ class Ui_MainWindow(object):
         Ui_MainWindow.tab3Value = self.tab3_tableWidget.item(row, 4).text()
         Ui_MainWindow.tab3Col = col
 
-    # -----------------------------------------------탭3 팝업창
+    # ----------------------------------------------- 탭3 창1 팝업창
     def windowList(self, fundCode, fundName):
         """ 탭3 팝업창"""
         self.tab3_win1tableWidget = QtWidgets.QTableWidget(self.tab3_newWindow1)
@@ -1297,7 +1341,7 @@ class Ui_MainWindow(object):
         self.tab3_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
         self.tab3_newWindow1.resize(1169, 558)
         self.tab3_win1label_2.setText(fundName)
-        self.newcreateTable(3, 1, '', '', '','', fundCode)
+        self.newcreateTable(3, 1, '', '', '', '', fundCode)
         if Ui_MainWindow.version != "xe" and len(Ui_MainWindow.mainWindow_df3_1) > 0:
             self.tab3_win1dateEdit.setDate(Ui_MainWindow.mainWindow_df3_1['기준일자'].min())
         else:
@@ -1314,7 +1358,7 @@ class Ui_MainWindow(object):
             self.tab3_win1pushButton_2.clicked.connect(lambda: self.windowGraphic("3", "1"))  # 탭3 새창 그래픽 팝업 버튼
             self.tab3_win1checkBox.stateChanged.connect(lambda: self.ckeckedTab3_Win1checkBox(1))  # 날짜로 검색
             self.tab3_win1checkBox_2.stateChanged.connect(lambda: self.ckeckedTab3_Win1checkBox(2))  # 날짜로 검색
-            self.tab3_win1pushButton_3.clicked.connect(lambda: self.newcreateTable(3, 1, "re", '', '', '',''))  # 조회
+            self.tab3_win1pushButton_3.clicked.connect(lambda: self.newcreateTable(3, 1, "re", '', '', '', ''))  # 조회
         except:
             traceback.print_exc()
 
@@ -1359,49 +1403,7 @@ class Ui_MainWindow(object):
         except:
             traceback.print_exc()
 
-    def test(self):
-        try:
-            print("~~")
-            pp = [('1', '2', '3', '4'),
-                  ('5', '6', '7', '8'),
-                  ('9', '10', '11', '12')]
-            df11 = pd.DataFrame(pp)
-            self.asd(df11)
-            self.asd2(df11)
-            # self.asd3(df11)
-            print("끝")
-
-        except:
-            traceback.print_exc()
-
-    def asd(self, df11):
-        try:
-            for i in range(len(df11.index)):
-                for j in range(len(df11.columns)):
-                    print(i, j)
-
-        except:
-            traceback.print_exc()
-
-    def asd2(self, df11):
-        try:
-            print('---------------')
-            np2 = df11.to_numpy()
-            for i, val in enumerate(np2):
-                for j, val2 in enumerate(val):
-                    print(j,val2)
-        except:
-            traceback.print_exc()
-    # def asd3(self,df11):
-    #     print('---------------')
-    #     try:
-    #         np2 = df11.to_numpy()
-    #         v,y=[val2 for i, val in enumerate(np2) for j, val2 in enumerate(val)]
-    #             # for j, val2 in enumerate(val):
-    #         print(v,y)
-    #     except:
-    #         traceback.print_exc()
-        # ---------------------------------------- windowCode
+        # ---------------------------------------- 탭3 창2 windowCode
 
     def windowCode(self):
         self.tab3_win2tableWidget = QtWidgets.QTableWidget(self.tab3_newWindow2)
@@ -1435,50 +1437,30 @@ class Ui_MainWindow(object):
         # QT디자이너 외 구현
         self.tab3_newWindow2.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
         self.tab3_newWindow2.resize(574, 482)
-        self.newcreateTable(3, 2, '', '', '', '','')
+        self.newcreateTable(3, 2, '', '', '', '', '')
         Ui_MainWindow.tab3SelectCode = ""
         self.tab3_lineEdit.setText("")
         self.tab3_newWindow2.show()
 
         # 이벤트
-        self.tab3_win2lineEdit.textEdited.connect(lambda: self.newcreateTable(3, 2, "re", 1, '', '','')) # 펀드코드 검색
-        self.tab3_win2lineEdit_2.textEdited.connect(lambda: self.newcreateTable(3, 2, "re", 2, '', '','')) # 펀드명 검색
-        self.tab3_win2tableWidget.cellClicked.connect(self.tab3_win2SelectValue) #값 선택
-        self.tab3_win2tableWidget.cellDoubleClicked.connect(lambda: self.tab3_win2Close(Ui_MainWindow.tab3SelectCode)) #값 넘김
-        self.tab3_win2pushButton.clicked.connect(lambda: self.tab3_win2Close(Ui_MainWindow.tab3SelectCode)) #조회 버튼
+        self.tab3_win2lineEdit.textEdited.connect(lambda: self.newcreateTable(3, 2, "re", 1, '', '', ''))  # 펀드코드 검색
+        self.tab3_win2lineEdit_2.textEdited.connect(lambda: self.newcreateTable(3, 2, "re", 2, '', '', ''))  # 펀드명 검색
+        self.tab3_win2tableWidget.cellClicked.connect(self.tab3_win2SelectValue)  # 값 선택
+        self.tab3_win2tableWidget.cellDoubleClicked.connect(
+            lambda: self.tab3_win2Close(Ui_MainWindow.tab3SelectCode))  # 값 넘김
+        self.tab3_win2pushButton.clicked.connect(lambda: self.tab3_win2Close(Ui_MainWindow.tab3SelectCode))  # 조회 버튼
 
     def tab3_win2SelectValue(self, row, col):
         """더블클릭 이벤트에 컬럼 좌표 입력이 별도로 없음"""
         Ui_MainWindow.tab3SelectCode = self.tab3_win2tableWidget.item(row, 0).text()
 
-    def tab3_win2Close(self,fundCode):
+    def tab3_win2Close(self, fundCode):
         """창 종료"""
         self.tab3_lineEdit.setText(fundCode)
-        self.newcreateTable(3, 0, '', '', '', '','')
+        self.newcreateTable(3, 0, '', '', '', '', '')
         self.tab3_newWindow2.close()
 
-    # ----------------------------------windowEarn
-
-    def tab3_selectWindow(self,col,val,fundCode,fundName):
-        """클릭 위치에 따라 다른 팝업"""
-        try:
-            if col == 4 and val != "None":  # null 필터링 하면 여기도 변경 필요
-                sql = query.returnSQL('tab3_win3SearchQuery').format(fundCode)
-                sql += "and rownum=1"
-                cur.execute(sql)
-                row = cur.fetchall()
-                if row:
-                    self.windowEarn(fundCode, fundName)
-
-                else:
-                    a = QMessageBox()
-                    a.setText("자료가 없습니다.")
-                    a.setStandardButtons(QMessageBox.Ok)
-                    a.exec_()
-            else:
-                self.windowList(fundCode, fundName)
-        except:
-            traceback.print_exc()
+    # ---------------------------------- 탭3 창3 windowEarn
 
     def windowEarn(self, fundCode, fundName):
         """수익자 팝업"""
@@ -1560,7 +1542,7 @@ class Ui_MainWindow(object):
         # QT디자이너 외 구현
         self.tab3_newWindow3.resize(901, 561)
         self.tab3_win3label_2.setText(fundName)
-        self.newcreateTable(3, 3, '', '', '','', fundCode)
+        self.newcreateTable(3, 3, '', '', '', '', fundCode)
         self.tab3_newWindow3.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
         if Ui_MainWindow.version != "xe" and len(Ui_MainWindow.mainWindow_df3_3) > 0:
             self.tab3_win3dateEdit.setDate(Ui_MainWindow.mainWindow_df3_3['기준일자'].min())
@@ -1572,13 +1554,14 @@ class Ui_MainWindow(object):
         # 이벤트
         self.tab3_win3pushButton_3.clicked.connect(
             lambda: self.newcreateTable(3, 3, "re", self.tab3_win3comboBox.currentText(),
-                                        self.tab3_win3comboBox_2.currentText(),'', fundCode)) # 조회 버튼
-        self.tab3_win3comboBox.currentTextChanged.connect(lambda: self.tab3_win3ChangeSelectComboBox(fundCode)) # 구좌항목 변경
+                                        self.tab3_win3comboBox_2.currentText(), '', fundCode))  # 조회 버튼
+        self.tab3_win3comboBox.currentTextChanged.connect(
+            lambda: self.tab3_win3ChangeSelectComboBox(fundCode))  # 구좌항목 변경
         self.tab3_win3pushButton_2.clicked.connect(lambda: self.windowGraphic("3", "3"))  # 그래픽 팝업 버튼
         self.tab3_win3pushButton.clicked.connect(
             lambda: self.toExcel("3", "3", self.tab3_win3label_2.text()))  # 엑셀변환 버튼
-        self.tab3_win3checkBox.stateChanged.connect(lambda: self.ckeckedTab3_Win3checkBox(1)) # 날짜조회 활성/비활성화
-        self.tab3_win3checkBox_2.stateChanged.connect(lambda: self.ckeckedTab3_Win3checkBox(2)) # 날짜조회 활성/비활성화
+        self.tab3_win3checkBox.stateChanged.connect(lambda: self.ckeckedTab3_Win3checkBox(1))  # 날짜조회 활성/비활성화
+        self.tab3_win3checkBox_2.stateChanged.connect(lambda: self.ckeckedTab3_Win3checkBox(2))  # 날짜조회 활성/비활성화
 
     def ckeckedTab3_Win3checkBox(self, val):
         """일별검색 활성화"""
@@ -1601,7 +1584,8 @@ class Ui_MainWindow(object):
             self.tab3_win3dateEdit.setEnabled(False)
             self.tab3_win3dateEdit_2.setEnabled(False)
             if self.tab3_win3comboBox.currentText() != '전체':
-                sql = query.returnSQL('tab3_win3ChangeSelectComboBox').format(fundCode, self.tab3_win3comboBox.currentText())
+                sql = query.returnSQL('tab3_win3ChangeSelectComboBox').format(fundCode,
+                                                                              self.tab3_win3comboBox.currentText())
                 cur.execute(sql)
                 row = cur.fetchmany(Ui_MainWindow.maxSearch)
                 df = pd.DataFrame(row)
@@ -1614,90 +1598,226 @@ class Ui_MainWindow(object):
         except:
             traceback.print_exc()
 
-    def tab5_win1SearchValue(self):
+    # -------------------------------------tab4 만들다 말았음
+
+    def tab4_layout(self):
+        self.tab4_pushButton.clicked.connect(lambda: self.newcreateTable(4, 0, '', '', '', '', ''))  # 탭4 조회
+
+    # ---------------------------------------tab5
+
+    def tab5_layout(self):
+        self.tab5_newWindow1 = QDialog()  # 탭5 수탁고 팝업창
+        self.tab5_newWindow2 = QDialog()  # 탭5 유형별 팝업창
+
+        # 이벤트
+        self.tab5_pushButton.clicked.connect(lambda: self.newcreateTable(5, 0, '', '', '', '', ''))  # 탭5 조회
+        self.tab5_dateEdit.dateChanged.connect(lambda: self.newcreateTable(5, 0, '', '', '', '', ''))  # 탭5 조회
+        self.tab5_tableWidget.cellClicked.connect(self.tab5_returnCode)  # 탭5 표 클릭시
+        self.tab5_tableWidget.doubleClicked.connect(self.tab5_searchValue)  # 탭5 펀드검색
+
+    def tab5_searchValue(self):
         """탭5 팝업 생성"""
-        if Ui_MainWindow.tab5group!='합계' and Ui_MainWindow.tab5team:
-            self.windowGroup(self.tab5_dateEdit.text(),Ui_MainWindow.tab5group,Ui_MainWindow.tab5team)
+        if Ui_MainWindow.tab5group != '합계' and Ui_MainWindow.tab5team:
+            self.windowGroup(self.tab5_dateEdit.text(), Ui_MainWindow.tab5group, Ui_MainWindow.tab5team)
 
     def tab5_returnCode(self, row, col):
         """ 팝업으로 넘길 그룹명,팀. 더블클릭 이벤트에는 클릭값 받는 인자가 없음"""
         try:
-            if col>=2 and col<=5:
-                Ui_MainWindow.tab5team='1본부'
+            if col >= 2 and col <= 5 and self.tab5_tableWidget.item(row, 2).text() != '0.0':
+                Ui_MainWindow.tab5team = '1본부'
                 Ui_MainWindow.tab5group = self.tab5_tableWidget.item(row, 0).text()
-            elif col>=7 and col<=10:
-                Ui_MainWindow.tab5team='2본부'
-                Ui_MainWindow.tab5group=self.tab5_tableWidget.item(row, 0).text()
+            elif col >= 7 and col <= 10 and self.tab5_tableWidget.item(row, 7).text() != '0.0':
+                Ui_MainWindow.tab5team = '2본부'
+                Ui_MainWindow.tab5group = self.tab5_tableWidget.item(row, 0).text()
             else:
-                Ui_MainWindow.tab5team=''
-                Ui_MainWindow.tab5group=''
+                Ui_MainWindow.tab5team = ''
+                Ui_MainWindow.tab5group = ''
         except:
             traceback.print_exc()
-    # ----------------------------windowGroup
 
-    def windowGroup(self,date1,group,team):
+    # ---------------------------- 탭5 창1 windowGroup
+
+    def windowGroup(self, date1, group, team):
         self.tab5_win1tableWidget = QtWidgets.QTableWidget(self.tab5_newWindow1)
-        self.tab5_win1tableWidget.setGeometry(QtCore.QRect(0, 80, 741, 381))
+        self.tab5_win1tableWidget.setGeometry(QtCore.QRect(0, 80, 841, 211))
         self.tab5_win1tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab5_win1tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab5_win1tableWidget.setAlternatingRowColors(True)
         self.tab5_win1tableWidget.setObjectName("tab5_win1tableWidget")
         self.tab5_win1tableWidget.setColumnCount(0)
         self.tab5_win1tableWidget.setRowCount(0)
-        self.tab5_win1label_4 = QtWidgets.QLabel(self.tab5_newWindow1)
-        self.tab5_win1label_4.setGeometry(QtCore.QRect(190, 40, 91, 21))
-        font = QtGui.QFont()
-        font.setFamily("-윤고딕110")
-        font.setPointSize(11)
-        self.tab5_win1label_4.setFont(font)
-        self.tab5_win1label_4.setObjectName("tab5_win1label_4")
         self.tab5_win1label_5 = QtWidgets.QLabel(self.tab5_newWindow1)
-        self.tab5_win1label_5.setGeometry(QtCore.QRect(510, 40, 91, 21))
-        font = QtGui.QFont()
-        font.setFamily("-윤고딕110")
-        font.setPointSize(11)
-        self.tab5_win1label_5.setFont(font)
+        self.tab5_win1label_5.setGeometry(QtCore.QRect(788, 40, 61, 21))
         self.tab5_win1label_5.setObjectName("tab5_win1label_5")
-        self.tab5_win1label_2 = QtWidgets.QLabel(self.tab5_newWindow1)
-        self.tab5_win1label_2.setGeometry(QtCore.QRect(680, 60, 61, 21))
-        self.tab5_win1label_2.setObjectName("tab5_win1label_2")
-        self.tab5_win1label = QtWidgets.QLabel(self.tab5_newWindow1)
-        self.tab5_win1label.setGeometry(QtCore.QRect(160, 10, 51, 21))
-        self.tab5_win1label.setObjectName("tab5_win1label")
+        self.tab5_win1label_4 = QtWidgets.QLabel(self.tab5_newWindow1)
+        self.tab5_win1label_4.setGeometry(QtCore.QRect(430, 10, 51, 21))
+        self.tab5_win1label_4.setObjectName("tab5_win1label_4")
         self.tab5_win1dateEdit = QtWidgets.QDateEdit(self.tab5_newWindow1)
-        self.tab5_win1dateEdit.setGeometry(QtCore.QRect(200, 10, 91, 22))
+        self.tab5_win1dateEdit.setGeometry(QtCore.QRect(470, 10, 91, 22))
         self.tab5_win1dateEdit.setDateTime(QtCore.QDateTime(QtCore.QDate(2021, 11, 8), QtCore.QTime(0, 0, 0)))
         self.tab5_win1dateEdit.setCurrentSection(QtWidgets.QDateTimeEdit.DaySection)
         self.tab5_win1dateEdit.setCalendarPopup(True)
         self.tab5_win1dateEdit.setObjectName("tab5_win1dateEdit")
         self.tab5_win1comboBox = QtWidgets.QComboBox(self.tab5_newWindow1)
-        self.tab5_win1comboBox.setGeometry(QtCore.QRect(40, 10, 111, 22))
+        self.tab5_win1comboBox.setGeometry(QtCore.QRect(260, 10, 151, 22))
         self.tab5_win1comboBox.setObjectName("tab5_win1comboBox")
         self.tab5_win1label_3 = QtWidgets.QLabel(self.tab5_newWindow1)
-        self.tab5_win1label_3.setGeometry(QtCore.QRect(10, 10, 31, 21))
+        self.tab5_win1label_3.setGeometry(QtCore.QRect(230, 10, 31, 21))
         self.tab5_win1label_3.setObjectName("tab5_win1label_3")
         self.tab5_win1pushButton = QtWidgets.QPushButton(self.tab5_newWindow1)
-        self.tab5_win1pushButton.setGeometry(QtCore.QRect(680, 10, 51, 21))
+        self.tab5_win1pushButton.setGeometry(QtCore.QRect(790, 10, 51, 21))
         self.tab5_win1pushButton.setObjectName("tab5_win1pushButton")
+        self.tab5_win1label_2 = QtWidgets.QLabel(self.tab5_newWindow1)
+        self.tab5_win1label_2.setGeometry(QtCore.QRect(97, 10, 51, 21))
+        self.tab5_win1label_2.setObjectName("tab5_win1label_2")
+        self.tab5_win1lineEdit = QtWidgets.QLineEdit(self.tab5_newWindow1)
+        self.tab5_win1lineEdit.setGeometry(QtCore.QRect(150, 10, 61, 21))
+        self.tab5_win1lineEdit.setReadOnly(True)
+        self.tab5_win1lineEdit.setObjectName("tab5_win1lineEdit")
+        self.tab5_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab5_newWindow1)
+        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 60, 201, 21))
+        self.tab5_win1lineEdit_2.setReadOnly(True)
+        self.tab5_win1lineEdit_2.setObjectName("tab5_win1lineEdit_2")
+        self.tab5_win1lineEdit_3 = QtWidgets.QLineEdit(self.tab5_newWindow1)
+        self.tab5_win1lineEdit_3.setGeometry(QtCore.QRect(200, 60, 301, 21))
+        self.tab5_win1lineEdit_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab5_win1lineEdit_3.setReadOnly(True)
+        self.tab5_win1lineEdit_3.setObjectName("tab5_win1lineEdit_3")
+        self.tab5_win1lineEdit_4 = QtWidgets.QLineEdit(self.tab5_newWindow1)
+        self.tab5_win1lineEdit_4.setGeometry(QtCore.QRect(500, 60, 341, 21))
+        self.tab5_win1lineEdit_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab5_win1lineEdit_4.setReadOnly(True)
+        self.tab5_win1lineEdit_4.setObjectName("tab5_win1lineEdit_4")
+        self.tab5_win1label = QtWidgets.QLabel(self.tab5_newWindow1)
+        self.tab5_win1label.setGeometry(QtCore.QRect(10, 10, 71, 21))
+        self.tab5_win1label.setAutoFillBackground(True)
+        self.tab5_win1label.setText("")
+        self.tab5_win1label.setObjectName("tab5_win1label")
 
         _translate = QtCore.QCoreApplication.translate
 
         self.tab5_win1tableWidget.setSortingEnabled(False)
-        self.tab5_win1label_4.setText(_translate("MainWindow", "홀세일 1본부"))
-        self.tab5_win1label_5.setText(_translate("MainWindow", "홀세일 2본부"))
-        self.tab5_win1label_2.setText(_translate("MainWindow", "(단위: 억)"))
-        self.tab5_win1label.setText(_translate("MainWindow", "기준일"))
+        self.tab5_win1label_5.setText(_translate("MainWindow", "(단위: 억)"))
+        self.tab5_win1label_4.setText(_translate("MainWindow", "기준일"))
         self.tab5_win1label_3.setText(_translate("MainWindow", "고객"))
         self.tab5_win1pushButton.setText(_translate("MainWindow", "조회"))
+        self.tab5_win1label_2.setText(_translate("MainWindow", "고객그룹"))
+        self.tab5_win1lineEdit_3.setText(_translate("MainWindow", "증감"))
+        self.tab5_win1lineEdit_4.setText(_translate("MainWindow", "수탁고"))
 
         # QT디자이너 외 구현
-        self.newcreateTable(5, 1, '',date1,group,team,'')
-        # self.tab5_win1dateEdit.setDate(datetime.datetime.strptime(date1,'%y-%m-%d'))
-        # date,group,team
-        # print(datetime.strptime('2021-11-28','%y%m%d'))
+        self.tab5_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
+        self.tab5_newWindow1.resize(843, 291)
+        self.tab5_win1lineEdit.setText(group)
+        self.tab5_win1label.setText('홀세일 ' + team)
+        self.tab5_win1dateEdit.setDate(parse(date1))
+        fund_cd = ''
+        if group == 'NPS':
+            fund_cd = 'NPS'
+        self.newcreateTable(5, 1, '', group, team, fund_cd, '')
         self.tab5_newWindow1.show()
 
         # 이벤트
+        self.tab5_win1dateEdit.dateChanged.connect(
+            lambda: self.newcreateTable(5, 1, '', group, team, fund_cd, ''))  # 탭5 조회
+        self.tab5_win1comboBox.currentTextChanged.connect(
+            lambda: self.newcreateTable(5, 1, 're', group, team, fund_cd, ''))  # 탭5 재조회
+        self.tab5_win1tableWidget.cellClicked.connect(self.tab5_win1returnCode)  # 탭5 표 클릭시
+        self.tab5_win1tableWidget.doubleClicked.connect(lambda: self.tab5_win1searchValue(fund_cd))  # 탭5 펀드검색
+
+    def tab5_win1searchValue(self, fund_cd):
+        """탭5 팝업의팝업 생성"""
+        self.windowItems(Ui_MainWindow.tab5win1Item, self.tab5_win1lineEdit.text(), Ui_MainWindow.tab5team, fund_cd)
+
+    def tab5_win1returnCode(self, row, col):
+        """ 팝업의팝업으로 넘길 그룹명,팀. 더블클릭 이벤트에는 클릭값 받는 인자가 없음"""
+        try:
+            Ui_MainWindow.tab5win1Item = self.tab5_win1tableWidget.item(row, 0).text()
+        except:
+            traceback.print_exc()
+
+    # ---------------------------- 탭5 창2 windowItems
+
+    def windowItems(self, items, group, team, fund_cd):
+        # item:항목,group:고객그룹,team:관리팀
+        self.tab5_win2label_6 = QtWidgets.QLabel(self.tab5_newWindow2)
+        self.tab5_win2label_6.setGeometry(QtCore.QRect(788, 40, 61, 21))
+        self.tab5_win2label_6.setObjectName("tab5_win2label_6")
+        self.tab5_win2label_5 = QtWidgets.QLabel(self.tab5_newWindow2)
+        self.tab5_win2label_5.setGeometry(QtCore.QRect(360, 10, 41, 21))
+        self.tab5_win2label_5.setObjectName("tab5_win2label_5")
+        self.tab5_win2dateEdit = QtWidgets.QDateEdit(self.tab5_newWindow2)
+        self.tab5_win2dateEdit.setGeometry(QtCore.QRect(400, 10, 91, 22))
+        self.tab5_win2dateEdit.setReadOnly(True)
+        self.tab5_win2dateEdit.setDateTime(QtCore.QDateTime(QtCore.QDate(2021, 11, 8), QtCore.QTime(0, 0, 0)))
+        self.tab5_win2dateEdit.setCurrentSection(QtWidgets.QDateTimeEdit.DaySection)
+        self.tab5_win2dateEdit.setCalendarPopup(True)
+        self.tab5_win2dateEdit.setObjectName("tab5_win2dateEdit")
+        self.tab5_win2label_2 = QtWidgets.QLabel(self.tab5_newWindow2)
+        self.tab5_win2label_2.setGeometry(QtCore.QRect(97, 10, 51, 21))
+        self.tab5_win2label_2.setObjectName("tab5_win2label_2")
+        self.tab5_win2lineEdit = QtWidgets.QLineEdit(self.tab5_newWindow2)
+        self.tab5_win2lineEdit.setGeometry(QtCore.QRect(150, 10, 61, 21))
+        self.tab5_win2lineEdit.setReadOnly(True)
+        self.tab5_win2lineEdit.setObjectName("tab5_win2lineEdit")
+        self.tab5_win2lineEdit_2 = QtWidgets.QLineEdit(self.tab5_newWindow2)
+        self.tab5_win2lineEdit_2.setGeometry(QtCore.QRect(0, 60, 201, 21))
+        self.tab5_win2lineEdit_2.setReadOnly(True)
+        self.tab5_win2lineEdit_2.setObjectName("tab5_win2lineEdit_2")
+        self.tab5_win2lineEdit_3 = QtWidgets.QLineEdit(self.tab5_newWindow2)
+        self.tab5_win2lineEdit_3.setGeometry(QtCore.QRect(200, 60, 301, 21))
+        self.tab5_win2lineEdit_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab5_win2lineEdit_3.setReadOnly(True)
+        self.tab5_win2lineEdit_3.setObjectName("tab5_win2lineEdit_3")
+        self.tab5_win2lineEdit_4 = QtWidgets.QLineEdit(self.tab5_newWindow2)
+        self.tab5_win2lineEdit_4.setGeometry(QtCore.QRect(500, 60, 341, 21))
+        self.tab5_win2lineEdit_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab5_win2lineEdit_4.setReadOnly(True)
+        self.tab5_win2lineEdit_4.setObjectName("tab5_win2lineEdit_4")
+        self.tab5_win2label = QtWidgets.QLabel(self.tab5_newWindow2)
+        self.tab5_win2label.setGeometry(QtCore.QRect(10, 10, 71, 21))
+        self.tab5_win2label.setAutoFillBackground(True)
+        self.tab5_win2label.setText("")
+        self.tab5_win2label.setObjectName("tab5_win2label")
+        self.tab5_win2label_3 = QtWidgets.QLabel(self.tab5_newWindow2)
+        self.tab5_win2label_3.setGeometry(QtCore.QRect(230, 10, 31, 21))
+        self.tab5_win2label_3.setObjectName("tab5_win2label_3")
+        self.tab5_win2lineEdit_5 = QtWidgets.QLineEdit(self.tab5_newWindow2)
+        self.tab5_win2lineEdit_5.setGeometry(QtCore.QRect(260, 10, 81, 21))
+        self.tab5_win2lineEdit_5.setReadOnly(True)
+        self.tab5_win2lineEdit_5.setObjectName("tab5_win2lineEdit_5")
+        self.tab5_win2tableWidget = QtWidgets.QTableWidget(self.tab5_newWindow2)
+        self.tab5_win2tableWidget.setGeometry(QtCore.QRect(0, 80, 841, 361))
+        self.tab5_win2tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.tab5_win2tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tab5_win2tableWidget.setAlternatingRowColors(True)
+        self.tab5_win2tableWidget.setObjectName("tab5_win2tableWidget")
+        self.tab5_win2tableWidget.setColumnCount(0)
+        self.tab5_win2tableWidget.setRowCount(0)
+
+        _translate = QtCore.QCoreApplication.translate
+
+        self.tab5_win2label_6.setText(_translate("MainWindow", "(단위: 억)"))
+        self.tab5_win2label_5.setText(_translate("MainWindow", "기준일"))
+        self.tab5_win2label_2.setText(_translate("MainWindow", "고객그룹"))
+        self.tab5_win2lineEdit_3.setText(_translate("MainWindow", "증감"))
+        self.tab5_win2lineEdit_4.setText(_translate("MainWindow", "수탁고"))
+        self.tab5_win2label_3.setText(_translate("MainWindow", "항목"))
+        self.tab5_win2tableWidget.setSortingEnabled(False)
+
+        # QT디자이너 외 구현
+        try:
+            self.tab5_newWindow2.resize(843, 441)
+            self.tab5_newWindow2.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
+            self.tab5_win2label.setText('홀세일 ' + team)
+            self.tab5_win2lineEdit.setText(group)
+            self.tab5_win2lineEdit_5.setText(items)
+            self.tab5_win2dateEdit.setDate(parse(self.tab5_win1dateEdit.text()))
+            self.newcreateTable(5, 2, '', Ui_MainWindow.mainWindow_df5_1, '', '', '')
+            self.tab5_newWindow2.show()
+
+        except:
+            traceback.print_exc()
 
     # ----------------------------공통
 
@@ -1739,8 +1859,9 @@ class Ui_MainWindow(object):
                 traceback.print_exc()
 
         elif tab == 2 and win == 0:
+            # val1=데이터프레임
             try:
-                df2=val1
+                df2 = val1
                 self.tab2_tableWidget.setColumnCount(len(df2.columns))
                 self.tab2_tableWidget.setRowCount(len(df2.index))
                 self.tab2_tableWidget.setHorizontalHeaderLabels(df2.columns)
@@ -1754,7 +1875,8 @@ class Ui_MainWindow(object):
                 header = ['기준일', '펀드코드', '펀드명', '수익자구분', '수익자', '펀드종류구분', '펀드유형', '일임_자문', '공모사모구분', '국내/해외', '모자구분',
                           '종류형구분', '펀드구분', '적용법률', '자통법적용일', '최초설정일자', '운용개시일',
                           '다음결산일', '상환일', '다음보수인출일',
-                          '판매보수', '운용보수', '사무관리보수', '수탁보수', '펀드평가보수', '자산관리보수', '상품관리보수', '성과보수', '성과보수여부', 'Total', '설정액',
+                          '판매보수', '운용보수', '사무관리보수', '수탁보수', '펀드평가보수', '자산관리보수', '상품관리보수', '성과보수', '성과보수여부', 'Total',
+                          '설정액',
                           '설정좌수', '총자산', '순자산', '기준가', '누적수익지수', '펀드약명',
                           '영문명', '운용역', '운용사명', '수탁은행', '수탁사명', '사무수탁사명', '펀드평가사', '판매사갯수', '판매사명', '협회표준코드', '금감원코드',
                           '예탁원펀드코드', '예탁원종목코드', '상품분류코드',
@@ -1764,7 +1886,8 @@ class Ui_MainWindow(object):
                           '설정대금확정일1', '설정일1', '환매대금확정일1', '환매일1', '환매대금확정일2', '환매일2', 'BM명', 'GIPS펀드유형', '채권평가사보수유예시작일',
                           '채권평가사보수유예종료일', '배당기준운용사',
                           '신주인수권증서평가기준(폐지일)', '공모청약수수료기준', '단위형구분', '수익차등여부', '사모분류', '일반투자자포함여부']
-                alignRight = ['20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31', '32', '33','34']  # 오른쪽 정렬할 컬럼순서들
+                alignRight = ['20', '21', '22', '23', '24', '25', '26', '27', '29', '30', '31', '32', '33',
+                              '34']  # 오른쪽 정렬할 컬럼순서들
                 sqlValue = self.tab3_searchValue()
                 df = pd.DataFrame(sqlValue)
                 df.columns = header
@@ -1774,9 +1897,14 @@ class Ui_MainWindow(object):
                 self.setTableData(df, 3, 0, startTime, alignRight)
                 self.tab3_tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
             except:
+                self.tab3_tableWidget.clear()
+                self.tab3_tableWidget.setRowCount(1)
+                self.tab3_tableWidget.setColumnCount(len(header))
+                self.tab3_tableWidget.setHorizontalHeaderLabels(header)
                 traceback.print_exc()
 
         elif tab == 3 and win == 1:
+            # fundCode=펀드코드
             header = ['기준일자', '기준가격', '전일대비', '설정금액', '설정좌수', '당일설정좌수', '당일해지좌수', '좌수증감', '총자산', '총자산일간변동', '순자산',
                       '순자산일간변동']
             try:
@@ -1794,24 +1922,24 @@ class Ui_MainWindow(object):
                         df = df.query('기준일자>=@minDate')
                     if self.tab3_win1checkBox_2.isChecked():
                         df = df.query('기준일자<=@maxDate')
-                if row:
-                    df.columns = header
-                    self.tab3_win1tableWidget.setColumnCount(len(df.columns))
-                    self.tab3_win1tableWidget.setRowCount(len(df.index))
-                    self.tab3_win1tableWidget.setHorizontalHeaderLabels(header)
-                    self.setTableData(df, 3, 1, startTime, '')
-                    if re == "":
-                        Ui_MainWindow.mainWindow_df3_1 = df
-                    Ui_MainWindow.mainWindow_df3_1Re = df
-                    self.tab3_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
-                else:
-                    a.setText("값이 없습니다")
-                    a.setStandardButtons(QMessageBox.Ok)
-                    a.exec_()
+                df.columns = header
+                self.tab3_win1tableWidget.setColumnCount(len(df.columns))
+                self.tab3_win1tableWidget.setRowCount(len(df.index))
+                self.tab3_win1tableWidget.setHorizontalHeaderLabels(header)
+                self.setTableData(df, 3, 1, startTime, '')
+                if re == "":
+                    Ui_MainWindow.mainWindow_df3_1 = df
+                Ui_MainWindow.mainWindow_df3_1Re = df
+                self.tab3_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
             except:
+                self.tab3_win1tableWidget.clear()
+                self.tab3_win1tableWidget.setRowCount(1)
+                self.tab3_win1tableWidget.setColumnCount(len(header))
+                self.tab3_win1tableWidget.setHorizontalHeaderLabels(header)
                 traceback.print_exc()
 
         elif tab == 3 and win == 2:
+            # val1=클릭한 박스
             header = ['펀드코드', '펀드명']
             try:
                 if re == "":
@@ -1839,13 +1967,18 @@ class Ui_MainWindow(object):
                 self.tab3_win2tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
 
             except:
+                self.tab3_win2tableWidget.clear()
+                self.tab3_win2tableWidget.setRowCount(1)
+                self.tab3_win2tableWidget.setColumnCount(len(header))
+                self.tab3_win2tableWidget.setHorizontalHeaderLabels(header)
                 traceback.print_exc()
 
         elif tab == 3 and win == 3:
+            # val1=콤보박스1 값 val2=콤보박스2 값 ,fundCode=펀드코드
             alignRight = ['3', '4']  # 오른쪽 정렬할 숫자값들
             header = ['기준일자', '그룹', '수익자명', '구좌', '설정자산', '자산증감', '설정좌수', '좌수증감', '판매사']
-            if val1=='전체' and val2=='':
-                re=''
+            if val1 == '전체' and val2 == '':
+                re = ''
             try:
                 if re == "":
                     sql += query.returnSQL('tab3_win3SearchQuery').format(fundCode)
@@ -1857,27 +1990,28 @@ class Ui_MainWindow(object):
                     self.tab3_win3tableWidget.setColumnCount(len(df.columns))
                     self.tab3_win3tableWidget.setRowCount(len(df.index))
                     self.tab3_win3tableWidget.setHorizontalHeaderLabels(header)
-                    self.setTableData(df, 3,3, '', alignRight)
+                    self.setTableData(df, 3, 3, '', alignRight)
 
                 elif re == "re":
                     minDate = self.tab3_win3dateEdit.text()
                     maxDate = self.tab3_win3dateEdit_2.text()
+
+                    df = Ui_MainWindow.mainWindow_df3_3
+                    if self.tab3_win3checkBox.isChecked():
+                        df = df.query('기준일자>=@minDate')
+                    if self.tab3_win3checkBox_2.isChecked():
+                        df = df.query('기준일자<=@maxDate')
                     if val1 != '전체':
-                        df = Ui_MainWindow.mainWindow_df3_3
-                        if self.tab3_win3checkBox.isChecked():
-                            df = df.query('기준일자>=@minDate')
-                        if self.tab3_win3checkBox_2.isChecked():
-                            df = df.query('기준일자<=@maxDate')
                         df = df.query('수익자명==@val1')
-                        if val2 != '전체':
-                            val2 = int(val2)
-                            df = df.query('구좌==@val2')
-                        df.columns = header
-                        self.tab3_win3tableWidget.setColumnCount(len(df.columns))
-                        self.tab3_win3tableWidget.setRowCount(len(df.index))
-                        self.tab3_win3tableWidget.setHorizontalHeaderLabels(header)
-                        self.setTableData(df, 3, 3, '', alignRight)
-                        Ui_MainWindow.mainWindow_df3_3Re = df
+                    if val2 != '전체':
+                        val2 = int(val2)
+                        df = df.query('구좌==@val2')
+                    df.columns = header
+                    self.tab3_win3tableWidget.setColumnCount(len(df.columns))
+                    self.tab3_win3tableWidget.setRowCount(len(df.index))
+                    self.tab3_win3tableWidget.setHorizontalHeaderLabels(header)
+                    self.setTableData(df, 3, 3, '', alignRight)
+                    Ui_MainWindow.mainWindow_df3_3Re = df
                 if re == "":
                     self.tab3_win3comboBox.addItem("전체")
                     groupd = df.groupby(['수익자명']).count().iloc[:, 0]
@@ -1885,131 +2019,169 @@ class Ui_MainWindow(object):
                     self.tab3_win3comboBox_2.addItem('전체')
                     Ui_MainWindow.mainWindow_df3_3 = df
                     Ui_MainWindow.mainWindow_df3_3Re = df
+                if len(df.index) == 0:
+                    self.tab3_win3tableWidget.setRowCount(1)
                 self.tab3_win3tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
             except:
-                if row:
-                    a = QMessageBox()
-                    a.setText("값이 없습니다.")
-                    a.setStandardButtons(QMessageBox.Ok)
-                    a.exec_()
+                self.tab3_win3tableWidget.clear()
+                self.tab3_win3tableWidget.setRowCount(1)
+                self.tab3_win3tableWidget.setColumnCount(len(header))
+                self.tab3_win3tableWidget.setHorizontalHeaderLabels(header)
                 traceback.print_exc()
 
         elif tab == 4 and win == 0:
-            header = ['일자','수익그룹','수익자명','구좌','설정금액','증감','본부','고객그룹','유형']
+            header = ['일자', '수익그룹', '수익자명', '구좌', '설정금액', '증감', '본부', '고객그룹', '유형']
             try:
                 if re == "":
-                    sql += query.returnSQL('tab4_searchQuery').format(self.tab4_dateEdit.text().replace('-', '/'),self.tab4_dateEdit_2.text().replace('-', '/'))
+                    sql += query.returnSQL('tab4_searchQuery').format(self.tab4_dateEdit.text().replace('-', '/'),
+                                                                      self.tab4_dateEdit_2.text().replace('-', '/'))
                     print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
-                # elif re == "re":
-                #     if val1 == 1:
-                #         self.tab3_win2lineEdit_2.setText("")
-                #         df = Ui_MainWindow.mainWindow_df3_2[
-                #             Ui_MainWindow.mainWindow_df3_2['펀드코드'].str.contains(self.tab3_win2lineEdit.text())]
-                #     elif val1 == 2:
-                #         self.tab3_win2lineEdit.setText("")
-                #         df = Ui_MainWindow.mainWindow_df3_2[
-                #             Ui_MainWindow.mainWindow_df3_2['펀드명'].str.contains(self.tab3_win2lineEdit_2.text())]
-                if row:
-                    df.columns = header
-                    self.tab4_tableWidget.setColumnCount(len(df.columns))
-                    self.tab4_tableWidget.setRowCount(len(df.index))
-                    self.tab4_tableWidget.setHorizontalHeaderLabels(header)
-                    self.setTableData(df, 4, 0, startTime, '')
-                    if re == "":
-                        Ui_MainWindow.mainWindow_df4_0 = df
-                    self.tab4_tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
-                else:
-                    a.setText("값이 없습니다")
-                    a.setStandardButtons(QMessageBox.Ok)
-                    a.exec_()
+
+                df.columns = header
+                self.tab4_tableWidget.setColumnCount(len(df.columns))
+                self.tab4_tableWidget.setRowCount(len(df.index))
+                self.tab4_tableWidget.setHorizontalHeaderLabels(header)
+                self.setTableData(df, 4, 0, startTime, '')
+                if re == "":
+                    Ui_MainWindow.mainWindow_df4_0 = df
+                self.tab4_tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+
             except:
+                self.tab4_tableWidget.clear()
+                self.tab4_tableWidget.setRowCount(1)
+                self.tab4_tableWidget.setColumnCount(len(header))
+                self.tab4_tableWidget.setHorizontalHeaderLabels(header)
                 traceback.print_exc()
 
         elif tab == 5 and win == 0:
-            header = ['고객그룹','설정액 합','설정액','전월말대비','전분기말대비','전년말대비','','설정액','전월말대비','전분기말대비','전년말대비']
+            header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '', '설정액', '전월말대비', '전분기말대비', '전년말대비']
             try:
                 if re == "":
-                    sql += query.returnSQL('tab5_searchQuery').format(self.tab5_dateEdit.text(),self.tab5_dateEdit.text(),
-                                                                      self.tab5_dateEdit.text(),self.tab5_dateEdit.text(),
-                                                                      self.tab5_dateEdit.text(),self.tab5_dateEdit.text(),
-                                                                      self.tab5_dateEdit.text(),self.tab5_dateEdit.text(),
-                                                                      self.tab5_dateEdit.text(),self.tab5_dateEdit.text()
+                    sql += query.returnSQL('tab5_searchQuery').format(self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text(),
+                                                                      self.tab5_dateEdit.text()
                                                                       )
                     print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
-                # elif re == "re":
-                #     if val1 == 1:
-                #         self.tab3_win2lineEdit_2.setText("")
-                #         df = Ui_MainWindow.mainWindow_df3_2[
-                #             Ui_MainWindow.mainWindow_df3_2['펀드코드'].str.contains(self.tab3_win2lineEdit.text())]
-                #     elif val1 == 2:
-                #         self.tab3_win2lineEdit.setText("")
-                #         df = Ui_MainWindow.mainWindow_df3_2[
-                #             Ui_MainWindow.mainWindow_df3_2['펀드명'].str.contains(self.tab3_win2lineEdit_2.text())]
-                if row:
-                    df.columns = header
-                    self.tab5_tableWidget.setColumnCount(len(df.columns))
-                    self.tab5_tableWidget.setRowCount(len(df.index))
-                    self.tab5_tableWidget.setHorizontalHeaderLabels(header)
-                    self.setTableData(df, 5, 0, startTime, '')
-                    if re == "":
-                        Ui_MainWindow.mainWindow_df5_0 = df
-                    self.tab5_tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
-                else:
-                    a.setText("값이 없습니다")
-                    a.setStandardButtons(QMessageBox.Ok)
-                    a.exec_()
-            except:
-                traceback.print_exc()
-        elif tab == 5 and win == 1:
-            #val1=date1,val2=group,val3=team
-            header = ['유형','설정액','순자산','전월말대비','전분기말대비','전년말대비','전전년말대비','','전월말','전분기말','전년말','전전년말']
-            try:
+
+                df.columns = header
+                self.tab5_tableWidget.setColumnCount(len(df.columns))
+                self.tab5_tableWidget.setRowCount(len(df.index))
+                self.tab5_tableWidget.setHorizontalHeaderLabels(header)
+                self.setTableData(df, 5, 0, '', '')
                 if re == "":
-                    sql += query.returnSQL('tab5_win1searchQuery').format(val1,val2,val3,
-                                                                          val1,val2,val3,
-                                                                          val1,val1,val2,val3,
-                                                                          val1,val2,val3,
-                                                                          val1,val2,val3,
-                                                                          val1,val2,val3,
-                                                                          val1,val2,val3,
-                                                                          val1,val1,val2,val3,
-                                                                          val1,val2,val3,
-                                                                          val1,val2,val3)
+                    Ui_MainWindow.mainWindow_df5_0 = df
+                self.tab5_tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+            except:
+                self.tab5_tableWidget.clear()
+                self.tab5_tableWidget.setRowCount(1)
+                self.tab5_tableWidget.setColumnCount(len(header))
+                self.tab5_tableWidget.setHorizontalHeaderLabels(header)
+                traceback.print_exc()
+
+        elif tab == 5 and win == 1:
+            # val1=group,val2=team,val3=NPS
+            header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말', '전분기말', '전년말', '전전년말']
+            try:
+                if val3 == 'NPS':
+                    val1 = '연기금'
+                    val3 = '='
+                else:
+                    val3 = '<>'
+                if re == "":
+                    sql += query.returnSQL('tab5_win1searchQuery').format(val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(),
+                                                                          self.tab5_win1dateEdit.text(), val1, val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(),
+                                                                          self.tab5_win1dateEdit.text(), val1, val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2,
+                                                                          val3, self.tab5_win1dateEdit.text(), val1,
+                                                                          val2)
                     print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
-                # elif re == "re":
-                #     if val1 == 1:
-                #         self.tab3_win2lineEdit_2.setText("")
-                #         df = Ui_MainWindow.mainWindow_df3_2[
-                #             Ui_MainWindow.mainWindow_df3_2['펀드코드'].str.contains(self.tab3_win2lineEdit.text())]
-                #     elif val1 == 2:
-                #         self.tab3_win2lineEdit.setText("")
-                #         df = Ui_MainWindow.mainWindow_df3_2[
-                #             Ui_MainWindow.mainWindow_df3_2['펀드명'].str.contains(self.tab3_win2lineEdit_2.text())]
-                if row:
-                    df.columns = header
-                    self.tab5_win1tableWidget.setColumnCount(len(df.columns))
-                    self.tab5_win1tableWidget.setRowCount(len(df.index))
-                    self.tab5_win1tableWidget.setHorizontalHeaderLabels(header)
-                    self.setTableData(df, 5, 1, startTime, '')
-                    if re == "":
-                        Ui_MainWindow.mainWindow_df5_1 = df
-                    self.tab5_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
-                else:
-                    a.setText("값이 없습니다")
-                    a.setStandardButtons(QMessageBox.Ok)
-                    a.exec_()
+                    df.columns = ['SUIK_NAME', 'INTE_FUND_TYPE', 'SUIK_SET_MONEY', 'SUIK_NET_MONEY',
+                                  'SUIK_NET_MONEYSUM', 'SUIK_NET_MONEYSUM2',
+                                  'SUIK_NET_MONEYSUM3', 'SUIK_NET_MONEYSUM4',
+                                  'SUIK_SET_MONEY1', 'SUIK_SET_MONEY2', 'SUIK_SET_MONEY3', 'SUIK_SET_MONEY4']
+
+                    Ui_MainWindow.mainWindow_df5_1 = df
+                    self.tab5_win1comboBox.clear()
+                    val = (df['SUIK_NAME'].drop_duplicates().values.tolist())
+                    self.tab5_win1comboBox.addItem('전체')
+                    [self.tab5_win1comboBox.addItem(i) for i in val]
+
+                elif re == "re":
+                    df = Ui_MainWindow.mainWindow_df5_1
+                    suik_name = self.tab5_win1comboBox.currentText()
+                    if self.tab5_win1comboBox.currentText() != '전체':
+                        df = df.query("SUIK_NAME==@suik_name")
+                Ui_MainWindow.mainWindow_df5_1Re = df
+                df = df.groupby(df['INTE_FUND_TYPE']).sum()
+                df = df.reset_index()
+                df.columns = header
+                self.tab5_win1tableWidget.setColumnCount(len(df.columns))
+                self.tab5_win1tableWidget.setRowCount(len(df.index))
+                self.tab5_win1tableWidget.setHorizontalHeaderLabels(header)
+                self.setTableData(df, 5, 1, '', '')
+                self.tab5_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+
             except:
+                self.tab5_win1tableWidget.clear()
+                self.tab5_win1tableWidget.setRowCount(1)
+                self.tab5_win1tableWidget.setColumnCount(len(header))
+                self.tab5_win1tableWidget.setHorizontalHeaderLabels(header)
                 traceback.print_exc()
 
+        elif tab == 5 and win == 2:
+            # val1=Ui_MainWindow.mainWindow_df5_1
+            header = ['수익자명', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말', '전분기말', '전년말', '전전년말']
+            try:
+                df = val1
+                if re == "":
+                    items = self.tab5_win2lineEdit_5.text()
+                    df = df.query("INTE_FUND_TYPE==@items")
+                Ui_MainWindow.mainWindow_df5_2Re = df
+                df = df.groupby(df['SUIK_NAME']).sum()
+                df = df.reset_index()
+                df.columns = header
+                self.tab5_win2tableWidget.setColumnCount(len(df.columns))
+                self.tab5_win2tableWidget.setRowCount(len(df.index))
+                self.tab5_win2tableWidget.setHorizontalHeaderLabels(header)
+                self.setTableData(df, 5, 2, '', '')
+                self.tab5_win2tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+
+            except:
+                self.tab5_win2tableWidget.clear()
+                self.tab5_win2tableWidget.setRowCount(1)
+                self.tab5_win2tableWidget.setColumnCount(len(header))
+                self.tab5_win2tableWidget.setHorizontalHeaderLabels(header)
+                traceback.print_exc()
 
     def setTableData(self, df, tab, win, startTime, alignRight):
         """for로 돌리면서 표에 값을 입력, Null값 따로 변환안함"""
@@ -2026,15 +2198,17 @@ class Ui_MainWindow(object):
                     for j, val in enumerate(arr):
                         self.tab3_tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
                         if str(j) in alignRight:
-                            self.tab3_tableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            self.tab3_tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             elif tab == 3 and win == 1:
                 for i, arr in enumerate(nArray):
                     for j, val in enumerate(arr):
                         if self.isFloat(val) != 0 or val == 0:
                             self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(str(val))))
-                            self.tab3_win1tableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            self.tab3_win1tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                             if float(val) < 0:
-                                self.tab3_win1tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                                self.tab3_win1tableWidget.item(i, j).setBackground(Ui_MainWindow.minus)
                         else:
                             self.tab3_win1tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
             elif tab == 3 and win == 2:
@@ -2045,9 +2219,10 @@ class Ui_MainWindow(object):
                     for j, val in enumerate(arr):
                         if self.isFloat(val) != 0 or val == 0:
                             self.tab3_win3tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(str(val))))
-                            self.tab3_win3tableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            self.tab3_win3tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                             if float(val) < 0:
-                                self.tab3_win3tableWidget.item(i, j).setBackground(Ui_MainWindow.color)
+                                self.tab3_win3tableWidget.item(i, j).setBackground(Ui_MainWindow.minus)
                         else:
                             self.tab3_win3tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
             elif tab == 4 and win == 0:
@@ -2056,16 +2231,58 @@ class Ui_MainWindow(object):
             elif tab == 5 and win == 0:
                 for i, arr in enumerate(nArray):
                     for j, val in enumerate(arr):
-                        if j!=6:
+                        if j != 6:
                             self.tab5_tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-                            self.tab5_tableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            self.tab5_tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                            if j == 1:
+                                self.tab5_tableWidget.item(i, j).setBackground(Ui_MainWindow.bold)
             elif tab == 5 and win == 1:
                 for i, arr in enumerate(nArray):
                     for j, val in enumerate(arr):
-                        if j!=7:
+                        if j == 0:
                             self.tab5_win1tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-                            self.tab5_win1tableWidget.item(i, j).setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-
+                            self.tab5_win1tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                        else:
+                            if val != 0:
+                                val = round((val / 100000000), 2)
+                            self.tab5_win1tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                            self.tab5_win1tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                self.tab5_win1tableWidget.insertRow(len(df.index))
+                self.tab5_win1tableWidget.setItem(len(df.index), 0, QTableWidgetItem('합계'))
+                self.tab5_win1tableWidget.item(len(df.index), 0).setTextAlignment(
+                    QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                sumList = df.sum()
+                for k in range(1, 11):
+                    self.tab5_win1tableWidget.setItem(len(df.index), k,
+                                                      QTableWidgetItem(str(round(sumList[k] / 100000000, 2))))
+                    self.tab5_win1tableWidget.item(len(df.index), k).setTextAlignment(
+                        QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            elif tab == 5 and win == 2:
+                for i, arr in enumerate(nArray):
+                    for j, val in enumerate(arr):
+                        if j == 0:
+                            self.tab5_win2tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                            self.tab5_win2tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                        else:
+                            if val != 0:
+                                val = round((val / 100000000), 2)
+                            self.tab5_win2tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                            self.tab5_win2tableWidget.item(i, j).setTextAlignment(
+                                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                self.tab5_win2tableWidget.insertRow(len(df.index))
+                self.tab5_win2tableWidget.setItem(len(df.index), 0, QTableWidgetItem('합계'))
+                self.tab5_win2tableWidget.item(len(df.index), 0).setTextAlignment(
+                    QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                sumList = df.sum()
+                for k in range(1, 11):
+                    self.tab5_win2tableWidget.setItem(len(df.index), k,
+                                                      QTableWidgetItem(str(round(sumList[k] / 100000000, 2))))
+                    self.tab5_win2tableWidget.item(len(df.index), k).setTextAlignment(
+                        QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
             if startTime:
                 endTime = time.time()
@@ -2175,9 +2392,54 @@ class Ui_MainWindow(object):
         if numeric == True:
             returnvalue = decimal.Decimal(par)
         return returnvalue
-       # ---------------------------------팝업
 
-    def popup1(self,update):
+    def test(self):
+        try:
+            print("~~")
+            pp = [('1', '2', '3', '4'),
+                  ('5', '6', '7', '8'),
+                  ('9', '10', '11', '12')]
+            df11 = pd.DataFrame(pp)
+            self.asd(df11)
+            self.asd2(df11)
+            # self.asd3(df11)
+            print("끝")
+
+        except:
+            traceback.print_exc()
+
+    def asd(self, df11):
+        try:
+            for i in range(len(df11.index)):
+                for j in range(len(df11.columns)):
+                    print(i, j)
+
+        except:
+            traceback.print_exc()
+
+    def asd2(self, df11):
+        try:
+            print('---------------')
+            np2 = df11.to_numpy()
+            for i, val in enumerate(np2):
+                for j, val2 in enumerate(val):
+                    print(j, val2)
+        except:
+            traceback.print_exc()
+
+    # def asd3(self,df11):
+    #     print('---------------')
+    #     try:
+    #         np2 = df11.to_numpy()
+    #         v,y=[val2 for i, val in enumerate(np2) for j, val2 in enumerate(val)]
+    #             # for j, val2 in enumerate(val):
+    #         print(v,y)
+    #     except:
+    #         traceback.print_exc()
+
+    # ---------------------------------팝업
+
+    def popup1(self, update):
         self.popup1_label = QtWidgets.QLabel(self.popup_version)
         self.popup1_label.setGeometry(QtCore.QRect(98, 13, 81, 21))
         self.popup1_label.setObjectName("popup1_label")
@@ -2208,12 +2470,11 @@ class Ui_MainWindow(object):
         self.popup1_label_3.setText(_translate("MainWindow", "개발자:"))
         self.popup1_label_4.setText(_translate("MainWindow", "송병규"))
 
-
         # Qt디자이너 외 구현
         self.popup_version.resize(274, 69)
         self.popup1_label_2.setText(update)
         pixmap = QtGui.QPixmap(resource_path('ci.jpg'))
-        pixmap=pixmap.scaledToHeight(int(60))
+        pixmap = pixmap.scaledToHeight(int(60))
         self.popup1_label_5.setPixmap(pixmap)
 
         self.popup_version.show()
@@ -2233,18 +2494,17 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 # 현재 setcomma에서 length 값 이하는 표시가 안되고 그걸 내리면 더블클릭시 코드값을 잘못 가져감
-# 코드값 같은 특정 헤더명으로 콤마를 안 걸게 하는 방법 찾아야함
+
 # conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
 # conn = cx_Oracle.connect("system", "1234", "localhost:1521/xe")
 # pyuic5 -x mainFrame.ui -o mainFrame.py
-# pyuic5 -x windowGraphic.ui -o windowGraphic.py
+# pyuic5 -x popupVersion.ui -o popupVersion.py
 # pyuic5 -x windowQuery.ui -o windowQuery.py
+# pyuic5 -x windowGraphic.ui -o windowGraphic.py
 # pyuic5 -x windowList.ui -o windowList.py
 # pyuic5 -x windowCode.ui -o windowCode.py
 # pyuic5 -x windowEarn.ui -o windowEarn.py
-# pyuic5 -x popupVersion.ui -o popupVersion.py
 # pyuic5 -x windowGroup.ui -o windowGroup.py
-
-# pyuic5 -x suikja_layout.ui -o suikja_layout.py
+# pyuic5 -x windowItems.ui -o windowItems.py
 # gcc -c clang.c
 # gcc -o clang.so -shared -f PIC clang.c
