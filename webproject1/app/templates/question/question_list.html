@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% extends 'base.html' %}
+    {% block content %}
+</head>
+<body>
+
+<div class="container my-3">
+    <br>
+    <li><a href="{{link1}}">링크</a></li>
+    <table class="table">
+        <thead>
+        <tr class="thead-dark">
+            <th>일자</th><th>수익자코드</th><th>펀드코드</th><th>수익자명</th><th>수익자 그룹</th>
+            <th>설정액</th><th>판매사</th><th>펀드타입</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td> {{queryData1[0]}}</td><td> {{queryData1[1]}}</td><td> {{queryData1[2]}}</td><td> {{queryData1[3]}}</td><td> {{queryData1[4]}}</td>
+            <td> {{queryData1[6]}}</td><td> {{queryData1[8]}}</td><td> {{queryData1[13]}}</td>
+        </tr>
+                <tr>
+            <td> {{queryData2[0]}}</td><td> {{queryData2[1]}}</td><td> {{queryData2[2]}}</td><td> {{queryData2[3]}}</td><td> {{queryData2[4]}}</td>
+            <td> {{queryData2[6]}}</td><td> {{queryData2[8]}}</td><td> {{queryData2[13]}}</td>
+        </tr>
+        </tbody>
+    </table>{{val1}}
+    <form action="{{ url_for('question.answer')}}" method="post">
+    <input type="text" id="input" name="input" class="form-control">
+    <input type="submit" value="검색" class="btn btn-primary">
+</form>
+</div>
+{% endblock %}
+</body>
+</html>
