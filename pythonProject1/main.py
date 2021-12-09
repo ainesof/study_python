@@ -126,14 +126,23 @@ class Ui_MainWindow(object):
         self.tab5_win1lineEdit_4.setReadOnly(True)
         self.tab5_win1lineEdit_4.setObjectName("tab5_win1lineEdit_4")
         self.tab5_win1lineEdit_3 = QtWidgets.QLineEdit(self.tab5)
-        self.tab5_win1lineEdit_3.setGeometry(QtCore.QRect(140, 60, 281, 21))
+        self.tab5_win1lineEdit_3.setGeometry(QtCore.QRect(170, 60, 251, 21))
         self.tab5_win1lineEdit_3.setAlignment(QtCore.Qt.AlignCenter)
         self.tab5_win1lineEdit_3.setReadOnly(True)
         self.tab5_win1lineEdit_3.setObjectName("tab5_win1lineEdit_3")
         self.tab5_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab5)
-        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 60, 141, 21))
+        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 60, 781, 21))
         self.tab5_win1lineEdit_2.setReadOnly(True)
         self.tab5_win1lineEdit_2.setObjectName("tab5_win1lineEdit_2")
+        self.tab5_win1lineEdit_2.raise_()
+        self.tab5_tableWidget.raise_()
+        self.tab5_dateEdit.raise_()
+        self.tab5_label.raise_()
+        self.tab5_label_2.raise_()
+        self.tab5_label_3.raise_()
+        self.tab5_pushButton.raise_()
+        self.tab5_win1lineEdit_4.raise_()
+        self.tab5_win1lineEdit_3.raise_()
         self.tabWidget.addTab(self.tab5, "")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -482,6 +491,9 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab4, "")
         self.tab6 = QtWidgets.QWidget()
         self.tab6.setObjectName("tab6")
+        self.label = QtWidgets.QLabel(self.tab6)
+        self.label.setGeometry(QtCore.QRect(50, 30, 151, 141))
+        self.label.setObjectName("label")
         self.tabWidget.addTab(self.tab6, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -1179,7 +1191,7 @@ class Ui_MainWindow(object):
         self.tab3_comboBox_5.addItems(('전체', '224 흥국자산운용', '207 교보악사자산운용', '216 DB자산운용', '363 트러스톤자산운용', '368 하이자산운용'))
         self.tab3_toolButton.setIcon(QIcon(resource_path('find.png')))  # 돋보기 아이콘
 
-        # @@@
+        # 멀티프로세스 연습 @@@
 
         p = mp.Process(target=times)
         p.daemon = True
@@ -1765,10 +1777,11 @@ class Ui_MainWindow(object):
         self.tab5_win1label_2.setObjectName("tab5_win1label_2")
         self.tab5_win1lineEdit = QtWidgets.QLineEdit(self.tab5_newWindow1)
         self.tab5_win1lineEdit.setGeometry(QtCore.QRect(150, 10, 61, 21))
+        self.tab5_win1lineEdit.setAlignment(QtCore.Qt.AlignCenter)
         self.tab5_win1lineEdit.setReadOnly(True)
         self.tab5_win1lineEdit.setObjectName("tab5_win1lineEdit")
         self.tab5_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab5_newWindow1)
-        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 60, 201, 21))
+        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 60, 841, 21))
         self.tab5_win1lineEdit_2.setReadOnly(True)
         self.tab5_win1lineEdit_2.setObjectName("tab5_win1lineEdit_2")
         self.tab5_win1lineEdit_3 = QtWidgets.QLineEdit(self.tab5_newWindow1)
@@ -1786,6 +1799,19 @@ class Ui_MainWindow(object):
         self.tab5_win1label.setAutoFillBackground(True)
         self.tab5_win1label.setText("")
         self.tab5_win1label.setObjectName("tab5_win1label")
+        self.tab5_win1lineEdit_2.raise_()
+        self.tab5_win1tableWidget.raise_()
+        self.tab5_win1label_5.raise_()
+        self.tab5_win1label_4.raise_()
+        self.tab5_win1dateEdit.raise_()
+        self.tab5_win1comboBox.raise_()
+        self.tab5_win1label_3.raise_()
+        self.tab5_win1pushButton.raise_()
+        self.tab5_win1label_2.raise_()
+        self.tab5_win1lineEdit.raise_()
+        self.tab5_win1lineEdit_3.raise_()
+        self.tab5_win1lineEdit_4.raise_()
+        self.tab5_win1label.raise_()
 
         _translate = QtCore.QCoreApplication.translate
 
@@ -1855,10 +1881,11 @@ class Ui_MainWindow(object):
         self.tab5_win2label_2.setObjectName("tab5_win2label_2")
         self.tab5_win2lineEdit = QtWidgets.QLineEdit(self.tab5_newWindow2)
         self.tab5_win2lineEdit.setGeometry(QtCore.QRect(150, 10, 61, 21))
+        self.tab5_win2lineEdit.setAlignment(QtCore.Qt.AlignCenter)
         self.tab5_win2lineEdit.setReadOnly(True)
         self.tab5_win2lineEdit.setObjectName("tab5_win2lineEdit")
         self.tab5_win2lineEdit_2 = QtWidgets.QLineEdit(self.tab5_newWindow2)
-        self.tab5_win2lineEdit_2.setGeometry(QtCore.QRect(0, 60, 201, 21))
+        self.tab5_win2lineEdit_2.setGeometry(QtCore.QRect(0, 60, 841, 21))
         self.tab5_win2lineEdit_2.setReadOnly(True)
         self.tab5_win2lineEdit_2.setObjectName("tab5_win2lineEdit_2")
         self.tab5_win2lineEdit_3 = QtWidgets.QLineEdit(self.tab5_newWindow2)
@@ -1881,6 +1908,7 @@ class Ui_MainWindow(object):
         self.tab5_win2label_3.setObjectName("tab5_win2label_3")
         self.tab5_win2lineEdit_5 = QtWidgets.QLineEdit(self.tab5_newWindow2)
         self.tab5_win2lineEdit_5.setGeometry(QtCore.QRect(260, 10, 81, 21))
+        self.tab5_win2lineEdit_5.setAlignment(QtCore.Qt.AlignCenter)
         self.tab5_win2lineEdit_5.setReadOnly(True)
         self.tab5_win2lineEdit_5.setObjectName("tab5_win2lineEdit_5")
         self.tab5_win2tableWidget = QtWidgets.QTableWidget(self.tab5_newWindow2)
@@ -1891,6 +1919,18 @@ class Ui_MainWindow(object):
         self.tab5_win2tableWidget.setObjectName("tab5_win2tableWidget")
         self.tab5_win2tableWidget.setColumnCount(0)
         self.tab5_win2tableWidget.setRowCount(0)
+        self.tab5_win2lineEdit_2.raise_()
+        self.tab5_win2label_6.raise_()
+        self.tab5_win2label_5.raise_()
+        self.tab5_win2dateEdit.raise_()
+        self.tab5_win2label_2.raise_()
+        self.tab5_win2lineEdit.raise_()
+        self.tab5_win2lineEdit_3.raise_()
+        self.tab5_win2lineEdit_4.raise_()
+        self.tab5_win2label.raise_()
+        self.tab5_win2label_3.raise_()
+        self.tab5_win2lineEdit_5.raise_()
+        self.tab5_win2tableWidget.raise_()
 
         _translate = QtCore.QCoreApplication.translate
 
@@ -2196,7 +2236,22 @@ class Ui_MainWindow(object):
                 self.setTableData(df, 5, 0, '', '')
                 if re == "":
                     Ui_MainWindow.mainWindow_df5_0 = df
-                self.tab5_tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+                self.tab5_tableWidget.resizeColumnsToContents()
+
+                if self.tab5_tableWidget.rowCount() >= 10:
+                    indexWidth = 23
+                else:
+                    indexWidth = 16
+                width1 = self.tab5_tableWidget.columnWidth(0) + self.tab5_tableWidget.columnWidth(
+                    1) + self.tab5_tableWidget.columnWidth(2)  # 헤더 사이즈 조정
+                width2 = self.tab5_tableWidget.columnWidth(3) + self.tab5_tableWidget.columnWidth(
+                    4) + self.tab5_tableWidget.columnWidth(5)
+                width3 = self.tab5_tableWidget.columnWidth(7) + self.tab5_tableWidget.columnWidth(
+                    8) + self.tab5_tableWidget.columnWidth(9) + self.tab5_tableWidget.columnWidth(10)
+                self.tab5_win1lineEdit_3.setGeometry(QtCore.QRect(indexWidth + width1, 60, width2, 21))
+                self.tab5_win1lineEdit_4.setGeometry(
+                    QtCore.QRect(indexWidth + width1 + width2 + self.tab5_tableWidget.columnWidth(6), 60, width3, 21))
+
             except:
                 self.tab5_dateEdit.setDate(date.today() - timedelta(2))
                 self.newcreateTable(5, 0, '', self.tab5_dateEdit.text(), '', '', '')
@@ -2247,7 +2302,22 @@ class Ui_MainWindow(object):
                 self.tab5_win1tableWidget.setRowCount(len(df.index))
                 self.tab5_win1tableWidget.setHorizontalHeaderLabels(header)
                 self.setTableData(df, 5, 1, '', '')
-                self.tab5_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+                self.tab5_win1tableWidget.resizeColumnsToContents()
+
+                if self.tab5_win1tableWidget.rowCount() >= 10:
+                    indexWidth = 23
+                else:
+                    indexWidth = 16
+                width1 = self.tab5_win1tableWidget.columnWidth(0) + self.tab5_win1tableWidget.columnWidth(
+                    1) + self.tab5_win1tableWidget.columnWidth(2)  # 헤더 사이즈 조정
+                width2 = self.tab5_win1tableWidget.columnWidth(3) + self.tab5_win1tableWidget.columnWidth(
+                    4) + self.tab5_win1tableWidget.columnWidth(5)
+                width3 = self.tab5_win1tableWidget.columnWidth(7) + self.tab5_win1tableWidget.columnWidth(
+                    8) + self.tab5_win1tableWidget.columnWidth(9) + self.tab5_win1tableWidget.columnWidth(10)
+                self.tab5_win1lineEdit_3.setGeometry(QtCore.QRect(indexWidth + width1, 60, width2, 21))
+                self.tab5_win1lineEdit_4.setGeometry(
+                    QtCore.QRect(indexWidth + width1 + width2 + self.tab5_win1tableWidget.columnWidth(6), 60, width3,
+                                 21))
 
             except:
                 self.tab5_win1tableWidget.clear()
@@ -2272,7 +2342,22 @@ class Ui_MainWindow(object):
                 self.tab5_win2tableWidget.setRowCount(len(df.index))
                 self.tab5_win2tableWidget.setHorizontalHeaderLabels(header)
                 self.setTableData(df, 5, 2, '', '')
-                self.tab5_win2tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
+                self.tab5_win2tableWidget.resizeColumnsToContents()
+
+                if self.tab5_win2tableWidget.rowCount() >= 10:
+                    indexWidth = 23
+                else:
+                    indexWidth = 16
+                width1 = self.tab5_win2tableWidget.columnWidth(0) + self.tab5_win2tableWidget.columnWidth(
+                    1) + self.tab5_win2tableWidget.columnWidth(2)  # 헤더 사이즈 조정
+                width2 = self.tab5_win2tableWidget.columnWidth(3) + self.tab5_win2tableWidget.columnWidth(
+                    4) + self.tab5_win2tableWidget.columnWidth(5)
+                width3 = self.tab5_win2tableWidget.columnWidth(7) + self.tab5_win2tableWidget.columnWidth(
+                    8) + self.tab5_win2tableWidget.columnWidth(9) + self.tab5_win2tableWidget.columnWidth(10)
+                self.tab5_win2lineEdit_3.setGeometry(QtCore.QRect(indexWidth + width1, 60, width2, 21))
+                self.tab5_win2lineEdit_4.setGeometry(
+                    QtCore.QRect(indexWidth + width1 + width2 + self.tab5_win2tableWidget.columnWidth(6), 60, width3,
+                                 21))
 
             except:
                 self.tab5_win2tableWidget.clear()
