@@ -12,15 +12,15 @@ def create_app():
     app.config.from_object(config)
 
     # ORM
-    db.init_app(app)
-    migrate.init_app(app, db)
-    from . import models
+    # db.init_app(app)
+    # migrate.init_app(app, db)
+    # from . import models
 
     # 블루프린트
-    from .views import main_views, question_view
+    from .views import main_views, tab5_list
     app.register_blueprint(main_views.bp)
     app.register_blueprint(main_views.err)
-    app.register_blueprint(question_view.bp)
+    app.register_blueprint(tab5_list.bp)
     return app
 
 
