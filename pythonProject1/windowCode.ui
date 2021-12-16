@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="tab3_newWindow2">
-   <widget class="QTableWidget" name="tab3_win2tablewidget">
+   <widget class="QTableWidget" name="tab3_win2tableWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
