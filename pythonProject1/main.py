@@ -10,6 +10,7 @@ import atexit
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests, bs4
+import styleframe
 from styleframe import StyleFrame, Styler, utils
 import multiprocessing as mp
 from dateutil.parser import parse
@@ -77,7 +78,12 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1082, 588)
+        MainWindow.resize(1077, 583)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -509,7 +515,7 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab6, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1082, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1077, 21))
         self.menubar.setObjectName("menubar")
         self.menuInfo = QtWidgets.QMenu(self.menubar)
         self.menuInfo.setObjectName("menuInfo")
@@ -621,8 +627,10 @@ class Ui_MainWindow(object):
         Ui_MainWindow.mainWindow_df5_0 = ""  # 탭5 수탁고현황 최종자료값
         Ui_MainWindow.mainWindow_df5_1 = ""  # 수익자 그룹현황 자료값
         Ui_MainWindow.mainWindow_df5_1Re = ""  # 수익자 그룹현황 가공값
+        Ui_MainWindow.mainWindow_df5_1Ex = ""  # 수익자 그룹현황 엑셀값
         Ui_MainWindow.mainWindow_df5_2 = ""  # 수익자 항목현황 자료값
         Ui_MainWindow.mainWindow_df5_2Re = ""  # 수익자 항목현황 가공값
+        Ui_MainWindow.mainWindow_df5_2Ex = ""  # 수익자 그룹현황 엑셀값
         Ui_MainWindow.sqlQuery = ""  # 추가 쿼리
         Ui_MainWindow.tab3Code = ""  # 탭3 클릭값 펀드코드
         Ui_MainWindow.tab3Name = ""  # 탭3 클릭값 펀드명
@@ -631,6 +639,7 @@ class Ui_MainWindow(object):
         Ui_MainWindow.tab5group = ""  # 탭5 고객그룹
         Ui_MainWindow.tab5team = ""  # 탭5 홀세일본부 구분
         Ui_MainWindow.tab5win1Item = ""  # 탭5 창1 항목값
+        Ui_MainWindow.tab5changeWonFlag= True
 
         # Qt디자이너 외 구현
         self.setListWidget()  # DB리스트 생성
@@ -919,7 +928,7 @@ class Ui_MainWindow(object):
 
     def setQuery(self, columnText, i, lineEditText):
         """ 조건을 설정해 SQL에 추가 """
-        str1 = [" like '%", " = '", " != '", " <= '", " >= '"]
+        str1 = [" like '%", " = '", " != '", " >= '", " <= '"]
         str2 = ["%'", "'"]
         sql = " and TO_CHAR(" + columnText + ") " + str1[i] + lineEditText + str2[math.trunc((i + 9) / 10)]  # %만 2번
         return sql
@@ -1827,6 +1836,9 @@ class Ui_MainWindow(object):
         self.tab5_win1comboBox_2.setEditable(False)
         self.tab5_win1comboBox_2.setCurrentText("")
         self.tab5_win1comboBox_2.setObjectName("tab5_win1comboBox_2")
+        self.tab5_win1pushButton_2 = QtWidgets.QPushButton(self.tab5_newWindow1)
+        self.tab5_win1pushButton_2.setGeometry(QtCore.QRect(1050, 0, 71, 21))
+        self.tab5_win1pushButton_2.setObjectName("tab5_win1pushButton_2")
         self.tab5_win1lineEdit_2.raise_()
         self.tab5_win1tableWidget.raise_()
         self.tab5_win1label_5.raise_()
@@ -1841,6 +1853,7 @@ class Ui_MainWindow(object):
         self.tab5_win1lineEdit_4.raise_()
         self.tab5_win1label.raise_()
         self.tab5_win1comboBox_2.raise_()
+        self.tab5_win1pushButton_2.raise_()
 
         _translate = QtCore.QCoreApplication.translate
 
@@ -1852,7 +1865,7 @@ class Ui_MainWindow(object):
         self.tab5_win1label_2.setText(_translate("MainWindow", "고객그룹"))
         self.tab5_win1lineEdit_3.setText(_translate("MainWindow", "순자산 증감"))
         self.tab5_win1lineEdit_4.setText(_translate("MainWindow", "수탁고 설정액"))
-        self.tab5_win1comboBox_2.setCurrentText(_translate("MainWindow", "억"))
+        self.tab5_win1pushButton_2.setText(_translate("MainWindow", "엑셀 변환"))
 
         # QT디자이너 외 구현
         self.tab5_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
@@ -1861,6 +1874,10 @@ class Ui_MainWindow(object):
         self.tab5_win1label.setText('홀세일 ' + team)
         self.tab5_win1dateEdit.setDate(parse(date1))
         self.tab5_win1comboBox_2.addItems(['억','원'])
+        if Ui_MainWindow.tab5changeWonFlag == True:
+            self.tab5_win1comboBox_2.setCurrentText('억')
+        else:
+            self.tab5_win1comboBox_2.setCurrentText('원')
         fund_cd = ''
         if group == 'NPS':
             fund_cd = 'NPS'
@@ -1878,6 +1895,7 @@ class Ui_MainWindow(object):
             lambda: self.newcreateTable(5, 1, 're', group, team, fund_cd, self.tab5_win1dateEdit.text()))  # 탭5 재조회
         row = self.tab5_win1tableWidget.cellClicked.connect(self.tab5_win1returnCode)  # 탭5 표 클릭시
         self.tab5_win1tableWidget.doubleClicked.connect(lambda: self.tab5_win1searchValue(fund_cd))  # 탭5 펀드검색
+        self.tab5_win1pushButton_2.clicked.connect(lambda: self.toExcel("5", "1", '그룹별 현황'))  # 엑셀변환 버튼
 
     def tab5_win1searchValue(self, fund_cd):
         """탭5 팝업의팝업 생성"""
@@ -1944,7 +1962,7 @@ class Ui_MainWindow(object):
         self.tab5_win2lineEdit_5.setReadOnly(True)
         self.tab5_win2lineEdit_5.setObjectName("tab5_win2lineEdit_5")
         self.tab5_win2tableWidget = QtWidgets.QTableWidget(self.tab5_newWindow2)
-        self.tab5_win2tableWidget.setGeometry(QtCore.QRect(0, 80, 1241, 361))
+        self.tab5_win2tableWidget.setGeometry(QtCore.QRect(0, 80, 1241, 421))
         self.tab5_win2tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab5_win2tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab5_win2tableWidget.setAlternatingRowColors(True)
@@ -1960,6 +1978,9 @@ class Ui_MainWindow(object):
         self.tab5_win2label_6 = QtWidgets.QLabel(self.tab5_newWindow2)
         self.tab5_win2label_6.setGeometry(QtCore.QRect(1172, 40, 31, 21))
         self.tab5_win2label_6.setObjectName("tab5_win2label_6")
+        self.tab5_win2pushButton = QtWidgets.QPushButton(self.tab5_newWindow2)
+        self.tab5_win2pushButton.setGeometry(QtCore.QRect(1170, 3, 71, 21))
+        self.tab5_win2pushButton.setObjectName("tab5_win2pushButton")
         self.tab5_win2lineEdit_2.raise_()
         self.tab5_win2label_5.raise_()
         self.tab5_win2dateEdit.raise_()
@@ -1973,6 +1994,7 @@ class Ui_MainWindow(object):
         self.tab5_win2tableWidget.raise_()
         self.tab5_win2comboBox.raise_()
         self.tab5_win2label_6.raise_()
+        self.tab5_win2pushButton.raise_()
 
         _translate = QtCore.QCoreApplication.translate
 
@@ -1983,22 +2005,28 @@ class Ui_MainWindow(object):
         self.tab5_win2label_3.setText(_translate("MainWindow", "항목"))
         self.tab5_win2tableWidget.setSortingEnabled(False)
         self.tab5_win2label_6.setText(_translate("MainWindow", "단위"))
+        self.tab5_win2pushButton.setText(_translate("MainWindow", "엑셀 변환"))
 
         # QT디자이너 외 구현
         try:
-            self.tab5_newWindow2.resize(1246, 441)
+            self.tab5_newWindow2.resize(1246, 503)
             self.tab5_newWindow2.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
             self.tab5_win2label.setText('홀세일 ' + team)
             self.tab5_win2lineEdit.setText(group)
             self.tab5_win2lineEdit_5.setText(items)
             self.tab5_win2dateEdit.setDate(parse(self.tab5_win1dateEdit.text()))
             self.tab5_win2comboBox.addItems(['억', '원'])
+            if Ui_MainWindow.tab5changeWonFlag==True:
+                self.tab5_win2comboBox.setCurrentText('억')
+            else:
+                self.tab5_win2comboBox.setCurrentText('원')
             self.newcreateTable(5, 2, '', Ui_MainWindow.mainWindow_df5_1, self.tab5_win2lineEdit_5.text(), '', '')
             self.tab5_newWindow2.show()
 
         # 이벤트
             self.tab5_win2comboBox.currentTextChanged.connect(
                 lambda: self.newcreateTable(5, 2, '', Ui_MainWindow.mainWindow_df5_1, self.tab5_win2lineEdit_5.text(), '', ''))
+            self.tab5_win2pushButton.clicked.connect(lambda: self.toExcel("5", "2", '상품별 현황'))  # 엑셀변환 버튼
 
         except:
             traceback.print_exc()
@@ -2121,7 +2149,7 @@ class Ui_MainWindow(object):
                 elif re == "re":
                     minDate = val1
                     maxDate = val2
-                    df = Ui_MainWindow.mainWindow_df3_1
+                    df = Ui_MainWindow.mainWindow_df3_1.copy()
                     if self.tab3_win1checkBox.isChecked():
                         df = df.query('기준일자>=@minDate')
                     if self.tab3_win1checkBox_2.isChecked():
@@ -2132,8 +2160,8 @@ class Ui_MainWindow(object):
                 self.tab3_win1tableWidget.setHorizontalHeaderLabels(header)
                 self.setTableData(df, 3, 1, startTime, '')
                 if re == "":
-                    Ui_MainWindow.mainWindow_df3_1 = df
-                Ui_MainWindow.mainWindow_df3_1Re = df
+                    Ui_MainWindow.mainWindow_df3_1 = df.copy()
+                Ui_MainWindow.mainWindow_df3_1Re = df.copy()
                 self.tab3_win1tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
             except:
                 self.tab3_win1tableWidget.clear()
@@ -2166,8 +2194,8 @@ class Ui_MainWindow(object):
                 self.tab3_win2tableWidget.setHorizontalHeaderLabels(header)
                 self.setTableData(df, 3, 2, '', '')
                 if re == "":
-                    Ui_MainWindow.mainWindow_df3_2 = df
-                Ui_MainWindow.mainWindow_df3_2Re = df
+                    Ui_MainWindow.mainWindow_df3_2 = df.copy()
+                Ui_MainWindow.mainWindow_df3_2Re = df.copy()
                 self.tab3_win2tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
 
             except:
@@ -2215,14 +2243,14 @@ class Ui_MainWindow(object):
                     self.tab3_win3tableWidget.setRowCount(len(df.index))
                     self.tab3_win3tableWidget.setHorizontalHeaderLabels(header)
                     self.setTableData(df, 3, 3, '', alignRight)
-                    Ui_MainWindow.mainWindow_df3_3Re = df
+                    Ui_MainWindow.mainWindow_df3_3Re = df.copy()
                 if re == "":
                     self.tab3_win3comboBox.addItem("전체")
                     groupd = df.groupby(['수익자명']).count().iloc[:, 0]
                     [self.tab3_win3comboBox.addItem(str(i)) for i in groupd.index]
                     self.tab3_win3comboBox_2.addItem('전체')
-                    Ui_MainWindow.mainWindow_df3_3 = df
-                    Ui_MainWindow.mainWindow_df3_3Re = df
+                    Ui_MainWindow.mainWindow_df3_3 = df.copy()
+                    Ui_MainWindow.mainWindow_df3_3Re = df.copy()
                 if len(df.index) == 0:
                     self.tab3_win3tableWidget.setRowCount(1)
                 self.tab3_win3tableWidget.resizeColumnsToContents()  # 컬럼 크기 조정
@@ -2279,10 +2307,9 @@ class Ui_MainWindow(object):
                 self.tab5_tableWidget.setColumnCount(len(df.columns))
                 self.tab5_tableWidget.setRowCount(len(df.index))
                 self.tab5_tableWidget.setHorizontalHeaderLabels(header)
-                Ui_MainWindow.mainWindow_df5_0 = df
+                Ui_MainWindow.mainWindow_df5_0 = df.copy()
                 self.setTableData(df, 5, 0, '', '')
                 self.tab5_tableWidget.resizeColumnsToContents()
-
                 if self.tab5_tableWidget.rowCount() >= 10:
                     indexWidth = 23
                 else:
@@ -2295,7 +2322,6 @@ class Ui_MainWindow(object):
                 self.tab5_lineEdit_2.setGeometry(QtCore.QRect(indexWidth + width1, 50, width2, 21))
                 self.tab5_lineEdit_3.setGeometry(
                     QtCore.QRect(indexWidth + width1 + width2, 50, width3, 21))
-
             except:
                 self.tab5_tableWidget.clear()
                 self.tab5_tableWidget.setRowCount(1)
@@ -2324,21 +2350,22 @@ class Ui_MainWindow(object):
                                   'SUIK_NET_MONEYSUM3', 'SUIK_NET_MONEYSUM4',
                                   'SUIK_SET_MONEY1', 'SUIK_SET_MONEY2', 'SUIK_SET_MONEY3', 'SUIK_SET_MONEY4']
 
-                    Ui_MainWindow.mainWindow_df5_1 = df
+                    Ui_MainWindow.mainWindow_df5_1 = df.copy()
                     self.tab5_win1comboBox.clear()
                     val = (df['SUIK_NAME'].drop_duplicates().values.tolist())
                     self.tab5_win1comboBox.addItem('전체')
                     [self.tab5_win1comboBox.addItem(i) for i in val]
 
                 elif re == "re":
-                    df = Ui_MainWindow.mainWindow_df5_1
+                    df = Ui_MainWindow.mainWindow_df5_1.copy()
                     suik_name = self.tab5_win1comboBox.currentText()
                     if self.tab5_win1comboBox.currentText() != '전체':
                         df = df.query("SUIK_NAME==@suik_name")
                 df = df.groupby(df['INTE_FUND_TYPE']).sum()
                 df = df.reset_index()
-                Ui_MainWindow.mainWindow_df5_1Re = df
                 df.columns = header
+                Ui_MainWindow.mainWindow_df5_1Re = df.copy()
+                Ui_MainWindow.mainWindow_df5_1Ex = df.copy()
                 self.tab5_win1tableWidget.setColumnCount(len(df.columns))
                 self.tab5_win1tableWidget.setRowCount(len(df.index))
                 self.tab5_win1tableWidget.setHorizontalHeaderLabels(header)
@@ -2374,10 +2401,12 @@ class Ui_MainWindow(object):
                 if re == "":
                     items = val2
                     df = df.query("INTE_FUND_TYPE==@items")
-                Ui_MainWindow.mainWindow_df5_2Re = df
+                Ui_MainWindow.mainWindow_df5_2 = df.copy()
                 df = df.groupby(df['SUIK_NAME']).sum()
                 df = df.reset_index()
                 df.columns = header
+                Ui_MainWindow.mainWindow_df5_2Re = df.copy() #추후 조건줄때 사용할 용도
+                Ui_MainWindow.mainWindow_df5_2Ex = df.copy()
                 self.tab5_win2tableWidget.setColumnCount(len(df.columns))
                 self.tab5_win2tableWidget.setRowCount(len(df.index))
                 self.tab5_win2tableWidget.setHorizontalHeaderLabels(header)
@@ -2460,12 +2489,12 @@ class Ui_MainWindow(object):
 
             elif tab == 5 and win == 0:
                 if self.tab5_comboBox.currentText() == '억':
-                    flag = True
+                    Ui_MainWindow.tab5changeWonFlag=True
                 else:
-                    flag = False
+                    Ui_MainWindow.tab5changeWonFlag=False
                 for i, arr in enumerate(nArray):
                     for j, val in enumerate(arr):
-                        val=self.changeWon(val,flag)
+                        val=self.changeWon(val,Ui_MainWindow.tab5changeWonFlag)
                         if j == 0:
                             self.tab5_tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
                             self.tab5_tableWidget.item(i, j).setTextAlignment(
@@ -2477,15 +2506,15 @@ class Ui_MainWindow(object):
                         if j == 1:
                             self.tab5_tableWidget.item(i, j).setBackground(Ui_MainWindow.bold)
                         Ui_MainWindow.mainWindow_df5_0.iloc[i,j]=val
-                print(Ui_MainWindow.mainWindow_df5_0)
+
             elif tab == 5 and win == 1:
                 if self.tab5_win1comboBox_2.currentText() == '억':
-                    flag = True
+                    Ui_MainWindow.tab5changeWonFlag = True
                 else:
-                    flag = False
+                    Ui_MainWindow.tab5changeWonFlag = False
                 for i, arr in enumerate(nArray):
                     for j, val in enumerate(arr):
-                        val = self.changeWon(val, flag)
+                        val = self.changeWon(val, Ui_MainWindow.tab5changeWonFlag)
                         if j == 0:
                             self.tab5_win1tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
                             self.tab5_win1tableWidget.item(i, j).setTextAlignment(
@@ -2494,25 +2523,33 @@ class Ui_MainWindow(object):
                             self.tab5_win1tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(1,val,True)))
                             self.tab5_win1tableWidget.item(i, j).setTextAlignment(
                                 QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                        Ui_MainWindow.mainWindow_df5_1Ex.iloc[i, j]= val
                 self.tab5_win1tableWidget.insertRow(len(df.index))
                 self.tab5_win1tableWidget.setItem(len(df.index), 0, QTableWidgetItem('합계'))
                 self.tab5_win1tableWidget.item(len(df.index), 0).setTextAlignment(
                     QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
                 sumList = df.sum()
+                sumList[0]='합계'
+
                 for k in range(1, 11):
-                    sumList[k] = self.changeWon(sumList[k], flag)
+                    sumList[k] = self.changeWon(sumList[k], Ui_MainWindow.tab5changeWonFlag)
                     self.tab5_win1tableWidget.setItem(len(df.index), k,
                          QTableWidgetItem(self.setComma(1,sumList[k],True)))
                     self.tab5_win1tableWidget.item(len(df.index), k).setTextAlignment(
                         QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                sumList_df=pd.DataFrame(columns=sumList.index)
+                sumList_df.loc[0]=sumList
+                Ui_MainWindow.mainWindow_df5_1Ex = pd.concat([Ui_MainWindow.mainWindow_df5_1Ex, sumList_df],
+                                                             ignore_index=True)
+
             elif tab == 5 and win == 2:
                 if self.tab5_win2comboBox.currentText() == '억':
-                    flag = True
+                    Ui_MainWindow.tab5changeWonFlag = True
                 else:
-                    flag = False
+                    Ui_MainWindow.tab5changeWonFlag = False
                 for i, arr in enumerate(nArray):
                     for j, val in enumerate(arr):
-                        val = self.changeWon(val, flag)
+                        val = self.changeWon(val, Ui_MainWindow.tab5changeWonFlag)
                         if j == 0:
                             self.tab5_win2tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
                             self.tab5_win2tableWidget.item(i, j).setTextAlignment(
@@ -2521,17 +2558,25 @@ class Ui_MainWindow(object):
                             self.tab5_win2tableWidget.setItem(i, j, QTableWidgetItem(self.setComma(1,val,True)))
                             self.tab5_win2tableWidget.item(i, j).setTextAlignment(
                                 QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                        Ui_MainWindow.mainWindow_df5_2Ex.iloc[i, j] = val
                 self.tab5_win2tableWidget.insertRow(len(df.index))
                 self.tab5_win2tableWidget.setItem(len(df.index), 0, QTableWidgetItem('합계'))
                 self.tab5_win2tableWidget.item(len(df.index), 0).setTextAlignment(
                     QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
                 sumList = df.sum()
+                sumList[0] = '합계'
+
                 for k in range(1, 11):
-                    sumList[k] = self.changeWon(sumList[k], flag)
+                    sumList[k] = self.changeWon(sumList[k], Ui_MainWindow.tab5changeWonFlag)
                     self.tab5_win2tableWidget.setItem(len(df.index), k,
                                 QTableWidgetItem(self.setComma(1,sumList[k],True)))
                     self.tab5_win2tableWidget.item(len(df.index), k).setTextAlignment(
                         QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                sumList_df = pd.DataFrame(columns=sumList.index)
+                sumList_df.loc[0] = sumList
+                Ui_MainWindow.mainWindow_df5_2Ex = pd.concat([Ui_MainWindow.mainWindow_df5_2Ex, sumList_df],
+                                                             ignore_index=True)
+
 
             if startTime:
                 endTime = time.time()
@@ -2584,6 +2629,7 @@ class Ui_MainWindow(object):
         """엑셀 변환 저장 tab은 탭, win은 창 번호(메인은 0) 저장시 셀칸 늘리는건 해결 못 함"""
         try:
             a = QMessageBox()
+            lengthCal = []
             rowCount=0
             if tab == "1" and win == "0":
                 rowCount = len(Ui_MainWindow.mainWindow_df1_0)
@@ -2594,9 +2640,9 @@ class Ui_MainWindow(object):
             if tab == "5" and win == "0":
                 rowCount = len(Ui_MainWindow.mainWindow_df5_0)
             elif tab == "5" and win == "1":
-                rowCount = len(Ui_MainWindow.mainWindow_df5_1Re)
+                rowCount = len(Ui_MainWindow.mainWindow_df5_1Ex)
             elif tab == "5" and win == "2":
-                rowCount = len(Ui_MainWindow.mainWindow_df5_2Re)
+                rowCount = len(Ui_MainWindow.mainWindow_df5_2Ex)
             if rowCount > 0:
                 excelfolder = QFileDialog.getExistingDirectory(self.tab1, '폴더 지정', 'C:\\Users\\User\\Desktop')
                 # excelfolder = QFileDialog.getSaveFileName(self.tab1, "저장","C:\\'", "excel File(*.xlsx)") 파일명 지정은 나중에 구현
@@ -2609,26 +2655,85 @@ class Ui_MainWindow(object):
                         Ui_MainWindow.mainWindow_df3_1Re.to_excel(excelPath)
                     elif tab == "3" and win == "3":
                         Ui_MainWindow.mainWindow_df3_3Re.to_excel(excelPath)
-                    elif tab == "5" and win == "0": #전체 숫자속성+1000마다 콤마 속성
+                    elif tab == "5" and win == "0":
                         header = ['고객그룹', '설정액 합', '홀세일1설정액', '홀세일1전월',
                                   '홀세일1전분기', '홀세일1전년','홀세일2설정액',
                                   '홀세일2전월', '홀세일2전분기', '홀세일2전년']
                         df=Ui_MainWindow.mainWindow_df5_0
                         df.columns = header
                         excel_writer = StyleFrame.ExcelWriter(excelPath)
-                        sf = StyleFrame(df, Styler(horizontal_alignment='right'))
+                        sf = StyleFrame(df)
+                        sf.apply_headers_style(styler_obj=Styler(bg_color=utils.colors.grey))
+                        for i, val in enumerate(header):
+                            if len(str(df.max()[i]))>len(val):  # 단위: 원
+                                sf.apply_column_style(cols_to_style=[val],
+                                                      styler_obj=Styler(horizontal_alignment='right',
+                                                                        number_format='#,##0'),
+                                                      width=(len(df.max())*17.5/8.05)+1)
+                            else: #단위: 억
+                                sf.apply_column_style(cols_to_style=[val],
+                                                      styler_obj=Styler(horizontal_alignment='right',
+                                                                        number_format='#,##0'),
+                                                      width=(len(val)*17.5/8.05)+1)
+                        sf.apply_column_style(cols_to_style=['고객그룹'],styler_obj=Styler(horizontal_alignment='left'))
                         sf.to_excel(
-                            excel_writer=excel_writer,
-                            best_fit=header, columns_and_rows_to_freeze=None
+                            excel_writer=excel_writer,best_fit=None, columns_and_rows_to_freeze=None
                         )
-                        sf.apply_column_style(cols_to_style=['홀세일1설정액'],
-                                              styler_obj=Styler(font_color=utils.colors.green, bold=True),
-                                              style_header=True)
                         excel_writer.save()
                     elif tab == "5" and win == "1":
-                        Ui_MainWindow.mainWindow_df5_1Re.to_excel(excelPath)
+                        header = ['유형','설정액', '순자산',
+                                  '순자산전월말', '순자산전분기말','순자산전년말', '순자산전전년말',
+                                  '수탁고전월말','수탁고전분기말', '수탁고전년말', '수탁고전전년말']
+                        df = Ui_MainWindow.mainWindow_df5_1Ex
+                        df.columns = header
+                        excel_writer = StyleFrame.ExcelWriter(excelPath)
+                        sf = StyleFrame(df)
+                        sf.apply_headers_style(styler_obj=Styler(bg_color=utils.colors.grey))
+
+                        for i, val in enumerate(header):
+                            lengthCal = [len(str(j)) for j in df.iloc[:, i]]
+                            if max(lengthCal) > len(val):  # 단위: 원
+                                sf.apply_column_style(cols_to_style=[val],
+                                                      styler_obj=Styler(horizontal_alignment='right',
+                                                                        number_format='#,##0'),
+                                                      width=(max(lengthCal) * 12 / 8.5) + 4)
+                            else:  # 단위: 억
+                                sf.apply_column_style(cols_to_style=[val],
+                                                      styler_obj=Styler(horizontal_alignment='right',
+                                                                        number_format='#,##0'),
+                                                      width=(len(val) * 12 / 8.5) + 4)
+                        sf.apply_column_style(cols_to_style=['유형'], styler_obj=Styler(horizontal_alignment='left'))
+                        sf.to_excel(
+                            excel_writer=excel_writer, best_fit=None, columns_and_rows_to_freeze=None
+                        )
+                        excel_writer.save()
                     elif tab == "5" and win == "2":
-                        Ui_MainWindow.mainWindow_df5_2Re.to_excel(excelPath)
+                        header = ['수익자명','설정액', '순자산',
+                                  '순자산전월말', '순자산전분기말','순자산전년말', '순자산전전년말',
+                                  '수탁고전월말','수탁고전분기말', '수탁고전년말', '수탁고전전년말']
+                        df = Ui_MainWindow.mainWindow_df5_2Ex
+                        df.columns = header
+                        excel_writer = StyleFrame.ExcelWriter(excelPath)
+                        sf = StyleFrame(df)
+                        sf.apply_headers_style(styler_obj=Styler(bg_color=utils.colors.grey))
+
+                        for i, val in enumerate(header):
+                            lengthCal = [len(str(j)) for j in df.iloc[:, i]]
+                            if max(lengthCal) > len(val):  # 단위: 원
+                                sf.apply_column_style(cols_to_style=[val],
+                                                      styler_obj=Styler(horizontal_alignment='right',
+                                                                        number_format='#,##0'),
+                                                      width=(max(lengthCal) * 12 / 8.5) + 4)
+                            else:  # 단위: 억
+                                sf.apply_column_style(cols_to_style=[val],
+                                                      styler_obj=Styler(horizontal_alignment='right',
+                                                                        number_format='#,##0'),
+                                                      width=(len(val) * 12 / 8.5) + 4)
+                        sf.apply_column_style(cols_to_style=['수익자명'], styler_obj=Styler(horizontal_alignment='left'))
+                        sf.to_excel(
+                            excel_writer=excel_writer, best_fit=None, columns_and_rows_to_freeze=None
+                        )
+                        excel_writer.save()
 
 
 
@@ -2676,13 +2781,15 @@ class Ui_MainWindow(object):
                     break
         if numeric == True:
             returnvalue = par
-        #     returnvalue = decimal.Decimal(par) #int64->decimal 변환 안됨
+            returnvalue = decimal.Decimal(par) #int64->decimal 변환 안됨
         return returnvalue
 
     def changeWon(self,val,flag):
-        """숫자 받아 나눈 뒤에 반환 flag=사용체크 여부"""
+        """숫자 받아 나눈 뒤에 int값으로 반환, val=값, flag=사용체크 여부"""
         if (str(type(val)).find('int')>0 or str(type(val)).find('float')>0) and flag==True:
             val=int(math.floor(val/Ui_MainWindow.won))
+        if (str(type(val)).find('int')>0 or str(type(val)).find('float')>0) and flag==False:
+            val=int(math.floor(val))
         return val
 
     def test(self):
