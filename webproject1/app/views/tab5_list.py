@@ -1,3 +1,5 @@
+import math
+
 from flask import Blueprint, render_template,request
 import traceback
 from app.models import query
@@ -13,22 +15,25 @@ def main():
     try:
         date1 = date.today() - timedelta(2)
         header, df, val = cal(1,date1,'','','','')
-        return render_template('tab5/tab5_view.html', queryData1=df,header=header,date1=date1,val1='')
+        df2=setComma(df)
+        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,date1=date1,val1='')
     except:
         traceback.print_exc()
 
 @bp.route('/main/', methods=["POST"])
 def tab5_search():
-    """submit 값 받아서 출력"""
+    """날짜받아서 main 페이지 재조회"""
     try:
-        date1=request.form['input']
+        date1=request.form['datepicker']
         header, df, val = cal(1,date1,'','','','')
-        return render_template('tab5/tab5_view.html', queryData1=df,header=header,date1=date1,val1='')
+        df2 = setComma(df)
+        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,date1=date1,val1='')
     except:
         traceback.print_exc()
 
 @bp.route('/tab5_group/', methods=["POST"])
 def tab5_newwindow1():
+    """tab5_group 페이지 조회 및 조건받아 재조회"""
     try:
         group=''
         NPS=''
@@ -42,14 +47,54 @@ def tab5_newwindow1():
         elif request.form['arg2'] == '4':             group='손보사'
         elif request.form['arg2'] == '5':             group='연기금'
         elif request.form['arg2'] == '6':             group='은행'
-        elif request.form['arg2'] == '7':             group='자산운용'
-        elif request.form['arg2'] == '8':             group='저축은행'
-        elif request.form['arg2'] == '9':             group='중앙회'
-        elif request.form['arg2'] == '10':            group='증권'
+        elif request.form['arg2'] == '7':             group='일반법인'
+        elif request.form['arg2'] == '8':             group='자산운용'
+        elif request.form['arg2'] == '9':             group='저축은행'
+        elif request.form['arg2'] == '10':             group='중앙회'
+        elif request.form['arg2'] == '11':            group='증권'
         else:                                         group=request.form['arg2']
         date1 = request.form['arg3']
         header, df, val = cal(2,date1,team,group,NPS,request.form['arg4'])
-        return render_template('tab5/tab5_group.html', queryData1=df, header=header, date1=date1, group=group, team=team, items=val, selected=request.form['arg4'])
+        df2 = setComma(df)
+        return render_template('tab5/tab5_group.html', queryData1=df2, header=header, date1=date1, group=group, team=team, items=val, selected=request.form['arg4'])
+
+    except:
+        traceback.print_exc()
+
+@bp.route('/tab5_items/', methods=["POST"])
+def tab5_newwindow2():
+    """tab5_group 페이지 조회 및 조건받아 재조회"""
+    try:
+        print('아직 없음')
+        team = request.form['arg1']
+        group = request.form['arg2']
+        date1 = request.form['arg3']
+        items = request.form['arg4']
+        df = request.form['arg5']
+
+        # group=''
+        # NPS=''
+        # team = request.form['arg1']
+        # if request.form['arg2']=='0' or request.form['arg4']=='국민연금':
+        #     group='NPS'
+        #     NPS='NPS'
+        # elif request.form['arg2'] == '1':             group='공제회'
+        # elif request.form['arg2'] == '2':             group='금융일반'
+        # elif request.form['arg2'] == '3':             group='생보사'
+        # elif request.form['arg2'] == '4':             group='손보사'
+        # elif request.form['arg2'] == '5':             group='연기금'
+        # elif request.form['arg2'] == '6':             group='은행'
+        # elif request.form['arg2'] == '7':             group='자산운용'
+        # elif request.form['arg2'] == '8':             group='저축은행'
+        # elif request.form['arg2'] == '9':             group='중앙회'
+        # elif request.form['arg2'] == '10':            group='증권'
+        # else:                                         group=request.form['arg2']
+        # date1 = request.form['arg3']
+        # header, df, val = cal(2,date1,team,group,NPS,request.form['arg4'])
+        # df2 = setComma(df)
+        # return render_template('tab5/tab5_group.html', queryData1=df2, header=header, date1=date1, group=group, team=team, items=val, selected=request.form['arg4'])
+
+
 
     except:
         traceback.print_exc()
@@ -62,6 +107,7 @@ def cal(page,date1,val1,val2,val3,val4):
             header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '설정액', '전월말대비', '전분기말대비', '전년말대비']
             df = pd.DataFrame(query(1,date1,'','',''))
             df = df.values.tolist()
+            changeWon(df)
         elif page==2:
             """val1=본부, val2=수익그룹, val3=NPS여부"""
             header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말', '전분기말', '전년말', '전전년말']
@@ -85,21 +131,31 @@ def cal(page,date1,val1,val2,val3,val4):
                 df = df.groupby(df['INTE_FUND_TYPE']).sum()
                 df = df.reset_index()
                 df = df.values.tolist()
+                changeWon(df)
                 valsum=['합계',0,0,0,0,0,0,0,0,0,0]
                 for i in range(1, len(df[0])):
                     for j in range(len(df)):
                         valsum[i]+=df[j][i]
                 df.append(valsum)
-                for i in range(len(df)): # s부동소수점 문제 해결용
-                    for j in range(1,len(df[0])-1):
-                        if df[i][j]:
-                            df[i][j]=round(float(df[i][j]),2)
 
         return header,df, val
     except:
         traceback.print_exc()
 
+def changeWon(df):
+    """단위 억으로 변경"""
+    for i in range(len(df)):
+        for j in range(1,len(df[0])):
+            df[i][j]=math.floor(df[i][j]/100000000)
 
+def setComma(df):
+    """콤마 찍어서 반환"""
+    df2=df.copy()
+    for i in range(len(df)):
+        for j in range(len(df[0])):
+            if j>0:
+                df2[i][j]=format(df[i][j],',')
+    return df2
 
 
 @bp.route('/main/<int:question_id>/')

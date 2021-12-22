@@ -8,24 +8,23 @@
 </head>
 <body>
 <script>
-<!-- 위치값을 ID로 받아서 팝업 index[0]=row(group파악용), index[1]=column(part 파악용) -->
+<!-- 위치값을 ID로 받아서 팝업 index[0]=row(group파악용), index[1]=column(team 파악용) -->
 $(function () {
-    $("td").dblclick(function(){
-        var part=''
-        var date1=$("#datepicker").val()
+    $(".tab5_td").dblclick(function(){
+        var team=''
         var group=''
         var index=$(this).attr('id').split('-');
         if (index[1]>=2 && index[1]<=5){
-            part='1본부';
+            team='1본부';
             }
         else if(index[1]>=6 && index[1]<=9){
-            part='2본부';
+            team='2본부';
             }
-        if (index[1]>=2 && index[1]<=9){
+        if (index[1]>=2 && index[1]<=9 && index[0]<=11){
             group=index[0];
-            $('#arg1').val(part);
+            $('#arg1').val(team);
             $('#arg2').val(group);
-            $('#arg3').val(date1);
+            $('#arg3').val($("#datepicker").val());
             $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow1')}}");
             $('#frm').attr("method", "POST");
             $('#frm').attr("target", "formInfo");
@@ -33,16 +32,22 @@ $(function () {
             $('#frm').submit();
             }
     });
+<!-- 날짜변경시 -->
+$('#datepicker').datepicker(datepicker)
+    .on("change", function(e) {
+   $('#submit').submit();
+    });
+
 });
+
 </script>
 <div class="container my-3">
     <table>
         <tr>
             <td>기준일:</td>
-            <td><form action="{{ url_for('tab5.tab5_search')}}" method="post">
-    <input type="text" id="datepicker" name="input" value="{{date1}}"></input>
-    <input type="submit" value="조회" class="btn btn-primary"></form>
-            </td>
+            <td><form action="{{ url_for('tab5.tab5_search')}}" id="submit" method="post">
+                <input type="text" id="datepicker" name="datepicker" value="{{date1}}"/>
+            </form></td>
         </tr>
     </table>
 
@@ -64,14 +69,14 @@ $(function () {
                 {% for i in range(queryData1|count) %}
             <tr id="row{{i}}">
                 {% for j in range(header|length) %}
-                <td id={{i}}-{{j}}><font size="3pt">
+                <td class="tab5_td" id={{i}}-{{j}}><font size="3pt">
                     {{queryData1[i][j]}}
                 </font></td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
-    </table>{{val1}}
+    </table>
 </div>
 <form id="frm" name="frm" method="post">
     <input type="hidden" id="arg1" name="arg1"/>

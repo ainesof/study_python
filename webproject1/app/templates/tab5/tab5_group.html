@@ -9,36 +9,23 @@
 <body>
 <script>
 <!-- 위치값을 ID로 받아서 팝업 index[0]=row(group파악용), index[1]=column(part 파악용) -->
-$(function () {
-    $("td").dblclick(function(){
-        var part=''
-        var date1=$("#datepicker").val()
-        var group=''
+$(function() {
 
-        var index=$(this).attr('id').split('-');
-        if (index[1]>=2 && index[1]<=5){
-            part='1본부';
-            }
-        else if(index[1]>=6 && index[1]<=9){
-            part='2본부';
-            }
-        if (index[1]>=2 && index[1]<=9){
-            group=index[0];
-            $('#arg1').val(part);
-            $('#arg2').val(group);
-            $('#arg3').val(date1);
-            $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow1')}}");
-            $('#frm').attr("method", "POST");
-            $('#frm').attr("target", "formInfo");
-            window.open("{{ url_for('tab5.tab5_newwindow1')}}", "formInfo", "height=1000, width=1400");
-            $('#frm').submit();
-            }
-
+<!-- 날짜 변경시 -->
+    $('#datepicker').datepicker(datepicker)
+    .change(function() {
+        $('#submit').submit();
     });
+<!-- 수익자 변경시 -->
+    $('#suikja').change(function(){
+        $('#submit').submit();
+    });
+
 });
+
 </script>
 <div class="container my-3">
-    <table><form action="{{ url_for('tab5.tab5_newwindow1')}}" method="post">
+    <table><form action="{{ url_for('tab5.tab5_newwindow1')}}" id="submit" method="post">
         <tr>
             <td>홀세일{{team}}</td>
         <tr/>
@@ -50,7 +37,7 @@ $(function () {
             </td>
             <td>그룹:</td><td><input type="text" name="arg2" value="{{group}}" readonly/></td>
             <td>고객:</td>
-            <td><select name="arg4">
+            <td><select name="arg4" id="suikja">
                 <option value="all">전체</option>
                 {% for i in range(items|length) %}
                 {% if items[i]==selected %}
