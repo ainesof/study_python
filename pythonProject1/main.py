@@ -2668,12 +2668,12 @@ class Ui_MainWindow(object):
                             if len(str(df.max()[i]))>len(val):  # 단위: 원
                                 sf.apply_column_style(cols_to_style=[val],
                                                       styler_obj=Styler(horizontal_alignment='right',
-                                                                        number_format='#,##0'),
+                                                                        number_format='#,##0',font_size=11),
                                                       width=(len(df.max())*17.5/8.05)+1)
                             else: #단위: 억
                                 sf.apply_column_style(cols_to_style=[val],
                                                       styler_obj=Styler(horizontal_alignment='right',
-                                                                        number_format='#,##0'),
+                                                                        number_format='#,##0',font_size=11),
                                                       width=(len(val)*17.5/8.05)+1)
                         sf.apply_column_style(cols_to_style=['고객그룹'],styler_obj=Styler(horizontal_alignment='left'))
                         sf.to_excel(
@@ -2695,13 +2695,13 @@ class Ui_MainWindow(object):
                             if max(lengthCal) > len(val):  # 단위: 원
                                 sf.apply_column_style(cols_to_style=[val],
                                                       styler_obj=Styler(horizontal_alignment='right',
-                                                                        number_format='#,##0'),
+                                                                        number_format='#,##0',font_size=11),
                                                       width=(max(lengthCal) * 12 / 8.5) + 4)
                             else:  # 단위: 억
                                 sf.apply_column_style(cols_to_style=[val],
                                                       styler_obj=Styler(horizontal_alignment='right',
-                                                                        number_format='#,##0'),
-                                                      width=(len(val) * 12 / 8.5) + 4)
+                                                                        number_format='#,##0',font_size=11),
+                                                      width=(len(val) * 12 / 8.5) + 6)
                         sf.apply_column_style(cols_to_style=['유형'], styler_obj=Styler(horizontal_alignment='left'))
                         sf.to_excel(
                             excel_writer=excel_writer, best_fit=None, columns_and_rows_to_freeze=None
@@ -2722,13 +2722,13 @@ class Ui_MainWindow(object):
                             if max(lengthCal) > len(val):  # 단위: 원
                                 sf.apply_column_style(cols_to_style=[val],
                                                       styler_obj=Styler(horizontal_alignment='right',
-                                                                        number_format='#,##0'),
+                                                                        number_format='#,##0',font_size=11),
                                                       width=(max(lengthCal) * 12 / 8.5) + 4)
                             else:  # 단위: 억
                                 sf.apply_column_style(cols_to_style=[val],
                                                       styler_obj=Styler(horizontal_alignment='right',
-                                                                        number_format='#,##0'),
-                                                      width=(len(val) * 12 / 8.5) + 4)
+                                                                        number_format='#,##0',font_size=11),
+                                                      width=(len(val) * 12 / 8.5) + 6)
                         sf.apply_column_style(cols_to_style=['수익자명'], styler_obj=Styler(horizontal_alignment='left'))
                         sf.to_excel(
                             excel_writer=excel_writer, best_fit=None, columns_and_rows_to_freeze=None

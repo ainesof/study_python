@@ -14,14 +14,29 @@
 rel="stylesheet"
 href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
 />
+    <!-- 필수, SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+<!--필수, FileSaver savaAs 이용 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
-$(function () {
-$("#datepicker").datepicker({ dateFormat: "yy-mm-dd" });
+$(function() {
+
+    <!-- 날짜변경시 -->
+    $('#datepicker').datepicker(datepicker)
+    .on("change", function(e) {
+   $('#submit').submit();
+    });
+
+     <!-- 엑셀로 보내기 -->
+    $("input[type='button']").click(function(){
+        alert();
+        exportExcel();
+    });
 });
-</script>
-<script>
+
   $.datepicker.setDefaults({
   dateFormat: 'yy-mm-dd',
   prevText: '이전 달',
@@ -34,11 +49,40 @@ $("#datepicker").datepicker({ dateFormat: "yy-mm-dd" });
   showMonthAfterYear: true,
   yearSuffix: '년'
 });
-$(function() {
-  $("#datepicker").datepicker();
-});
+
+function exportExcel(){
+    // step 1. workbook 생성
+    var wb = XLSX.utils.book_new();
+
+    // step 2. 시트 만들기
+    var newWorksheet = excelHandler.getWorksheet();
+
+    // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.
+    XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+
+    // step 4. 엑셀 파일 만들기
+    var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+    // step 5. 엑셀 파일 내보내기
+    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), excelHandler.getExcelFileName());
+}
+
+var excelHandler = {
+        getExcelFileName : function(){
+            return 'table-test.xlsx';
+        },
+        getSheetName : function(){
+            return 'Table Test Sheet';
+        },
+        getExcelData : function(){
+            return document.getElementById('tableData');
+        },
+        getWorksheet : function(){
+            return XLSX.utils.table_to_sheet(this.getExcelData());
+        }
+}
+
 </script>
-    <title>Title</title>
 </head>
 <body>
 <!-- 기본 템플릿 안에 삽입될 내용 start -->

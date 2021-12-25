@@ -239,6 +239,19 @@
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="tab5_win1pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>0</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>엑셀 변환</string>
+    </property>
+   </widget>
    <zorder>tab5_win1lineEdit_2</zorder>
    <zorder>tab5_win1tableWidget</zorder>
    <zorder>tab5_win1label_5</zorder>
@@ -253,6 +266,7 @@
    <zorder>tab5_win1lineEdit_4</zorder>
    <zorder>tab5_win1label</zorder>
    <zorder>tab5_win1comboBox_2</zorder>
+   <zorder>tab5_win1pushButton_2</zorder>
   </widget>
  </widget>
  <resources/>

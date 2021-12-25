@@ -22,13 +22,13 @@ import traceback
 def query(page,date1,val1,val2,val3):
     try:
         """sql연산"""
-        if page==1:
+        if page==0:
             cur=connect_hkfund()
             sql=seqrchQuery.returnSQL('tab5_searchQuery').format(date=date1)
             cur.execute(sql)
             print(sql)
             row = cur.fetchall()
-        elif page==2:
+        elif page==1:
             """val1=본부, val2=수익그룹, val3=NPS여부"""
             cur=connect_hkfund()
             sql=seqrchQuery.returnSQL('tab5_win1searchQuery').format(date=date1,mg_bu=val1,suik_group=val2,nps=val3)
