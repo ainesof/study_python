@@ -7,11 +7,6 @@
     {% block content %}
 </head>
 <body>
-<style>
-.ui-datepicker{ font-size: 15px; width: 200px; }
-.ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
-.ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
-</style>
 <script>
 $(function() {
 
@@ -33,6 +28,11 @@ $(function() {
     <!-- 수익자 변경시 -->
     $('#suikja').change(function(){
         $('#submit').submit();
+    });
+
+    <!-- 날짜변경시 -->
+    $('#datepicker').datepicker(datepicker).change(function(e) {
+   $('#submit').submit();
     });
 
 });
@@ -62,12 +62,12 @@ $(function() {
                 {% endfor %}
             </select></td>
             <td>
-            <td align="right" style="width:800px;"><input class="btn btn-dark" type="button" value="excel 변환"/></td>
+            <td align="right" style="width:800px;"><input class="btn btn-dark" type="button" name="toExcel" value="excel 변환"/></td>
         </tr></form>
     </table>
 
     <div align="right"><b>단위: (억)</b></div>
-    <table class="table table-striped table-bordered table-hover" style="width:100%";>
+    <table class="table table-striped table-bordered table-hover" id="tab5_table" style="width:100%";>
         <thead>
             <tr class="thead-dark" align="center">
                 {% for i in range(header|length) %}

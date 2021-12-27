@@ -195,3 +195,11 @@ def q():
 
 # https://wikidocs.net/book/4542
 # Method Not Allowed 값 넘기는데서 get, post 방식이 안 맞는거
+
+# https://www.jetbrains.com/help/pycharm/에서 PyCharm 도움말 참조
+# --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org
+# flask run
+# flask run --host=0.0.0.0
+# 포트까지 입력하면 다른PC에서 직접 접근 가능하나 외부망을 타고가진 않음 DLP검출 안됨
+# 현재 시점 리비전과 최종 리비전이 같아야 migrate가 됨 https://programmer-ririhan.tistory.com/222
+# https://wikidocs.net/81046

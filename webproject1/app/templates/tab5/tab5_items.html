@@ -7,36 +7,30 @@
     {% block content %}
 </head>
 <body>
-<style>
-.ui-datepicker{ font-size: 15px; width: 200px; }
-.ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
-.ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
-</style>
 <script>
 $(function() {
 
-});
+}
 
 </script>
 <div class="container my-3">
-    <table style="width:100%";><form action="{{ url_for('tab5.tab5_newwindow2')}}" id="submit" method="post">
+    <table style="width:100%";>
         <tr>
             <td colspan="2"><font size="4"><b>홀세일{{team}}</b></font></td>
         <tr/>
         <tr>
             <td align="center" style="width:80px";>기준일:</td>
             <td style="width:170px;">
-                <input class="form-control" type="text" value="{{date1}}" style="width:100%;" readonly/>
-                <input type="hidden" name="win1_arg1" value="{{team}}"/>
+                <input class="form-control" type="text" value="{{date1}}" id="datepicker" style="width:100%;" readonly/>
             </td>
             <td align="center" style="width:100px";>그룹:</td><td style="width:110px;"><input class="form-control" type="text" name="win1_arg2" value="{{group}}" style="width:100%;" readonly/></td>
             <td align="center" style="width:100px";>상품:</td><td style="width:330px";><input class="form-control" type="text" name="win1_arg2" value="{{items}}" style="width:100%;" readonly/></td>
-            <td align="right" style="width:800px;"><input class="btn btn-dark" type="button" value="excel 변환"/></td>
-        </tr></form>
+            <td align="right" style="width:800px;"><input class="btn btn-dark" type="button" name="toExcel" value="excel 변환"/></td>
+        </tr>
     </table>
 
     <div align="right"><b>단위: (억)</b></div>
-    <table width="1400" class="table table-striped table-bordered table-hover">
+    <table width="1400" class="table table-striped table-bordered table-hover" id="tab5_table" >
         <thead>
             <tr class="thead-dark" align="center">
                 {% for i in range(header|length) %}

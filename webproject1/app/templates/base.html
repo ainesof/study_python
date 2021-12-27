@@ -23,18 +23,12 @@ href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $(function() {
-
-    <!-- 날짜변경시 -->
-    $('#datepicker').datepicker(datepicker)
-    .on("change", function(e) {
-   $('#submit').submit();
-    });
-
-     <!-- 엑셀로 보내기 -->
-    $("input[type='button']").click(function(){
+    <!-- 엑셀로 보내기 -->
+    $("[name='toExcel']").click(function(){
         alert();
         exportExcel();
     });
+
 });
 
   $.datepicker.setDefaults({
@@ -49,6 +43,13 @@ $(function() {
   showMonthAfterYear: true,
   yearSuffix: '년'
 });
+
+function s2ab(s) {
+    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+    var view = new Uint8Array(buf);  //create uint8array as viewer
+    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+    return buf;
+}
 
 function exportExcel(){
     // step 1. workbook 생성
@@ -68,23 +69,48 @@ function exportExcel(){
 }
 
 var excelHandler = {
+
         getExcelFileName : function(){
-            return 'table-test.xlsx';
+            var i=$(document).find('title').text()
+            var day=$("#datepicker").val().replaceAll('-','');
+            return day+i+'.xlsx';
         },
         getSheetName : function(){
-            return 'Table Test Sheet';
+            return 'Sheet1';
         },
         getExcelData : function(){
-            return document.getElementById('tableData');
+            return document.getElementById('tab5_table');
         },
         getWorksheet : function(){
             return XLSX.utils.table_to_sheet(this.getExcelData());
         }
 }
 
+var wscols = [
+	{wch: 6}, // "characters"
+	{wpx: 50}, // "pixels"
+	,
+	{hidden: true} // hide column
+];
+
+/* At 96 PPI, 1 pt = 1 px */
+var wsrows = [
+	{hpt: 12}, // "points"
+	{hpx: 16}, // "pixels"
+	,
+	{hpx: 24, level:3},
+	{hidden: true}, // hide row
+	{hidden: false}
+];
+
 </script>
 </head>
 <body>
+<style>
+.ui-datepicker{ font-size: 15px; width: 200px; }
+.ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
+.ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
+</style>
 <!-- 기본 템플릿 안에 삽입될 내용 start -->
 {% block content %}
 {% endblock %}
