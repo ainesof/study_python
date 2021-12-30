@@ -1,6 +1,6 @@
 import math
 
-from flask import Blueprint, render_template,request
+from flask import Blueprint, render_template,request, send_file
 import traceback
 from app.models import query
 from datetime import date, timedelta
@@ -19,6 +19,10 @@ def main():
         return render_template('tab5/tab5_view.html', queryData1=df2,header=header,date1=date1,val1='')
     except:
         traceback.print_exc()
+
+@bp.route('/download/')
+def download():
+    return render_template('tab5/download.html')
 
 @bp.route('/main/', methods=["POST"])
 def tab5_search():
@@ -156,6 +160,24 @@ def cal(page,date1,val1,val2,val3,val4):
                 changeWon(df)
 
         return header,df, val
+    except:
+        traceback.print_exc()
+
+@bp.route('/file_down/', methods=['GET','POST'])
+def file_down():
+    try:
+        fileType = request.form['arg1']
+        name = request.form['arg2']
+        if fileType=='file_py_recently':
+            name='main.exe'
+        elif fileType=='file_py':
+            name='main'+name.replace('/','')[2:]+'.exe'
+        fileName= f'static/file/'+name
+        return send_file(fileName,
+                         mimetype='application/octet-stream',
+                         attachment_filename=name,
+                         as_attachment=True
+                         )
     except:
         traceback.print_exc()
 

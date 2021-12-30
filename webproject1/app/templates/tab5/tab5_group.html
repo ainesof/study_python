@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>그룹별</title>
@@ -11,7 +11,7 @@
 $(function() {
 
 <!-- submit -->
-    $('.tab5_win1td').click(function(){ // dblclick
+    $('.tab5_win1td').dblclick(function(){ // dblclick
     var index=$(this).attr('id').split('-');
     if(index[0]<{{queryData1|length}}-1){
         var items=($(this).closest('tr').find('td:eq(0)').text()).trim(); // 클릭한 곳과 가장 가까운 tr태그에서 0번째 td를 찾아 값에서 null 제거
@@ -38,8 +38,21 @@ $(function() {
 });
 
 </script>
+
+
+
+
 <div class="container my-3">
     <table style="width:100%";><form action="{{ url_for('tab5.tab5_newwindow1')}}" id="submit" method="post">
+        <tr><td colspan="4">
+        <div class="btn-group btn-group-lg" role="group" aria-label="...">
+            <button type="button" class="btn btn-outline-secondary" onclick="location.href='http://11.10.5.34:5000/main'">메뉴1</button>
+            <button type="button" class="btn btn-outline-secondary" onclick="location.href='http://11.10.5.34:5000/download'">메뉴2</button>
+            <button type="button" class="btn btn-outline-secondary">메뉴3</button>
+            <button type="button" class="btn btn-outline-secondary">메뉴4</button>
+        </div>
+        </td></tr>
+        <tr style="height:30px"></tr>
         <tr>
             <td colspan="2"><font size="4"><b>홀세일{{team}}</b></font></td>
         <tr/>

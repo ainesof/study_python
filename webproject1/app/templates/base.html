@@ -9,101 +9,106 @@
     <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
     <!-- datapicker -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js" charset = "UTF-8"></script>
-<link
-rel="stylesheet"
-href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
-/>
-    <!-- 필수, SheetJS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
-<!--필수, FileSaver savaAs 이용 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js" charset = "UTF-8"></script>
+    <link
+    rel="stylesheet"
+    href="//code.jquery.com/ui/1.8.23/themes/smoothness/jquery-ui.css"
+    />
+        <!-- 필수, SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+    <!--필수, FileSaver savaAs 이용 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            <!-- 엑셀로 보내기 -->
+            $("[name='toExcel']").click(function(){
+                exportExcel();
+            });
 
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-$(function() {
-    <!-- 엑셀로 보내기 -->
-    $("[name='toExcel']").click(function(){
-        alert();
-        exportExcel();
-    });
+            <!-- 메뉴링크 설정 -->
+            $('button[name^=menu]').click(function(){
+                var menu=$(this).attr('name')
+                var url=''
+                if(menu=='menu1'){
+                    url="http://11.10.5.34:5000/download/"
+                    window.open(url, "");
+                }
+                else if(menu=='menu2'){
+                    url="http://11.10.5.34:5000/main/"
+                    window.open(url, "");
+                }
+                else if(menu=='menu3'){
+                    alert();
+                }
+            });
 
-});
 
-  $.datepicker.setDefaults({
-  dateFormat: 'yy-mm-dd',
-  prevText: '이전 달',
-  nextText: '다음 달',
-  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-  showMonthAfterYear: true,
-  yearSuffix: '년'
-});
+        });
 
-function s2ab(s) {
-    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
-    var view = new Uint8Array(buf);  //create uint8array as viewer
-    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
-    return buf;
-}
+        $.datepicker.setDefaults({
+            dateFormat: 'yy-mm-dd',
+            prevText: '이전 달',
+            nextText: '다음 달',
+            monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            showMonthAfterYear: true,
+            yearSuffix: '년'
+        });
 
-function exportExcel(){
-    // step 1. workbook 생성
-    var wb = XLSX.utils.book_new();
 
-    // step 2. 시트 만들기
-    var newWorksheet = excelHandler.getWorksheet();
+        function exportExcel(){
+            // step 1. workbook 생성
+            var wb = XLSX.utils.book_new();
 
-    // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.
-    XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+            // step 2. 시트 만들기
+            var newWorksheet = excelHandler.getWorksheet();
 
-    // step 4. 엑셀 파일 만들기
-    var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+            // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.
+            XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
 
-    // step 5. 엑셀 파일 내보내기
-    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), excelHandler.getExcelFileName());
-}
+            // step 4. 엑셀 파일 만들기
+            var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
 
-var excelHandler = {
-
-        getExcelFileName : function(){
-            var i=$(document).find('title').text()
-            var day=$("#datepicker").val().replaceAll('-','');
-            return day+i+'.xlsx';
-        },
-        getSheetName : function(){
-            return 'Sheet1';
-        },
-        getExcelData : function(){
-            return document.getElementById('tab5_table');
-        },
-        getWorksheet : function(){
-            return XLSX.utils.table_to_sheet(this.getExcelData());
+            // step 5. 엑셀 파일 내보내기
+            saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), excelHandler.getExcelFileName());
         }
-}
 
-var wscols = [
-	{wch: 6}, // "characters"
-	{wpx: 50}, // "pixels"
-	,
-	{hidden: true} // hide column
-];
+        var excelHandler = {
 
-/* At 96 PPI, 1 pt = 1 px */
-var wsrows = [
-	{hpt: 12}, // "points"
-	{hpx: 16}, // "pixels"
-	,
-	{hpx: 24, level:3},
-	{hidden: true}, // hide row
-	{hidden: false}
-];
+            getExcelFileName : function(){
+                var i=$(document).find('title').text()
+                var day=$("#datepicker").val().replaceAll('-','');
+                return day+i+'.xlsx';
+            },
+            getSheetName : function(){
+                return 'Sheet1';
+            },
+            getExcelData : function(){
+                return document.getElementById('tab5_table');
+            },
+            getWorksheet : function(){
+                return XLSX.utils.table_to_sheet(this.getExcelData());
+            }
+        }
 
-</script>
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+            var view = new Uint8Array(buf);  //create uint8array as viewer
+            for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+            return buf;
+        }
+
+
+    </script>
+
 </head>
 <body>
 <style>
