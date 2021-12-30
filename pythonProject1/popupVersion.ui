@@ -17,24 +17,27 @@
    <widget class="QLabel" name="popup1_label">
     <property name="geometry">
      <rect>
-      <x>98</x>
-      <y>13</y>
-      <width>81</width>
-      <height>21</height>
+      <x>74</x>
+      <y>3</y>
+      <width>61</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>최신 업데이트:</string>
+     <string>해당 버전:</string>
     </property>
    </widget>
    <widget class="QLabel" name="popup1_label_2">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>14</y>
-      <width>81</width>
-      <height>21</height>
+      <x>140</x>
+      <y>3</y>
+      <width>61</width>
+      <height>16</height>
      </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
     </property>
     <property name="text">
      <string/>
@@ -43,8 +46,8 @@
    <widget class="QLabel" name="popup1_label_3">
     <property name="geometry">
      <rect>
-      <x>98</x>
-      <y>33</y>
+      <x>74</x>
+      <y>50</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -56,8 +59,8 @@
    <widget class="QLabel" name="popup1_label_4">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>33</y>
+      <x>116</x>
+      <y>50</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -84,6 +87,61 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QLabel" name="popup1_label_6">
+    <property name="geometry">
+     <rect>
+      <x>74</x>
+      <y>28</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>최신 버전:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="popup1_label_7">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>28</y>
+      <width>61</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="popup1_pushbutton">
+    <property name="geometry">
+     <rect>
+      <x>208</x>
+      <y>0</y>
+      <width>61</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>사이트</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="popup1_pushbutton_2">
+    <property name="geometry">
+     <rect>
+      <x>208</x>
+      <y>23</y>
+      <width>61</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>다운로드</string>
+    </property>
    </widget>
   </widget>
  </widget>

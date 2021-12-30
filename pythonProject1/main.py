@@ -3,14 +3,14 @@
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import datetime
-import math, decimal, os.path, sys, traceback, webbrowser
+import math, decimal, os.path, sys, traceback, webbrowser, urllib
 import cx_Oracle, query
 import time
 import atexit
 import matplotlib.pyplot as plt
+import socket
 import pandas as pd
 import requests, bs4
-import styleframe
 from styleframe import StyleFrame, Styler, utils
 import multiprocessing as mp
 from dateutil.parser import parse
@@ -605,14 +605,15 @@ class Ui_MainWindow(object):
         self.action_wikidocs.setText(_translate("MainWindow", "wiki docs"))
 
         # 클래스 변수
-        Ui_MainWindow.updateDate = "2021-12-15"  # 최신 업데이트
+        Ui_MainWindow.updateDate = "2021-12-29"  # 최근 업데이트
 
         Ui_MainWindow.version  # 현재 접속DB 구분
+        Ui_MainWindow.serverip= "" # 서버IP
         Ui_MainWindow.col = ""  # 클릭한 표위치
         Ui_MainWindow.row = ""  # 클릭한 표위치
         Ui_MainWindow.maxSearch = 10000  # 최대 테이블 조회가능 제한
         Ui_MainWindow.commaLength = 4  # 최소 콤마찍는 자리 수
-        Ui_MainWindow.won=100000000 # 표시단위(억)
+        Ui_MainWindow.won= 100000000 # 표시단위(억)
         Ui_MainWindow.minus = QtGui.QColor(255, 225, 225)  # 음수표시 색상 RGB
         Ui_MainWindow.bold = QtGui.QColor(225, 225, 225)  # 강조 색상 RGB
         Ui_MainWindow.selectedTable = ""  # DB리스트 선택값
@@ -639,6 +640,7 @@ class Ui_MainWindow(object):
         Ui_MainWindow.tab5group = ""  # 탭5 고객그룹
         Ui_MainWindow.tab5team = ""  # 탭5 홀세일본부 구분
         Ui_MainWindow.tab5win1Item = ""  # 탭5 창1 항목값
+        Ui_MainWindow.tab5win1Item = ""  # 탭5 창1 항목값
         Ui_MainWindow.tab5changeWonFlag= True
 
         # Qt디자이너 외 구현
@@ -649,17 +651,22 @@ class Ui_MainWindow(object):
         self.popup_version = QDialog()  # 탭3 수익자 팝업창
         self.tab1_pushButton_3.setDisabled(True)
         self.tab1_pushButton_4.setDisabled(True)
-        self.tabWidget.setUsesScrollButtons(True)  # 상단 탭스크롤바 막기
+        self.tabWidget.setUsesScrollButtons(False)  # 상단 탭스크롤바 막기
+        if os.path.exists('hkamudfl.exe'):
+            os.remove('hkamudfl.exe') # 시작시 다운로더 제거
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow",
-        "                                                                                                                          "
-        "                                                                                                                   "))
+        "                                                                                                                              "
+        "                                                                                                                    "))
         self.tab1_tableWidget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter)  # 헤더 중앙정렬
         if Ui_MainWindow.version != "xe":  # xe 계정만 날짜 다르게
             day = 1
+            Ui_MainWindow.serverip='http://11.10.5.34'
             if date.today().isoweekday() == 1:  # 월요일만
                 day = 3
             self.tab3_dateEdit.setDate(date.today() - timedelta(day))
             self.tab4_dateEdit.setDate(date.today() - timedelta(day))
+        else:
+            Ui_MainWindow.serverip = 'http://192.168.123.3'
         self.tab3_dateEdit_2.setDate(date.today() - timedelta(1))  # 자료는 전일자꺼 까지만 있음
         self.tab4_dateEdit_2.setDate(date.today() - timedelta(1))  # 자료는 전일자꺼 까지만 있음
 
@@ -793,7 +800,7 @@ class Ui_MainWindow(object):
                 subSql = ""
             if Ui_MainWindow.selectedTable:  # 값 있는 경우
                 sql = query.returnSQL('searchValue').format(Ui_MainWindow.selectedTable) + subSql
-                print(sql)
+                # print(sql)
                 cur.execute(sql)
                 row = cur.fetchmany(Ui_MainWindow.maxSearch)
             else:  # 값 없는 경우
@@ -1302,7 +1309,7 @@ class Ui_MainWindow(object):
             if self.tab3_checkBox_3.isChecked():  # 멀티커런시 체크
                 sql += " and a.멀티통화여부='Y'"
             #   판매펀드: 판매사 1이상
-            print(sql)
+            # print(sql)
             cur.execute(sql)
             row = cur.fetchall()
             if len(row) == 0:
@@ -2033,7 +2040,7 @@ class Ui_MainWindow(object):
 
     # -----------------------------tab6
     def tab6_layout(self):
-        print('')
+        '''1:1 매칭되는 펀드들 HK01, VH03'''
 
     def paintEvent(self, event):
         print('이벤트시작')
@@ -2142,7 +2149,7 @@ class Ui_MainWindow(object):
             try:
                 if re == "":
                     sql += query.returnSQL('tab3_win1SearchQuery').format(val4)
-                    print(sql)
+                    # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
@@ -2214,7 +2221,7 @@ class Ui_MainWindow(object):
             try:
                 if re == "":
                     sql += query.returnSQL('tab3_win3SearchQuery').format(val3)
-                    print(sql)
+                    # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
@@ -2269,7 +2276,7 @@ class Ui_MainWindow(object):
                     sql += query.returnSQL('tab4_searchQuery').format(val1.replace('-', '/'), val2.replace('-', '/'))
                     if val3 != '전체':
                         sql += " and suik_name='{}'".format(val3)
-                    print(sql)
+                    # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
@@ -2299,7 +2306,7 @@ class Ui_MainWindow(object):
             try:
                 if re == "":
                     sql += query.returnSQL('tab5_searchQuery').format(date=val1)
-                    print(sql)
+                    # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
@@ -2341,7 +2348,7 @@ class Ui_MainWindow(object):
                 if re == "":
                     sql += query.returnSQL('tab5_win1searchQuery').format(date=val4, suik_group=val1, mg_bu=val2,
                                                                           nps=val3)
-                    print(sql)
+                    # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
                     df = pd.DataFrame(row)
@@ -2656,9 +2663,9 @@ class Ui_MainWindow(object):
                     elif tab == "3" and win == "3":
                         Ui_MainWindow.mainWindow_df3_3Re.to_excel(excelPath)
                     elif tab == "5" and win == "0":
-                        header = ['고객그룹', '설정액 합', '홀세일1설정액', '홀세일1전월',
-                                  '홀세일1전분기', '홀세일1전년','홀세일2설정액',
-                                  '홀세일2전월', '홀세일2전분기', '홀세일2전년']
+                        header = ['고객그룹', '설정액 합', '홀세일1 설정액', '홀세일1 전월말',
+                                  '홀세일1 전분기말', '홀세일1 전년말','홀세일2 설정액',
+                                  '홀세일2 전월말', '홀세일2 전분기말', '홀세일2 전년말']
                         df=Ui_MainWindow.mainWindow_df5_0
                         df.columns = header
                         excel_writer = StyleFrame.ExcelWriter(excelPath)
@@ -2682,8 +2689,8 @@ class Ui_MainWindow(object):
                         excel_writer.save()
                     elif tab == "5" and win == "1":
                         header = ['유형','설정액', '순자산',
-                                  '순자산전월말', '순자산전분기말','순자산전년말', '순자산전전년말',
-                                  '수탁고전월말','수탁고전분기말', '수탁고전년말', '수탁고전전년말']
+                                  '순자산 전월말', '순자산 전분기말','순자산 전년말', '순자산 전전년말',
+                                  '수탁고 전월말','수탁고 전분기말', '수탁고 전년말', '수탁고 전전년말']
                         df = Ui_MainWindow.mainWindow_df5_1Ex
                         df.columns = header
                         excel_writer = StyleFrame.ExcelWriter(excelPath)
@@ -2709,8 +2716,8 @@ class Ui_MainWindow(object):
                         excel_writer.save()
                     elif tab == "5" and win == "2":
                         header = ['수익자명','설정액', '순자산',
-                                  '순자산전월말', '순자산전분기말','순자산전년말', '순자산전전년말',
-                                  '수탁고전월말','수탁고전분기말', '수탁고전년말', '수탁고전전년말']
+                                  '순자산 전월말', '순자산 전분기말','순자산 전년말', '순자산 전전년말',
+                                  '수탁고 전월말','수탁고 전분기말', '수탁고 전년말', '수탁고 전전년말']
                         df = Ui_MainWindow.mainWindow_df5_2Ex
                         df.columns = header
                         excel_writer = StyleFrame.ExcelWriter(excelPath)
@@ -2836,17 +2843,18 @@ class Ui_MainWindow(object):
 
     def popup1(self, update):
         self.popup1_label = QtWidgets.QLabel(self.popup_version)
-        self.popup1_label.setGeometry(QtCore.QRect(98, 13, 81, 21))
+        self.popup1_label.setGeometry(QtCore.QRect(74, 3, 61, 16))
         self.popup1_label.setObjectName("popup1_label")
         self.popup1_label_2 = QtWidgets.QLabel(self.popup_version)
-        self.popup1_label_2.setGeometry(QtCore.QRect(180, 14, 81, 21))
+        self.popup1_label_2.setGeometry(QtCore.QRect(140, 3, 61, 16))
+        self.popup1_label_2.setAutoFillBackground(True)
         self.popup1_label_2.setText("")
         self.popup1_label_2.setObjectName("popup1_label_2")
         self.popup1_label_3 = QtWidgets.QLabel(self.popup_version)
-        self.popup1_label_3.setGeometry(QtCore.QRect(98, 33, 41, 21))
+        self.popup1_label_3.setGeometry(QtCore.QRect(74, 50, 41, 21))
         self.popup1_label_3.setObjectName("popup1_label_3")
         self.popup1_label_4 = QtWidgets.QLabel(self.popup_version)
-        self.popup1_label_4.setGeometry(QtCore.QRect(140, 33, 41, 21))
+        self.popup1_label_4.setGeometry(QtCore.QRect(116, 50, 41, 21))
         self.popup1_label_4.setObjectName("popup1_label_4")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.popup_version)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(1, 4, 71, 61))
@@ -2858,12 +2866,29 @@ class Ui_MainWindow(object):
         self.popup1_label_5.setText("")
         self.popup1_label_5.setObjectName("popup1_label_5")
         self.verticalLayout_2.addWidget(self.popup1_label_5)
+        self.popup1_label_6 = QtWidgets.QLabel(self.popup_version)
+        self.popup1_label_6.setGeometry(QtCore.QRect(74, 28, 61, 16))
+        self.popup1_label_6.setObjectName("popup1_label_6")
+        self.popup1_label_7 = QtWidgets.QLabel(self.popup_version)
+        self.popup1_label_7.setGeometry(QtCore.QRect(140, 28, 61, 16))
+        self.popup1_label_7.setAutoFillBackground(True)
+        self.popup1_label_7.setText("")
+        self.popup1_label_7.setObjectName("popup1_label_7")
+        self.popup1_pushbutton = QtWidgets.QPushButton(self.popup_version)
+        self.popup1_pushbutton.setGeometry(QtCore.QRect(208, 0, 61, 23))
+        self.popup1_pushbutton.setObjectName("popup1_pushbutton")
+        self.popup1_pushbutton_2 = QtWidgets.QPushButton(self.popup_version)
+        self.popup1_pushbutton_2.setGeometry(QtCore.QRect(208, 23, 61, 23))
+        self.popup1_pushbutton_2.setObjectName("popup1_pushbutton_2")
 
         _translate = QtCore.QCoreApplication.translate
 
-        self.popup1_label.setText(_translate("MainWindow", "최신 업데이트:"))
+        self.popup1_label.setText(_translate("MainWindow", "해당 버전:"))
         self.popup1_label_3.setText(_translate("MainWindow", "개발자:"))
         self.popup1_label_4.setText(_translate("MainWindow", "송병규"))
+        self.popup1_label_6.setText(_translate("MainWindow", "최신 버전:"))
+        self.popup1_pushbutton.setText(_translate("MainWindow", "사이트"))
+        self.popup1_pushbutton_2.setText(_translate("MainWindow", "다운로드"))
 
         # Qt디자이너 외 구현
         self.popup_version.resize(274, 69)
@@ -2871,22 +2896,82 @@ class Ui_MainWindow(object):
         pixmap = QtGui.QPixmap(resource_path('ci.jpg'))
         pixmap = pixmap.scaledToHeight(int(60))
         self.popup1_label_5.setPixmap(pixmap)
+        self.latestUpdate(update)
+        self.popup_version.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
         self.popup_version.show()
 
-    def linkSite(self, val1):
-        """참고용 사이트"""
+        # 이벤트
+        self.popup1_pushbutton.clicked.connect(lambda: self.linkSite(3))  # 사이트 접속
+        self.popup1_pushbutton_2.clicked.connect(lambda: self.linkSite(4))  # 최신버전 다운
+
+    def latestUpdate(self,update):
+        """홈페이지 업데이트 날짜 긁어옴"""
         try:
-            if val1 == 1:
-                webbrowser.open("https://doc.qt.io/qtforpython/PySide6/QtWidgets/QTableWidget.html")
-            elif val1 == 2:
-                webbrowser.open("https://wikidocs.net/")
+            newdate=[]
+            req = requests.get(Ui_MainWindow.serverip+':5000/download')
+            soup = bs4.BeautifulSoup(req.text, "html.parser")
+            soup = soup.findAll('a', {'id': 'recently'})
+            for i in soup:
+                newdate=i.get_text().replace('/','-')
+            self.popup1_label_7.setText(newdate)
+            newdate=parse(newdate)
+            update=parse(update)
+            if update==newdate:
+                self.popup1_pushbutton_2.hide()
+            elif update<newdate:
+                self.popup1_label_7.setStyleSheet('color: red')
+                self.popup1_pushbutton.show()
+                self.popup1_pushbutton_2.show()
+            else:
+                self.popup1_label_7.setText('오류')
+                self.popup1_label_7.setStyleSheet('color: red')
+                self.popup1_pushbutton.show()
+                self.popup1_pushbutton_2.show()
+
         except:
             traceback.print_exc()
+            self.popup1_label_7.setText('접속 불가')
+            self.popup1_label_7.setStyleSheet('color: red')
+            self.popup1_pushbutton.hide()
+            self.popup1_pushbutton_2.hide()
+
+    def linkSite(self, val1):
+        """링크 혹은 다운로드"""
+        try:
+            if val1 == 1:
+                webbrowser.open('https://doc.qt.io/qtforpython/PySide6/QtWidgets/QTableWidget.html')
+            elif val1 == 2:
+                webbrowser.open('https://wikidocs.net/')
+            elif val1 == 3:
+                webbrowser.open_new(Ui_MainWindow.serverip+':5000/download/')
+            elif val1 == 4:
+                if os.path.exists('main.exe'):
+                    print('~')
+                    url = Ui_MainWindow.serverip + ':5000/static/file/hkamudfl.exe'
+                    urllib.request.urlretrieve(url, "hkamudfl.exe")
+                    os.startfile('hkamudfl.exe')
+                    os._exit(1)
+                else:
+                    print('~~')
+                    url = Ui_MainWindow.serverip + ':5000/static/file/main.exe'
+                    urllib.request.urlretrieve(url, "main.exe")
+                    os._exit(1)
+        except:
+            traceback.print_exc()
+
     # ---------------------------------------main
 
 
 if __name__ == '__main__':
-    conn = cx_Oracle.connect("system", "1234", "localhost:1521/xe")
+    print(socket.gethostname())
+    coninfo=(["HKCL","hkcl","11.10.5.11:1521/hkfund"],
+             ["system", "1234", "localhost:1521/xe"])
+    info=[]
+    if socket.gethostname()=='HKFUND':
+        info.append(coninfo[0])
+    elif socket.gethostname()=='MSDN-SPECIAL':
+        info.append(coninfo[1])
+    conn = cx_Oracle.connect(info[0][0],info[0][1],info[0][2])
     Ui_MainWindow.version = (str(conn)[-3:-1])
     cur = conn.cursor()
     app = QtWidgets.QApplication(sys.argv)
