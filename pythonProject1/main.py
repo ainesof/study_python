@@ -1,24 +1,18 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import datetime
-import math, decimal, os.path, sys, traceback, webbrowser, urllib
+import time, datetime
+from datetime import date, timedelta
+import math, decimal, os.path, sys, traceback, webbrowser, urllib, atexit, socket
 import cx_Oracle, query
-import time
-import atexit
 import matplotlib.pyplot as plt
-import socket
 import pandas as pd
 import requests, bs4
-from styleframe import StyleFrame, Styler, utils
 import multiprocessing as mp
+from styleframe import StyleFrame, Styler, utils
 from dateutil.parser import parse
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from datetime import date, timedelta
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QIcon, QPainter, QFont, QPen, QBrush, QPainterPath
 from PyQt5.QtWidgets import *
+import ctypes
 
 # 한글 폰트 사용을 위해서 세팅
 from matplotlib import font_manager, rc
@@ -78,12 +72,15 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1077, 583)
+        MainWindow.resize(1077, 581)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -607,8 +604,7 @@ class Ui_MainWindow(object):
         # 클래스 변수
         Ui_MainWindow.updateDate = "2021-12-29"  # 최근 업데이트
 
-        Ui_MainWindow.version  # 현재 접속DB 구분
-        Ui_MainWindow.serverip= "" # 서버IP
+        Ui_MainWindow.userinfo= {}
         Ui_MainWindow.col = ""  # 클릭한 표위치
         Ui_MainWindow.row = ""  # 클릭한 표위치
         Ui_MainWindow.maxSearch = 10000  # 최대 테이블 조회가능 제한
@@ -652,24 +648,22 @@ class Ui_MainWindow(object):
         self.tab1_pushButton_3.setDisabled(True)
         self.tab1_pushButton_4.setDisabled(True)
         self.tabWidget.setUsesScrollButtons(False)  # 상단 탭스크롤바 막기
+        Ui_MainWindow.userinfo=userinfo # 접속정보 입력
         if os.path.exists('hkamudfl.exe'):
             os.remove('hkamudfl.exe') # 시작시 다운로더 제거
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow",
         "                                                                                                                              "
         "                                                                                                                    "))
         self.tab1_tableWidget.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter)  # 헤더 중앙정렬
-        if Ui_MainWindow.version != "xe":  # xe 계정만 날짜 다르게
+        if Ui_MainWindow.userinfo['id'] != "HKCL":  # 계정만 날짜 다르게
             day = 1
-            Ui_MainWindow.serverip='http://11.10.5.34'
             if date.today().isoweekday() == 1:  # 월요일만
                 day = 3
             self.tab3_dateEdit.setDate(date.today() - timedelta(day))
             self.tab4_dateEdit.setDate(date.today() - timedelta(day))
-        else:
-            Ui_MainWindow.serverip = 'http://192.168.123.3'
         self.tab3_dateEdit_2.setDate(date.today() - timedelta(1))  # 자료는 전일자꺼 까지만 있음
         self.tab4_dateEdit_2.setDate(date.today() - timedelta(1))  # 자료는 전일자꺼 까지만 있음
-
+        # print(userinfo)
         self.tab2_layout()  # 탭2 레이아웃
         self.tab3_layout()  # 탭3 레이아웃
         self.tab4_layout()  # 탭4 레이아웃
@@ -1455,7 +1449,7 @@ class Ui_MainWindow(object):
         self.tab3_newWindow1.resize(1169, 558)
         self.tab3_win1label_2.setText(fundName)
         self.newcreateTable(3, 1, '', self.tab3_win1dateEdit.text(), self.tab3_win1dateEdit_2.text(), '', fundCode)
-        if Ui_MainWindow.version != "xe" and len(Ui_MainWindow.mainWindow_df3_1) > 0:
+        if Ui_MainWindow.userinfo['id'] != "HKCL" and len(Ui_MainWindow.mainWindow_df3_1) > 0:
             self.tab3_win1dateEdit.setDate(Ui_MainWindow.mainWindow_df3_1['기준일자'].min())
         else:
             self.tab3_win1dateEdit.setDate(date.today() - timedelta(1))
@@ -1659,7 +1653,7 @@ class Ui_MainWindow(object):
         self.tab3_win3label_2.setText(fundName)
         self.newcreateTable(3, 3, '', '', '', fundCode, '')
         self.tab3_newWindow3.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
-        if Ui_MainWindow.version != "xe" and len(Ui_MainWindow.mainWindow_df3_3) > 0:
+        if Ui_MainWindow.userinfo['id'] != "HKCL" and len(Ui_MainWindow.mainWindow_df3_3) > 0:
             self.tab3_win3dateEdit.setDate(Ui_MainWindow.mainWindow_df3_3['기준일자'].min())
         else:
             self.tab3_win3dateEdit.setDate(date.today() - timedelta(1))
@@ -1747,6 +1741,7 @@ class Ui_MainWindow(object):
         self.tab5_comboBox.currentTextChanged.connect(
             lambda: self.newcreateTable(5, 0, '', self.tab5_dateEdit.text(), '', '', ''))  # 탭5 조회
         self.tab5_pushButton_2.clicked.connect(lambda: self.toExcel("5", "0", '수탁고 현황'))  # 엑셀변환 버튼
+        self.tab5_tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.tab5_headerDbclick) #헤더 더블클릭시 기준날짜 보여줌
 
     def tab5_searchValue(self):
         """탭5 팝업 생성"""
@@ -1778,11 +1773,38 @@ class Ui_MainWindow(object):
         except:
             traceback.print_exc()
 
+    def tab5_headerDbclick(self,logicalIndex):
+        """헤더 더블클릭시 해당 줄 기준날짜 보여줌"""
+        try:
+            header=['lastmonth','lastquater','lastyear','last2year']
+            date=self.tab5_dateEdit.text()
+            month=date[0:7]
+            sql = query.returnSQL('tab5_headerDbclick').format(date=date,month=month)
+            cur.execute(sql)
+            row = cur.fetchall()
+            df = pd.DataFrame(row)
+            df.columns = header
+            if logicalIndex==2 or logicalIndex==6:
+                self.tab5_tableWidget.horizontalHeaderItem(logicalIndex).setText(self.tab5_dateEdit.text()[5:10])
+            elif logicalIndex==3 or logicalIndex==7:
+                date=(pd.to_datetime(df['lastmonth']).dt.date).values[0]
+                self.tab5_tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+            elif logicalIndex==4 or logicalIndex==8:
+                date=(pd.to_datetime(df['lastquater']).dt.date).values[0]
+                self.tab5_tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+            elif logicalIndex==5 or logicalIndex==9:
+                date=(pd.to_datetime(df['lastyear']).dt.date).values[0]
+                self.tab5_tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+
+        except:
+            traceback.print_exc()
+
+
     # ---------------------------- 탭5 창1 windowGroup
 
     def windowGroup(self, date1, group, team):
         self.tab5_win1tableWidget = QtWidgets.QTableWidget(self.tab5_newWindow1)
-        self.tab5_win1tableWidget.setGeometry(QtCore.QRect(0, 70, 1181, 281))
+        self.tab5_win1tableWidget.setGeometry(QtCore.QRect(0, 70, 1211, 281))
         self.tab5_win1tableWidget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.tab5_win1tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tab5_win1tableWidget.setAlternatingRowColors(True)
@@ -1790,7 +1812,7 @@ class Ui_MainWindow(object):
         self.tab5_win1tableWidget.setColumnCount(0)
         self.tab5_win1tableWidget.setRowCount(0)
         self.tab5_win1label_5 = QtWidgets.QLabel(self.tab5_newWindow1)
-        self.tab5_win1label_5.setGeometry(QtCore.QRect(1111, 28, 31, 21))
+        self.tab5_win1label_5.setGeometry(QtCore.QRect(1142, 28, 31, 21))
         self.tab5_win1label_5.setObjectName("tab5_win1label_5")
         self.tab5_win1label_4 = QtWidgets.QLabel(self.tab5_newWindow1)
         self.tab5_win1label_4.setGeometry(QtCore.QRect(430, 10, 51, 21))
@@ -1808,7 +1830,7 @@ class Ui_MainWindow(object):
         self.tab5_win1label_3.setGeometry(QtCore.QRect(230, 10, 31, 21))
         self.tab5_win1label_3.setObjectName("tab5_win1label_3")
         self.tab5_win1pushButton = QtWidgets.QPushButton(self.tab5_newWindow1)
-        self.tab5_win1pushButton.setGeometry(QtCore.QRect(1130, 0, 51, 21))
+        self.tab5_win1pushButton.setGeometry(QtCore.QRect(1161, 0, 51, 21))
         self.tab5_win1pushButton.setObjectName("tab5_win1pushButton")
         self.tab5_win1label_2 = QtWidgets.QLabel(self.tab5_newWindow1)
         self.tab5_win1label_2.setGeometry(QtCore.QRect(97, 10, 51, 21))
@@ -1819,7 +1841,7 @@ class Ui_MainWindow(object):
         self.tab5_win1lineEdit.setReadOnly(True)
         self.tab5_win1lineEdit.setObjectName("tab5_win1lineEdit")
         self.tab5_win1lineEdit_2 = QtWidgets.QLineEdit(self.tab5_newWindow1)
-        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 50, 1181, 21))
+        self.tab5_win1lineEdit_2.setGeometry(QtCore.QRect(0, 50, 1211, 21))
         self.tab5_win1lineEdit_2.setReadOnly(True)
         self.tab5_win1lineEdit_2.setObjectName("tab5_win1lineEdit_2")
         self.tab5_win1lineEdit_3 = QtWidgets.QLineEdit(self.tab5_newWindow1)
@@ -1828,7 +1850,7 @@ class Ui_MainWindow(object):
         self.tab5_win1lineEdit_3.setReadOnly(True)
         self.tab5_win1lineEdit_3.setObjectName("tab5_win1lineEdit_3")
         self.tab5_win1lineEdit_4 = QtWidgets.QLineEdit(self.tab5_newWindow1)
-        self.tab5_win1lineEdit_4.setGeometry(QtCore.QRect(600, 50, 341, 21))
+        self.tab5_win1lineEdit_4.setGeometry(QtCore.QRect(590, 50, 341, 21))
         self.tab5_win1lineEdit_4.setAlignment(QtCore.Qt.AlignCenter)
         self.tab5_win1lineEdit_4.setReadOnly(True)
         self.tab5_win1lineEdit_4.setObjectName("tab5_win1lineEdit_4")
@@ -1839,12 +1861,12 @@ class Ui_MainWindow(object):
         self.tab5_win1label.setObjectName("tab5_win1label")
         self.tab5_win1comboBox_2 = QtWidgets.QComboBox(self.tab5_newWindow1)
         self.tab5_win1comboBox_2.setEnabled(True)
-        self.tab5_win1comboBox_2.setGeometry(QtCore.QRect(1139, 27, 41, 22))
+        self.tab5_win1comboBox_2.setGeometry(QtCore.QRect(1170, 27, 41, 22))
         self.tab5_win1comboBox_2.setEditable(False)
         self.tab5_win1comboBox_2.setCurrentText("")
         self.tab5_win1comboBox_2.setObjectName("tab5_win1comboBox_2")
         self.tab5_win1pushButton_2 = QtWidgets.QPushButton(self.tab5_newWindow1)
-        self.tab5_win1pushButton_2.setGeometry(QtCore.QRect(1050, 0, 71, 21))
+        self.tab5_win1pushButton_2.setGeometry(QtCore.QRect(1081, 0, 71, 21))
         self.tab5_win1pushButton_2.setObjectName("tab5_win1pushButton_2")
         self.tab5_win1lineEdit_2.raise_()
         self.tab5_win1tableWidget.raise_()
@@ -1876,7 +1898,7 @@ class Ui_MainWindow(object):
 
         # QT디자이너 외 구현
         self.tab5_newWindow1.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
-        self.tab5_newWindow1.resize(1189, 363)
+        self.tab5_newWindow1.resize(1213, 355)
         self.tab5_win1lineEdit.setText(group)
         self.tab5_win1label.setText('홀세일 ' + team)
         self.tab5_win1dateEdit.setDate(parse(date1))
@@ -1903,6 +1925,36 @@ class Ui_MainWindow(object):
         row = self.tab5_win1tableWidget.cellClicked.connect(self.tab5_win1returnCode)  # 탭5 표 클릭시
         self.tab5_win1tableWidget.doubleClicked.connect(lambda: self.tab5_win1searchValue(fund_cd))  # 탭5 펀드검색
         self.tab5_win1pushButton_2.clicked.connect(lambda: self.toExcel("5", "1", '그룹별 현황'))  # 엑셀변환 버튼
+        self.tab5_win1tableWidget.horizontalHeader().sectionDoubleClicked.connect(self.tab5_win1HeaderDbclick) #헤더 더블클릭시 기준날짜 보여줌
+
+
+    def tab5_win1HeaderDbclick(self,logicalIndex):
+        """헤더 더블클릭시 해당 줄 기준날짜 보여줌"""
+        try:
+            header=['lastmonth','lastquater','lastyear','last2year']
+            date=self.tab5_win1dateEdit.text()
+            month=date[0:7]
+            sql = query.returnSQL('tab5_headerDbclick').format(date=date,month=month)
+            cur.execute(sql)
+            row = cur.fetchall()
+            df = pd.DataFrame(row)
+            df.columns = header
+            if logicalIndex==1 or logicalIndex==2:
+                self.tab5_win1tableWidget.horizontalHeaderItem(logicalIndex).setText(self.tab5_dateEdit.text()[5:10])
+            elif logicalIndex==3 or logicalIndex==7:
+                date=(pd.to_datetime(df['lastmonth']).dt.date).values[0]
+                self.tab5_win1tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+            elif logicalIndex==4 or logicalIndex==8:
+                date=(pd.to_datetime(df['lastquater']).dt.date).values[0]
+                self.tab5_win1tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+            elif logicalIndex==5 or logicalIndex==9:
+                date=(pd.to_datetime(df['lastyear']).dt.date).values[0]
+                self.tab5_win1tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+            elif logicalIndex==6 or logicalIndex==10:
+                date=(pd.to_datetime(df['last2year']).dt.date).values[0]
+                self.tab5_win1tableWidget.horizontalHeaderItem(logicalIndex).setText(str(date)[2:10])
+        except:
+            traceback.print_exc()
 
     def tab5_win1searchValue(self, fund_cd):
         """탭5 팝업의팝업 생성"""
@@ -2305,7 +2357,7 @@ class Ui_MainWindow(object):
             header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '설정액', '전월말대비', '전분기말대비', '전년말대비']
             try:
                 if re == "":
-                    sql += query.returnSQL('tab5_searchQuery').format(date=val1)
+                    sql += query.returnSQL('tab5_searchQuery').format(date=val1,month=val1[0:7])
                     # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
@@ -2347,7 +2399,7 @@ class Ui_MainWindow(object):
                     val3 = '<>'
                 if re == "":
                     sql += query.returnSQL('tab5_win1searchQuery').format(date=val4, suik_group=val1, mg_bu=val2,
-                                                                          nps=val3)
+                                                                          nps=val3, month=val4[0:7])
                     # print(sql)
                     cur.execute(sql)
                     row = cur.fetchall()
@@ -2536,7 +2588,7 @@ class Ui_MainWindow(object):
                 self.tab5_win1tableWidget.item(len(df.index), 0).setTextAlignment(
                     QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
                 sumList = df.sum()
-                sumList[0]='합계'
+
 
                 for k in range(1, 11):
                     sumList[k] = self.changeWon(sumList[k], Ui_MainWindow.tab5changeWonFlag)
@@ -2893,12 +2945,15 @@ class Ui_MainWindow(object):
         # Qt디자이너 외 구현
         self.popup_version.resize(274, 69)
         self.popup1_label_2.setText(update)
+        self.popup_version.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
         pixmap = QtGui.QPixmap(resource_path('ci.jpg'))
         pixmap = pixmap.scaledToHeight(int(60))
         self.popup1_label_5.setPixmap(pixmap)
         self.latestUpdate(update)
-        self.popup_version.setWindowModality(QtCore.Qt.ApplicationModal)  # 하위창 컨트롤 금지
         self.popup_version.show()
+
+
+
 
         # 이벤트
         self.popup1_pushbutton.clicked.connect(lambda: self.linkSite(3))  # 사이트 접속
@@ -2908,7 +2963,7 @@ class Ui_MainWindow(object):
         """홈페이지 업데이트 날짜 긁어옴"""
         try:
             newdate=[]
-            req = requests.get(Ui_MainWindow.serverip+':5000/download')
+            req = requests.get(Ui_MainWindow.userinfo['ip']+':5000/download')
             soup = bs4.BeautifulSoup(req.text, "html.parser")
             soup = soup.findAll('a', {'id': 'recently'})
             for i in soup:
@@ -2923,7 +2978,6 @@ class Ui_MainWindow(object):
                 self.popup1_pushbutton.show()
                 self.popup1_pushbutton_2.show()
             else:
-                self.popup1_label_7.setText('오류')
                 self.popup1_label_7.setStyleSheet('color: red')
                 self.popup1_pushbutton.show()
                 self.popup1_pushbutton_2.show()
@@ -2943,17 +2997,17 @@ class Ui_MainWindow(object):
             elif val1 == 2:
                 webbrowser.open('https://wikidocs.net/')
             elif val1 == 3:
-                webbrowser.open_new(Ui_MainWindow.serverip+':5000/download/')
+                webbrowser.open_new(Ui_MainWindow.userinfo['ip']+':5000/download/')
             elif val1 == 4:
                 if os.path.exists('main.exe'):
                     print('~')
-                    url = Ui_MainWindow.serverip + ':5000/static/file/hkamudfl.exe'
+                    url = Ui_MainWindow.userinfo['ip'] + ':5000/static/file/hkamudfl.exe'
                     urllib.request.urlretrieve(url, "hkamudfl.exe")
                     os.startfile('hkamudfl.exe')
                     os._exit(1)
                 else:
                     print('~~')
-                    url = Ui_MainWindow.serverip + ':5000/static/file/main.exe'
+                    url = Ui_MainWindow.userinfo['ip'] + ':5000/static/file/main.exe'
                     urllib.request.urlretrieve(url, "main.exe")
                     os._exit(1)
         except:
@@ -2963,16 +3017,15 @@ class Ui_MainWindow(object):
 
 
 if __name__ == '__main__':
-    print(socket.gethostname())
-    coninfo=(["HKCL","hkcl","11.10.5.11:1521/hkfund"],
-             ["system", "1234", "localhost:1521/xe"])
-    info=[]
-    if socket.gethostname()=='HKFUND':
-        info.append(coninfo[0])
-    elif socket.gethostname()=='MSDN-SPECIAL':
-        info.append(coninfo[1])
-    conn = cx_Oracle.connect(info[0][0],info[0][1],info[0][2])
-    Ui_MainWindow.version = (str(conn)[-3:-1])
+    user=[{'id': 'system', 'pw': '1234','connect': 'localhost:1521/xe', 'ip':'http://192.168.123.3'},
+           {'id': 'HKCL','pw': 'hkcl','connect': '11.10.5.11:1521/hkfund', 'ip':'http://11.10.5.34'}]
+    userinfo={}
+    if socket.gethostname()=='MSDN-SPECIAL':
+        userinfo.update(user[0])
+    else:
+        userinfo.update(user[1])
+
+    conn = cx_Oracle.connect(userinfo['id'],userinfo['pw'],userinfo['connect'])
     cur = conn.cursor()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

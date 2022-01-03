@@ -17,12 +17,15 @@ def returnSQL(para):
         sql = tab3_win3ChangeSelectComboBoxQuery()
     elif para == 'tab4_searchQuery':
         sql = tab4_searchQuery()
+    elif para == 'tab5_headerDbclick':
+        sql = tab5_headerDbclick()
     elif para == 'tab5_setDateQuery':
         sql = tab5_setDateQuery()
     elif para == 'tab5_searchQuery':
         sql = tab5_searchQuery()
     elif para == 'tab5_win1searchQuery':
         sql = tab5_win1searchQuery()
+
 
     return sql
 
@@ -143,6 +146,18 @@ where suik_set_money=0 and a=0
 """
     return str
 
+def tab5_headerDbclick():
+    str = \
+"""
+select last_day(to_date('{month}','yyyy-mm')-(interval'1'month)) as lastmonth,
+        last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01','04','04',
+        '05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) as lastquater,
+        to_date(substr('{date}',0,4)-1||'/12/31') as lastyear,
+        to_date(substr('{date}',0,4)-2||'/12/31') as last2year
+from dual
+"""
+    return str
+
 def tab5_setDateQuery():
     str = \
 """
@@ -182,7 +197,7 @@ group by a.suik_group
 select a.suik_group,decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastmonth 
 from SUIKJA_INFO a,FUND_INTEGRATE b
 where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and b.inte_fund_type is not null
-and a.tr_ymd=last_day(to_date('{date}','yyyy-mm-dd')-(interval'1'month)) and a.fund_cd<>'1522' and a.suik_group<>'MMF' and a.suik_mg_bu='1본부'
+and a.tr_ymd=last_day(to_date('{month}','yyyy-mm')-(interval'1'month)) and a.fund_cd<>'1522' and a.suik_group<>'MMF' and a.suik_mg_bu='1본부'
 group by a.suik_group
 ) b,(
 select a.suik_group,decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastquater 
@@ -216,7 +231,7 @@ group by a.suik_group
 select a.suik_group,decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastmonth2
 from SUIKJA_INFO a,FUND_INTEGRATE b
 where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and b.inte_fund_type is not null
-and a.tr_ymd=last_day(to_date('{date}','yyyy-mm-dd')-(interval'1'month)) and a.fund_cd<>'1522' and a.suik_group<>'MMF' 
+and a.tr_ymd=last_day(to_date('{month}','yyyy-mm')-(interval'1'month)) and a.fund_cd<>'1522' and a.suik_group<>'MMF' 
 and a.suik_mg_bu='2본부'
 group by a.suik_group
 ) b,(
@@ -265,7 +280,7 @@ decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
 decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
 from SUIKJA_INFO a, FUND_INTEGRATE b
 where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
-and a.tr_ymd=last_day(to_date('{date}','yyyy-mm-dd')-(interval'1'month)) and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
+and a.tr_ymd=last_day(to_date('{month}','yyyy-mm')-(interval'1'month)) and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
 ) b 
 on  a.SUIK_NAME=b.SUIK_NAME and a.INTE_FUND_TYPE=b.INTE_FUND_TYPE and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ  
 full outer join (
