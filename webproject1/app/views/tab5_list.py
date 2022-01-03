@@ -32,6 +32,7 @@ def tab5_search():
         header, df, val = cal(0,date1,'','','','')
         df2 = setComma(df)
         return render_template('tab5/tab5_view.html', queryData1=df2,header=header,date1=date1,val1='')
+
     except:
         traceback.print_exc()
 

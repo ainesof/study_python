@@ -33,14 +33,11 @@
             <!-- 메뉴링크 설정 -->
             $('button[name^=menu]').click(function(){
                 var menu=$(this).attr('name')
-                var url=''
                 if(menu=='menu1'){
-                    url="http://11.10.5.34:5000/download/"
-                    window.open(url, "");
+                    window.open("/download/", "");
                 }
                 else if(menu=='menu2'){
-                    url="http://11.10.5.34:5000/main/"
-                    window.open(url, "");
+                    window.open("/main/", "");
                 }
                 else if(menu=='menu3'){
                     alert();
