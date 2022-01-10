@@ -34,13 +34,14 @@
             $('button[name^=menu]').click(function(){
                 var menu=$(this).attr('name')
                 if(menu=='menu1'){
-                    window.open("/download/", "");
-                }
-                else if(menu=='menu2'){
                     window.open("/main/", "");
                 }
+                else if(menu=='menu2'){
+                    window.open("/download/", "");
+                }
                 else if(menu=='menu3'){
-                    alert();
+                    alert('미구현');
+                    window.open("/set_info", "");
                 }
             });
 

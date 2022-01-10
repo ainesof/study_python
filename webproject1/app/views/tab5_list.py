@@ -1,7 +1,7 @@
 import math
 
 from flask import Blueprint, render_template,request, send_file
-import traceback
+import traceback, socket
 from app.models import query
 from datetime import date, timedelta
 import pandas as pd
@@ -99,7 +99,7 @@ def cal(page,date1,val1,val2,val3,val4):
             changeWon(df)
         elif page==1:
             """val1:본부, val2:수익그룹, val3:NPS여부, val4: 수익자명(재검색용)"""
-
+            valcal=0
             header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말', '전분기말', '전년말', '전전년말']
             if val3 == 'NPS':
                 val2 = '연기금'
@@ -121,11 +121,20 @@ def cal(page,date1,val1,val2,val3,val4):
                 df = df.groupby(df['INTE_FUND_TYPE']).sum()
                 df = df.reset_index()
                 df = df.values.tolist()
+
                 valsum=['합계',0,0,0,0,0,0,0,0,0,0]
                 for i in range(1, len(df[0])):
                     for j in range(len(df)):
                         valsum[i]+=math.floor(df[j][i])
                 df.append(valsum)
+                
+                # 순자산 표시, 차액 표시 스위칭 용도
+                for i in range(0, len(df)):
+                    for j in range(len(df[0])):
+                        if j==2:
+                            valcal=df[i][j]
+                        if j >2 and j<7:
+                            df[i][j]=valcal-df[i][j]
                 changeWon(df)
         elif page == 2:
             """val1:본부, val2:수익그룹, val3:항목, val4:"""
@@ -158,14 +167,34 @@ def cal(page,date1,val1,val2,val3,val4):
                     for j in range(len(df)):
                         valsum[i]+=math.floor(df[j][i])
                 df.append(valsum)
+
+                # 순자산 표시, 차액 표시 스위칭 용도
+                for i in range(0, len(df)):
+                    for j in range(len(df[0])):
+                        if j==2:
+                            valcal=df[i][j]
+                        if j >2 and j<7:
+                            df[i][j]=valcal-df[i][j]
                 changeWon(df)
 
         return header,df, val
     except:
         traceback.print_exc()
 
+@bp.route('/set_info')
+def set_info():
+    '''들어오는 IP 기준으로 설정정보 가져옴'''
+    try:
+        print("IP Address(Internal) : ", socket.gethostbyname(socket.gethostname()))
+        print("IP Address(External) : ", socket.gethostbyname(socket.getfqdn()))
+        return render_template('tab5/download.html')
+        asd={dd:'dd',aa:'aa'}
+    except:
+        traceback.print_exc()
+
 @bp.route('/file_down/', methods=['GET','POST'])
 def file_down():
+    '''최근버전은 main, 그 외는 풀네임으로 찾음'''
     try:
         fileType = request.form['arg1']
         name = request.form['arg2']
