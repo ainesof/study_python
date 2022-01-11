@@ -1,10 +1,13 @@
 import math
+import os.path
 
 from flask import Blueprint, render_template,request, send_file
 import traceback, socket
-from app.models import query
+from app.models import query, querydate
 from datetime import date, timedelta
 import pandas as pd
+import json
+from collections import OrderedDict
 
 bp = Blueprint('tab5', __name__, url_prefix='/')
 
@@ -14,24 +17,25 @@ def main():
     """시작시 조회"""
     try:
         date1 = date.today() - timedelta(2)
-        header, df, val= cal(0,date1,'','','','')
+        header, df, val, searchdate = cal(0,date1,'','','','')
         df2=setComma(df)
-        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,date1=date1,val1='')
+        tab5_readJson()
+        tab5_createJson()
+        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,searchdate=searchdate,
+                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
     except:
         traceback.print_exc()
 
-@bp.route('/download/')
-def download():
-    return render_template('tab5/download.html')
 
 @bp.route('/main/', methods=["POST"])
 def tab5_search():
     """날짜받아서 main 페이지 재조회"""
     try:
         date1=request.form['datepicker']
-        header, df, val = cal(0,date1,'','','','')
+        header, df, val, searchdate = cal(0,date1,'','','','')
         df2 = setComma(df)
-        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,date1=date1,val1='')
+        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,searchdate=searchdate,
+                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
 
     except:
         traceback.print_exc()
@@ -59,11 +63,13 @@ def tab5_newwindow1():
         elif request.form['win1_arg2'] == '11':            group='증권'
         else:                                         group=request.form['win1_arg2']
         date1 = request.form['win1_arg3']
-        header, df, val = cal(1,date1,team,group,NPS,request.form['win1_arg4'])
+        header, df, val, searchdate = cal(1,date1,team,group,NPS,request.form['win1_arg4'])
         df2 = setComma(df)
         print('')
         """queryData1:데이터셋, header:테이블 컬럼, date1:조회일, group:고객그룹, team:본부, suikja:수익자, selected:선택된 수익자"""
-        return render_template('tab5/tab5_group.html', queryData1=df2, header=header, date1=date1, group=group, team=team, suikja=val, selected=request.form['win1_arg4'])
+        return render_template('tab5/tab5_group.html', queryData1=df2, header=header, searchdate=searchdate,
+                               date1=date1, group=group, team=team, suikja=val, selected=request.form['win1_arg4'],
+                               ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
 
     except:
         traceback.print_exc()
@@ -79,9 +85,11 @@ def tab5_newwindow2():
         items = request.form['win2_arg4']
         if group == 'NPS':
             NPS='NPS'
-        header, df, val, = cal(2,date1,team,group,items,'')
+        header, df, val, searchdate = cal(2,date1,team,group,items,'')
         df2 = setComma(df)
-        return render_template('tab5/tab5_items.html', queryData1=df2, header=header, date1=date1, team=team, group=group, items=items)
+        return render_template('tab5/tab5_items.html', queryData1=df2, header=header, searchdate=searchdate,
+                               date1=date1, team=team, group=group, items=items,
+                               ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
 
 
 
@@ -96,6 +104,8 @@ def cal(page,date1,val1,val2,val3,val4):
             header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '설정액', '전월말대비', '전분기말대비', '전년말대비']
             df = pd.DataFrame(query(0,date1,'','',''))
             df = df.values.tolist()
+            df2 = pd.DataFrame(querydate(date1,0))
+            searchdate = df2.values.tolist()
             changeWon(df)
         elif page==1:
             """val1:본부, val2:수익그룹, val3:NPS여부, val4: 수익자명(재검색용)"""
@@ -127,6 +137,9 @@ def cal(page,date1,val1,val2,val3,val4):
                     for j in range(len(df)):
                         valsum[i]+=math.floor(df[j][i])
                 df.append(valsum)
+
+                df2 = pd.DataFrame(querydate(date1, 0))
+                searchdate = df2.values.tolist()
                 
                 # 순자산 표시, 차액 표시 스위칭 용도
                 for i in range(0, len(df)):
@@ -168,6 +181,9 @@ def cal(page,date1,val1,val2,val3,val4):
                         valsum[i]+=math.floor(df[j][i])
                 df.append(valsum)
 
+                df2 = pd.DataFrame(querydate(date1, 0))
+                searchdate = df2.values.tolist()
+
                 # 순자산 표시, 차액 표시 스위칭 용도
                 for i in range(0, len(df)):
                     for j in range(len(df[0])):
@@ -177,20 +193,11 @@ def cal(page,date1,val1,val2,val3,val4):
                             df[i][j]=valcal-df[i][j]
                 changeWon(df)
 
-        return header,df, val
+        return header,df, val, searchdate
     except:
         traceback.print_exc()
 
-@bp.route('/set_info')
-def set_info():
-    '''들어오는 IP 기준으로 설정정보 가져옴'''
-    try:
-        print("IP Address(Internal) : ", socket.gethostbyname(socket.gethostname()))
-        print("IP Address(External) : ", socket.gethostbyname(socket.getfqdn()))
-        return render_template('tab5/download.html')
-        asd={dd:'dd',aa:'aa'}
-    except:
-        traceback.print_exc()
+
 
 @bp.route('/file_down/', methods=['GET','POST'])
 def file_down():
@@ -211,6 +218,13 @@ def file_down():
     except:
         traceback.print_exc()
 
+
+@bp.route('/download/')
+def download():
+    return render_template('tab5/download.html')
+
+#--------단순 메소드
+
 def changeWon(df):
     """단위 억으로 변경"""
     for i in range(len(df)):
@@ -228,6 +242,34 @@ def setComma(df):
     return df2
 
 
+def tab5_createJson():
+    """JSON파일 생성"""
+    if os.path.isfile(f"app\static\\file\\setting\\userimsi.json")==False:
+        file_data=OrderedDict()
+        file_data['ip']=socket.gethostbyname(socket.gethostname())
+        file_data['info1']='2'
+        file_data['info2']='3'
+        with open('app\static\\file\\setting\\userimsi.json','w',encoding="utf-8") as makefile:
+            json.dump(file_data,makefile,ensure_ascii=False, indent='\t')
+
+def tab5_readJson():
+    """JSON파일 읽기"""
+    if os.path.isfile(f"app\static\\file\\setting\\userimsi.json"):
+        with open(f'app\static\\file\\setting\\userimsi.json','r',encoding='utf-8') as readfile:
+            content=json.load(readfile)
+            print(content)
+            print(content['ip'])
+
+
+#--------------------안씀
+@bp.route('/set_info')
+def set_info():
+    '''들어오는 IP 기준으로 설정정보 가져옴'''
+    try:
+        return render_template('tab5/download.html')
+    except:
+        traceback.print_exc()
+
 @bp.route('/main/<int:question_id>/')
 def detail(question_id):
     """변수 받음"""
@@ -235,8 +277,6 @@ def detail(question_id):
         return render_template('tab5/tab5_view.html',queryData1='',link1='http://127.0.0.1:5000/main',val1=question_id)
     except:
         traceback.print_exc()
-
-
 
 @bp.route('/list/')
 def q():

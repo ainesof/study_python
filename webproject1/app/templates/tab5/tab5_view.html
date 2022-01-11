@@ -11,6 +11,13 @@
 
 <!-- 위치값을 ID로 받아서 팝업 index[0]=row(group파악용), index[1]=column(team 파악용) -->
 $(function () {
+    <!-- 헤더클릭 -->
+    $('.tab5_th').click(function(){
+    var a=$(this).closest('th').prevAll().length;
+    var searchdate={searchdate};
+    alert(searchdate[1]);
+    });
+
     <!-- submit -->
     $('.tab5_td').dblclick(function(){ // dblclick
         var team=''
@@ -48,10 +55,10 @@ $(function () {
     <table style="width:100%";>
         <tr><td colspan="3">
         <div class="btn-group btn-group-lg" role="group" aria-label="...">
-            <button type="button" class="btn btn-outline-secondary" name="menu1">수탁고현황</button>
-            <button type="button" class="btn btn-outline-secondary" name="menu2">파일자료</button>
-            <button type="button" class="btn btn-outline-secondary" name="menu3">메뉴3</button>
-            <button type="button" class="btn btn-outline-secondary" name="menu4">메뉴4</button>
+            <button type="button" class="btn btn-outline-secondary" name="menu1"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu2"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu3"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu4"/>
         </div>
         </td></tr>
         <tr style="height:30px"></tr>
@@ -74,7 +81,7 @@ $(function () {
             </tr>
             <tr class="thead-dark" align="center">
                 {% for i in range(header|length) %}
-                <th><font size="2pt">{{header[i]}}</font></th>
+                <th><font class="tab5_th" size="2pt">{{header[i]}}</font></th>
                 {% endfor %}
             </tr>
             </thead>
@@ -84,9 +91,9 @@ $(function () {
                 {% for j in range(header|length) %}
                     {% if j==0 %}
                     <td class="tab5_td" id={{i}}-{{j}} align="left">
-                        {% else %}
+                    {% else %}
                     <td class="tab5_td" id={{i}}-{{j}} align="right">
-                        {% endif %}
+                    {% endif %}
                     <font size="3pt">{{queryData1[i][j]}}</font>
                     </td>
                 {% endfor %}
@@ -94,6 +101,12 @@ $(function () {
             {% endfor %}
         </tbody>
     </table>
+ <table>
+     <tr>
+         <td> 사용자 IP:</td>
+         <td>{{ip}}</td>
+     </tr>
+ </table>
 </div>
 <form id="frm" name="frm" method="post">
     <input type="hidden" id="win1_arg1" name="win1_arg1"/>

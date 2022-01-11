@@ -21,10 +21,10 @@ $(function() {
     <table style="width:100%";>
         <tr><td colspan="6">
         <div class="btn-group btn-group-lg" role="group" aria-label="...">
-            <button type="button" class="btn btn-outline-secondary" name="menu1">수탁고현황</button>
-            <button type="button" class="btn btn-outline-secondary" name="menu2">파일자료</button>
-            <button type="button" class="btn btn-outline-secondary">메뉴3</button>
-            <button type="button" class="btn btn-outline-secondary">메뉴4</button>
+            <button type="button" class="btn btn-outline-secondary" name="menu1"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu2"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu3"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu4"/>
         </div>
         </td></tr>
         <tr style="height:30px"></tr>
@@ -64,7 +64,13 @@ $(function() {
             </tr>
             {% endfor %}
         </tbody>
-    </table>{{val1}}
+    </table>
+     <table>
+     <tr>
+         <td> 사용자 IP:</td>
+         <td>{{ip}}</td>
+     </tr>
+ </table>
 </div>
 
 {% endblock %}

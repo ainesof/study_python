@@ -25,10 +25,11 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         $(function() {
-            <!-- 엑셀로 보내기 -->
-            $("[name='toExcel']").click(function(){
-                exportExcel();
-            });
+            <!-- 메뉴 설정 -->
+            $('button[name=menu1]').html('수탁고 현황');
+            $('button[name=menu2]').html('자료실');
+            $('button[name=menu3]').html('메뉴3');
+            $('button[name=menu4]').html('메뉴4');
 
             <!-- 메뉴링크 설정 -->
             $('button[name^=menu]').click(function(){
@@ -40,9 +41,12 @@
                     window.open("/download/", "");
                 }
                 else if(menu=='menu3'){
-                    alert('미구현');
-                    window.open("/set_info", "");
                 }
+            });
+
+            <!-- 엑셀로 보내기 -->
+            $("[name='toExcel']").click(function(){
+                exportExcel();
             });
 
 
