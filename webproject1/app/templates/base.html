@@ -25,30 +25,75 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         $(function() {
+
+
+
+            <!-- 메뉴헤더 더블클릭 -->
+            $('.tab5_th').dblclick(function(){
+            var a=$(this).closest('th').prevAll().length; //클릭한 곳에서 가장 가까운 th태그들 개수 합의 길이
+            {% for i in range(header|length) %}
+                $('.tab5_th').eq({{i}}).text('{{searchdate[0][i]}}');
+            {% endfor %}
+            setTimeout(function(){
+                {% for i in range(header|length) %}
+                    $('.tab5_th').eq({{i}}).text('{{header[i]}}');
+                {% endfor %}
+            },4000);
+            });
+
             <!-- 메뉴 설정 -->
             $('button[name=menu1]').html('수탁고 현황');
-            $('button[name=menu2]').html('자료실');
-            $('button[name=menu3]').html('메뉴3');
+            $('button[name=menu2]').html('유형별 현황');
+            $('button[name=menu3]').html('자료실');
             $('button[name=menu4]').html('메뉴4');
 
-            <!-- 메뉴링크 설정 -->
             $('button[name^=menu]').click(function(){
                 var menu=$(this).attr('name')
                 if(menu=='menu1'){
                     window.open("/main/", "");
                 }
                 else if(menu=='menu2'){
-                    window.open("/download/", "");
+                    window.open("/main2/", "");
                 }
                 else if(menu=='menu3'){
+                    window.open("/download/", "");
+                }
+                else if(menu=='menu4'){
+                    window.open("/layout/", "");
                 }
             });
+
+            <!-- 검색창 -->
+            $('[name=find]').click(function(){
+                window.open("/find_suikja/", "findForm", "height=500, width=500");
+            });
+
+            <!-- 제목 설정 -->
+            if($('input[name=page]').val()==1 && $('input[name=win]').val()==1){
+                $('b[name=headtitle]').html('고객 그룹별 설정액 현황');
+            }
+            else if($('input[name=page]').val()==1 && $('input[name=win]').val()==2){
+                $('b[name=headtitle]').html('고객 상품별 순자산/설정액 현황');
+            }
+            else if($('input[name=page]').val()==1 && $('input[name=win]').val()==3){
+                $('b[name=headtitle]').html('고객 수익자별 순자산/설정액 현황');
+            }
+            else if($('input[name=page]').val()==2 && $('input[name=win]').val()==1){
+                $('b[name=headtitle]').html('고객 상품별 설정액 현황');
+            }
+            else if($('input[name=page]').val()==2 && $('input[name=win]').val()==2){
+                $('b[name=headtitle]').html('고객 상품별 순자산/설정액 현황222');
+            }
 
             <!-- 엑셀로 보내기 -->
             $("[name='toExcel']").click(function(){
                 exportExcel();
             });
 
+            <!-- 날짜변경시 -->
+            $('#datepicker').datepicker(datepicker).change(function(e) {
+           $('#submit').submit();
+            });
 
         });
 
@@ -67,6 +112,7 @@
 
 
         function exportExcel(){
+
             // step 1. workbook 생성
             var wb = XLSX.utils.book_new();
 
@@ -109,6 +155,8 @@
         }
 
 
+
+
     </script>
 
 </head>
@@ -117,9 +165,21 @@
 .ui-datepicker{ font-size: 15px; width: 200px; }
 .ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
 .ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
+table{
+
+    width:100%;
+    }
 </style>
 <!-- 기본 템플릿 안에 삽입될 내용 start -->
 {% block content %}
+
+     <table>
+         <tr>
+             <td> 사용자 2IP: <mark>{{ip}}</mark></td>
+         </tr>
+    </table>
+
+
 {% endblock %}
 <!-- 기본 템플릿 안에 삽입될 내용 end -->
 </body>

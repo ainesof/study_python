@@ -12,33 +12,74 @@ from collections import OrderedDict
 bp = Blueprint('tab5', __name__, url_prefix='/')
 
 
+#-------------------------메인
+
 @bp.route('/main/')
 def main():
-    """시작시 조회"""
+    """시작시 조회 win=창, page=실행 모듈"""
     try:
+        win=1
+        page=1
         date1 = date.today() - timedelta(2)
-        header, df, val, searchdate = cal(0,date1,'','','','')
+        header, df, val, searchdate = cal(win,page,date1,'','','','')
         df2=setComma(df)
-        tab5_readJson()
-        tab5_createJson()
+        """queryData1: 내용,searchdate: 조회기준날짜, header: 테이블 컬럼, data1:날짜, ip:접속자 IP """
         return render_template('tab5/tab5_view.html', queryData1=df2,header=header,searchdate=searchdate,
-                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win,page=page)
     except:
         traceback.print_exc()
 
+@bp.route('/main2/')
+def main2():
+    """시작시 조회"""
+    try:
+        win=1
+        page=2
+        date1 = date.today() - timedelta(2)
+        header, df, val, searchdate = cal(win,page,date1,'','','','')
+        df2=setComma(df)
+        # tab5_readJson()
+        # tab5_createJson()
+        """queryData1: 내용,searchdate: 조회기준날짜, header: 테이블 컬럼, data1:날짜, ip:접속자 IP """
+        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,searchdate=searchdate,
+                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win,page=page)
+    except:
+        traceback.print_exc()
+
+#---------------------------------- 메인 재검색
 
 @bp.route('/main/', methods=["POST"])
 def tab5_search():
     """날짜받아서 main 페이지 재조회"""
     try:
-        date1=request.form['datepicker']
-        header, df, val, searchdate = cal(0,date1,'','','','')
+        date1 = request.form['datepicker']
+        win = int(request.form['win'])
+        page = int(request.form['page'])
+        header, df, val, searchdate = cal(win,page,date1,'','','','')
         df2 = setComma(df)
+        """queryData1: 내용,searchdate: 조회기준날짜, header: 테이블 컬럼, data1:날짜, ip:접속자 IP """
         return render_template('tab5/tab5_view.html', queryData1=df2,header=header,searchdate=searchdate,
-                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win,page=page)
+    except:
+        traceback.print_exc()
+
+@bp.route('/main2/', methods=["POST"])
+def tab5_search2():
+    """날짜받아서 main 페이지 재조회"""
+    try:
+        date1 = request.form['datepicker']
+        win = int(request.form['win'])
+        page = int(request.form['page'])
+        header, df, val, searchdate = cal(win,page,date1,'','','','')
+        df2 = setComma(df)
+        """queryData1: 내용,searchdate: 조회기준날짜, header: 테이블 컬럼, data1:날짜, ip:접속자 IP """
+        return render_template('tab5/tab5_view.html', queryData1=df2,header=header,searchdate=searchdate,
+                               date1=date1,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win,page=page)
 
     except:
         traceback.print_exc()
+
+#-----------------------------------
 
 @bp.route('/tab5_group/', methods=["POST"])
 def tab5_newwindow1():
@@ -46,6 +87,8 @@ def tab5_newwindow1():
     try:
         group=''
         NPS=''
+        win=2
+        page=1
         team = request.form['win1_arg1']
         if request.form['win1_arg2']=='0' or request.form['win1_arg4']=='국민연금':
             group='NPS'
@@ -63,13 +106,14 @@ def tab5_newwindow1():
         elif request.form['win1_arg2'] == '11':            group='증권'
         else:                                         group=request.form['win1_arg2']
         date1 = request.form['win1_arg3']
-        header, df, val, searchdate = cal(1,date1,team,group,NPS,request.form['win1_arg4'])
+        header, df, val, searchdate = cal(2,0,date1,team,group,NPS,request.form['win1_arg4'])
         df2 = setComma(df)
-        print('')
-        """queryData1:데이터셋, header:테이블 컬럼, date1:조회일, group:고객그룹, team:본부, suikja:수익자, selected:선택된 수익자"""
+
+        """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜 date1:조회일, group:고객그룹, team:본부, suikja:수익자,
+         selected:선택된 수익자, ip:접속자 IP"""
         return render_template('tab5/tab5_group.html', queryData1=df2, header=header, searchdate=searchdate,
                                date1=date1, group=group, team=team, suikja=val, selected=request.form['win1_arg4'],
-                               ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+                               ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win,page=page)
 
     except:
         traceback.print_exc()
@@ -79,44 +123,69 @@ def tab5_newwindow2():
     """arg1:본부, arg2:그룹, arg3:날짜, arg4:유형"""
     try:
         NPS=''
+        win=3
+        page=1
         team = request.form['win2_arg1']
         group = request.form['win2_arg2']
         date1 = request.form['win2_arg3']
         items = request.form['win2_arg4']
         if group == 'NPS':
             NPS='NPS'
-        header, df, val, searchdate = cal(2,date1,team,group,items,'')
+        header, df, val, searchdate = cal(3,0,date1,team,group,items,'')
         df2 = setComma(df)
+        """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜 date1:조회일, team:본부, group:고객그룹, items:상품유형,
+         ip:접속자 IP"""
         return render_template('tab5/tab5_items.html', queryData1=df2, header=header, searchdate=searchdate,
                                date1=date1, team=team, group=group, items=items,
-                               ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
-
-
+                               ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win,page=page)
 
     except:
         traceback.print_exc()
 
-def cal(page,date1,val1,val2,val3,val4):
+@bp.route('/find_suikja/')
+def findpopup():
+    """수익자 찾는 팝업"""
+    try:
+        return render_template('tab5/find_suikja.html')
+
+    except:
+        traceback.print_exc()
+
+
+@bp.route('/layout/')
+def layout():
+    """사이트 흐름도 보여줌"""
+    try:
+        return render_template('tab5/layout.html')
+
+    except:
+        traceback.print_exc()
+
+def cal(win,page,date1,val1,val2,val3,val4):
     """page:페이지구분, date1:날짜"""
     try:
         val=''
-        if page==0:
-            header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '설정액', '전월말대비', '전분기말대비', '전년말대비']
-            df = pd.DataFrame(query(0,date1,'','',''))
+        if win == 1:
+            header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '설정액',
+                      '전월말대비', '전분기말대비', '전년말대비']
+            df = pd.DataFrame(query(win,page,date1,'','',''))
             df = df.values.tolist()
-            df2 = pd.DataFrame(querydate(date1,0))
+
+            df2 = pd.DataFrame(querydate(date1,win))
             searchdate = df2.values.tolist()
             changeWon(df)
-        elif page==1:
+
+        elif win == 2:
             """val1:본부, val2:수익그룹, val3:NPS여부, val4: 수익자명(재검색용)"""
             valcal=0
-            header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말', '전분기말', '전년말', '전전년말']
-            if val3 == 'NPS':
+            header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말',
+                      '전분기말', '전년말', '전전년말']
+            if val2 == 'NPS':
                 val2 = '연기금'
                 val3 = '='
             else:
                 val3 = '<>'
-            df = pd.DataFrame(query(1,date1,val1,val2,val3))
+            df = pd.DataFrame(query(win,page,date1,val1,val2,val3))
             if df.empty:
                 df=['',0,0,0,0,0,0,0,0,0,0]
             else:
@@ -137,9 +206,6 @@ def cal(page,date1,val1,val2,val3,val4):
                     for j in range(len(df)):
                         valsum[i]+=math.floor(df[j][i])
                 df.append(valsum)
-
-                df2 = pd.DataFrame(querydate(date1, 0))
-                searchdate = df2.values.tolist()
                 
                 # 순자산 표시, 차액 표시 스위칭 용도
                 for i in range(0, len(df)):
@@ -149,18 +215,23 @@ def cal(page,date1,val1,val2,val3,val4):
                         if j >2 and j<7:
                             df[i][j]=valcal-df[i][j]
                 changeWon(df)
-        elif page == 2:
+
+            df2 = pd.DataFrame(querydate(date1, win))
+            searchdate = df2.values.tolist()
+
+        elif win == 3:
             """val1:본부, val2:수익그룹, val3:항목, val4:"""
 
-            header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말', '전분기말', '전년말', '전전년말']
+            header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말',
+                      '전분기말', '전년말', '전전년말']
             NPS=''
             items=val3
-            if val3 == 'NPS':
+            if val2 == 'NPS':
                 val2 = '연기금'
                 NPS = '='
             else:
                 NPS = '<>'
-            df = pd.DataFrame(query(1,date1,val1,val2,NPS))
+            df = pd.DataFrame(query(win,page,date1,val1,val2,NPS))
 
             if df.empty:
                 df=['',0,0,0,0,0,0,0,0,0,0]
@@ -181,8 +252,7 @@ def cal(page,date1,val1,val2,val3,val4):
                         valsum[i]+=math.floor(df[j][i])
                 df.append(valsum)
 
-                df2 = pd.DataFrame(querydate(date1, 0))
-                searchdate = df2.values.tolist()
+
 
                 # 순자산 표시, 차액 표시 스위칭 용도
                 for i in range(0, len(df)):
@@ -192,6 +262,8 @@ def cal(page,date1,val1,val2,val3,val4):
                         if j >2 and j<7:
                             df[i][j]=valcal-df[i][j]
                 changeWon(df)
+            df2 = pd.DataFrame(querydate(date1, win))
+            searchdate = df2.values.tolist()
 
         return header,df, val, searchdate
     except:
@@ -257,8 +329,8 @@ def tab5_readJson():
     if os.path.isfile(f"app\static\\file\\setting\\userimsi.json"):
         with open(f'app\static\\file\\setting\\userimsi.json','r',encoding='utf-8') as readfile:
             content=json.load(readfile)
-            print(content)
-            print(content['ip'])
+            # print(content)
+            # print(content['ip'])
 
 
 #--------------------안씀
@@ -295,3 +367,4 @@ def q():
 # 포트까지 입력하면 다른PC에서 직접 접근 가능하나 외부망을 타고가진 않음 DLP검출 안됨
 # 현재 시점 리비전과 최종 리비전이 같아야 migrate가 됨 https://programmer-ririhan.tistory.com/222
 # https://wikidocs.net/81046
+# https://coderap.tistory.com/447
