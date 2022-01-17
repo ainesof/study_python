@@ -20,6 +20,10 @@ def returnSQL(para):
     # ---------------------------------------------------
     elif para == 'tab5_setDateQuery':
         sql = tab5_setDateQuery()
+    elif para == 'tab5_recDateQuery':
+        sql = tab5_recDateQuery()
+    elif para == 'findSuikjaQuery':
+        sql = findSuikjaQuery()
     # ---------------------------------------------------
     elif para == 'tab5_searchDateQuery':
         sql = tab5_searchDateQuery()
@@ -167,6 +171,30 @@ and a.fund_cd<>'1522'
 group by a.tr_ymd
 )"""
     return str
+
+def tab5_recDateQuery():
+    """최근 DB자료 날짜"""
+    str = \
+"""
+select to_char(max(a.tr_ymd),'yyyy-mm-dd')
+from SUIKJA_INFO a,FUND_INTEGRATE b
+where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+"""
+    return str
+
+def findSuikjaQuery():
+    """고객명 찾기"""
+    str = \
+"""
+select suik_group,suik_name
+from SUIKJA_INFO a,FUND_INTEGRATE b
+where 1=1 
+and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+and suik_name like'%{suikja}%'
+group by suik_group,suik_name
+"""
+    return str
+
 
 def tab5_searchDateQuery():
     """날짜 조회"""

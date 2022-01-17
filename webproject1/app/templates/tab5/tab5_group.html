@@ -12,9 +12,10 @@ $(function() {
 
 <!-- submit -->
     $('.tab5_win1td').dblclick(function(){ // dblclick
-    var index=$(this).attr('name').split('-');
+    var x=$(this).closest('td').prevAll().length;
+    var y=$(this).closest('tr').prevAll().length;
     if($(this).text().trim()){
-        if(index[0]<{{queryData1|length}}-1){
+        if(y<{{queryData1|length}}-1){
             var items=($(this).closest('tr').find('td:eq(0)').text()).trim(); // 클릭한 곳과 가장 가까운 tr태그에서 0번째 td를 찾아 값에서 null 제거
             $('#win2_arg3').val($("#datepicker").val());
             $('#win2_arg4').val(items);
@@ -53,22 +54,28 @@ $(function() {
     </table>
     <table>
         <table>
+             <tr>
+                 <p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p>
+             </tr>
+             <tr align="right">
+                 <div class="d-flex flex-row-reverse bd-highlight">
+                      <input class="form-control" name="find" type="text" style="width:100px;"/>
+                 </div>
+             </tr>
             <tr>
-                 <td colspan="9"><p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p></td>
-            </tr>
-            <tr style="height:30px"></tr>
-            <tr>
+                <div class="d-flex justify-content-between">
+                    <div>
                 <td style="width:130px; font-size:14pt;"><span><b>홀세일{{team}}</b></span></td>
-                <td style="width:80px;">기준일:</td>
+                <td style="width:60px;">기준일</td>
                 <td style="width:120px;">
                     <input class="form-control" type="text" id="datepicker" name="win1_arg3" value="{{date1}}" style="width:100%;"/>
                     <input type="hidden" name="win1_arg1" value="{{team}}"/>
                     <input type="hidden" name="win" value="{{win}}"/>
-                    <input type="hidden" name="page" value="{{page}}"/>
+                    <input type="hidden" name="logic" value="{{logic}}"/>
                 </td>
-                <td align="center" style="width:80px";>그룹:</td>
+                <td align="center" style="width:60px";>그룹</td>
                 <td style="width:100px;"><input class="form-control" type="text" name="win1_arg2" value="{{group}}" style="width:100%;" readonly/></td>
-                <td align="center" style="width:100px";>고객:</td>
+                <td align="center" style="width:60px";>고객</td>
                 <td style="width:220px"><select class="form-control" name="win1_arg4" id="suikja" style="width:100%;">
                     <option value="all">전체</option>
                     {% for i in range(suikja|length) %}
@@ -79,8 +86,8 @@ $(function() {
                     {% endif %}
                     {% endfor %}
                 </select></td>
-                <td>
-                <td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel 변환"/></td>
+                </div>
+                <div><td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
             </tr></form>
         </table>
         </form>
@@ -103,11 +110,9 @@ $(function() {
                 <tr id="row{{i}}">
                     {% for j in range(header|length) %}
                         {% if j==0 %}
-                        <td class="tab5_win1td" name={{i}}-{{j}} align="left" bgcolor=#CCCCCC>
-                        {% elif j==1 %}
-                        <td class="tab5_win1td" name={{i}}-{{j}} align="right">
+                        <td class="tab5_win1td" align="left" bgcolor=#CCCCCC>
                         {% else %}
-                        <td class="tab5_win1td" name={{i}}-{{j}} align="right">
+                        <td class="tab5_win1td" align="right">
                         {% endif %}
                         <span style="font-size:11pt;">{{queryData1[i][j]}}</span>
                         </td>

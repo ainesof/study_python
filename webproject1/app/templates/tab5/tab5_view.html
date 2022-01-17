@@ -6,25 +6,26 @@
     {% extends 'base.html' %}
     {% block content %}
 
-</head>
-<body>
+<style>
+</style>
 <script>
 
-<!-- 위치값을 ID로 받아서 팝업 index[0]=row(group파악용), index[1]=column(team 파악용) -->
+<!-- 위치값을 ID로 받아서 팝업 x=row(group파악용), y=column(team 파악용) -->
 $(function () {
     <!-- submit -->
     $('.tab5_td').dblclick(function(){ // dblclick
         var team=''
         var group=''
-        var index=$(this).attr('name').split('-');
-        if (index[1]>=2 && index[1]<=5){
+        var x=$(this).closest('td').prevAll().length;
+        var y=$(this).closest('tr').prevAll().length;
+        if (x>=2 && x<=5){
             team='1본부';
             }
-        else if(index[1]>=6 && index[1]<=9){
+        else if(x>=6 && x<=9){
             team='2본부';
             }
-        if (index[1]>=2 && index[1]<=9 && index[0]<=11){
-            group=index[0];
+        if (x>=2 && x<=9 && y<=11){
+            group=y;
             $('#win1_arg1').val(team);
             $('#win1_arg2').val(group);
             $('#win1_arg3').val($("#datepicker").val());
@@ -40,7 +41,8 @@ $(function () {
 });
 
 </script>
-
+</head>
+<body>
 
 <div class="container my-3">
      <table>
@@ -57,19 +59,27 @@ $(function () {
     <table>
          <table>
              <tr>
-                 <td colspan="6"><p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p></td>
+                 <p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p>
+             </tr>
+             <tr align="right">
+                 <div class="d-flex flex-row-reverse bd-highlight">
+                      <input class="form-control" name="find" type="text" style="width:120px;"/>
+                 </div>
              </tr>
             <tr>
-                <td align="center" style="width:80px";>기준일:</td>
-                <td align="left" style="width:120px;"><form action="{{ url_for('tab5.tab5_search')}}" id="submit" method="post">
-                    <input class="form-control" type="text" id="datepicker" name="datepicker" value="{{date1}}"  style="width:100%;"/>
-                    <input type="hidden" name="win" value="{{win}}"/>
-                    <input type="hidden" name="page" value="{{page}}"/>
-                </form></td>
-                <td align="center" style="width:80px";>검색:</td>
-                <td style="width:100px;"><input class="form-control" name="find" type="text"/></td>
-                <td><img name="find" src="{{url_for('static',filename='image/find.png')}}" height="25"></td>
-                <td align="right" style="width:600px;"><input class="btn btn-dark" type="button" name="toExcel" value="excel 변환"/></td>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <td align="center" style="width:50px";>기준일</td>
+                        <td align="left" style="width:80px;">
+                            <form action="{{ url_for('tab5.main')}}" id="submit" method="post">
+                            <input class="form-control" type="text" id="datepicker" name="datepicker" value="{{date1}}"/>
+                            <input type="hidden" name="win" value="{{win}}"/>
+                            <input type="hidden" name="logic" value="{{logic}}"/>
+                            </form>
+                        </td>
+                    </div>
+                    <div><td align="right" style="width:600px;"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
+                </div>
             </tr>
         </table>
 
@@ -89,14 +99,14 @@ $(function () {
                 </thead>
                 <tbody align="right">
                     {% for i in range(queryData1|count) %}
-                <tr id="row{{i}}">
+                <tr>
                     {% for j in range(header|length) %}
                         {% if j==0 %}
-                        <td class="tab5_td" name={{i}}-{{j}} align="left" bgcolor=#CCCCCC>
+                        <td class="tab5_td" align="left" bgcolor=#CCCCCC>
                         {% elif j==1 %}
-                        <td class="tab5_td" name={{i}}-{{j}} align="right" bgcolor=#CCCCCC>
+                        <td class="tab5_td" align="right" bgcolor=#CCCCCC>
                         {% else %}
-                        <td class="tab5_td" name={{i}}-{{j}} align="right">
+                        <td class="tab5_td" align="right">
                         {% endif %}
                         {% if j>=2 and j<=5 and queryData1[i][2]=='0' %}
                         <span style="font-size:11pt; color:#CCCCCC">{{queryData1[i][j]}}</span>

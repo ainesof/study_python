@@ -19,15 +19,16 @@ import traceback, socket
 #     create_date = db.Column(db.DateTime(), nullable=False)
 
 
-def query(win,page,date1,val1,val2,val3):
+def query(win,logic,date1,val1,val2,val3):
     try:
 
         if win is not None:
             cur = connect_hkfund()
-            if win==1 and page==1:
+            if win==1 and logic==1:
                 """date:날짜"""
                 sql = seqrchQuery.returnSQL('tab5_view1searchQuery2').format(date=date1)
-            elif win==1 and page==2:
+            elif win==1 and logic==2:
+                """date:날짜"""
                 sql = seqrchQuery.returnSQL('tab5_view2searchQuery').format(date=date1)
             elif win==2 or win==3:
                 """date:날짜,val1:본부, val2:수익그룹, val3:NPS여부"""
@@ -36,6 +37,29 @@ def query(win,page,date1,val1,val2,val3):
             cur.execute(sql)
             row = cur.fetchall()
             return row
+    except:
+        traceback.print_exc()
+
+def findSuikja(val1):
+    """고객명 찾기 val1:검색어"""
+    try:
+        cur = connect_hkfund()
+        sql = seqrchQuery.returnSQL('findSuikjaQuery').format(suikja=val1)
+        cur.execute(sql)
+        row = cur.fetchall()
+        return row
+    except:
+        traceback.print_exc()
+
+
+def recentlydate():
+    """DB 최근날짜 가져옴"""
+    try:
+        cur = connect_hkfund()
+        sql = seqrchQuery.returnSQL('tab5_recDateQuery')
+        cur.execute(sql)
+        row = cur.fetchall()
+        return row
     except:
         traceback.print_exc()
 
@@ -71,7 +95,6 @@ def connect_hkfund():
             userinfo.update(server[1])
         else:
             print(socket.gethostbyname(socket.gethostname()))
-        print(userinfo)
         conn = cx_Oracle.connect(userinfo['id'], userinfo['pw'], userinfo['connect'])
         cur = conn.cursor()
         return cur

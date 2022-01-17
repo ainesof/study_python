@@ -69,21 +69,22 @@
             });
 
             <!-- 제목 설정 -->
-            if($('input[name=page]').val()==1 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 그룹별 설정액 현황');
+            if($('input[name=logic]').val()==1 && $('input[name=win]').val()==1){
+                $('b[name=headtitle]').html('고객 그룹별 수탁고 현황');
             }
-            else if($('input[name=page]').val()==1 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객 상품별 순자산/설정액 현황');
+            else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==2){
+                $('b[name=headtitle]').html('고객별 설정액 현황/총괄');
             }
-            else if($('input[name=page]').val()==1 && $('input[name=win]').val()==3){
+            else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==3){
                 $('b[name=headtitle]').html('고객 수익자별 순자산/설정액 현황');
             }
-            else if($('input[name=page]').val()==2 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 상품별 설정액 현황');
+            else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==1){
+                $('b[name=headtitle]').html('고객 자산별 수탁고 현황');
             }
-            else if($('input[name=page]').val()==2 && $('input[name=win]').val()==2){
+            else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==2){
                 $('b[name=headtitle]').html('고객 상품별 순자산/설정액 현황222');
             }
+
 
             <!-- 엑셀로 보내기 -->
             $("[name='toExcel']").click(function(){
@@ -162,13 +163,21 @@
 </head>
 <body>
 <style>
-.ui-datepicker{ font-size: 15px; width: 200px; }
-.ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
-.ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
-table{
+    .ui-datepicker{ font-size: 15px; width: 200px; }
+    .ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
+    .ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
+    table{
 
-    width:100%;
+        width:100%;
     }
+
+    input[name='find'] {
+        background-image : url('{{url_for('static',filename='image/find.png')}}');
+        background-size : 25px;
+        background-position : center right;
+        background-repeat : no-repeat;
+    }
+
 </style>
 <!-- 기본 템플릿 안에 삽입될 내용 start -->
 {% block content %}

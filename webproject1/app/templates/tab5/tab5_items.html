@@ -10,7 +10,8 @@
 <script>
 $(function() {
 
-}
+});
+
 
 </script>
 
@@ -29,23 +30,27 @@ $(function() {
     </table>
     <table>
         <table>
-            <tr>
-                 <td colspan="9"><p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p></td>
-            </tr>
-            <tr style="height:30px"></tr>
+<tr>
+                 <p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p>
+             </tr>
+             <tr align="right">
+                 <div class="d-flex flex-row-reverse bd-highlight">
+                      <input class="form-control" name="find" type="text" style="width:100px;"/>
+                 </div>
+             </tr>
             <tr>
                 <td style="width:130px; font-size:14pt;"><span><b>홀세일{{team}}</b></span></td>
-                <td style="width:80px;">기준일:</td>
+                <td style="width:60px;">기준일</td>
                 <td style="width:120px;">
-                    <input class="form-control" type="text" value="{{date1}}" style="width:100%;" readonly/>
+                    <input class="form-control" type="text" id="datepicker" value="{{date1}}" style="width:100%;"/>
                     <input type="hidden" name="win" value="{{win}}"/>
-                    <input type="hidden" name="page" value="{{page}}"/>
+                    <input type="hidden" name="logic" value="{{logic}}"/>
                 </td>
-                <td align="center" style="width:80px";>그룹:</td>
+                <td align="center" style="width:60px";>그룹</td>
                 <td style="width:100px;"><input class="form-control" type="text" name="win1_arg2" value="{{group}}" style="width:100%;" readonly/></td>
-                <td align="center" style="width:100px";>상품:</td>
+                <td align="center" style="width:60px";>상품</td>
                 <td style="width:80px";><input class="form-control" type="text" name="win1_arg2" value="{{items}}" style="width:100%;" readonly/></td>
-                <td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel 변환"/></td>
+                <td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td>
             </tr>
         </table>
 
@@ -85,7 +90,6 @@ $(function() {
     </table>
 </div>
 
-<input type="hidden" id="datepicker"/>
 {% endblock %}
 </body>
 </html>

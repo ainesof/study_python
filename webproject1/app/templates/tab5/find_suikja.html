@@ -2,64 +2,72 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>search</title>
         {% extends 'base.html' %}
     {% block content %}
 
 <style>
 div.container {
-    overflow: hidden;
-    border:solid 1px green;
-    height: 200px;
-    width: 200px;
+    border:solid 1px black;
+    overflow: auto;
+    height: 390px;
+    width: 480px;
 }
-
 </style>
+<script>
+
+$(function() {
+    <!-- 아이콘 클릭 -->
+    $('#find').click(function(){
+    $('#submit').submit();
+    });
+
+    <!-- 행 클릭 -->
+    $('[name="suikja_table"]').click(function(){
+    alert($(this).find('td:eq(1)').text()); //클릭한 곳에 td값 중 2번째 텍스트값
+    });
+
+
+});
+
+</script>
 </head>
 <body>
-
 <table>
+        <tr style="height:10px"></tr>
     <tr>
-        <td align="center" style="width:80px";>검색:</td>
-                <td style="width:150px;"><input class="form-control" type="text"/></td>
-                <td><img src="{{url_for('static',filename='image/find.png')}}" height="25"></td>
+        <td align="center" style="width:60px";>검색</td>
+            <form action="{{ url_for('tab5.findpopup')}}" id="submit" method="post">
+                <td style="width:150px;">
+                    <input class="form-control" type="text" name="suikja" value="{{suikja}}"/>
+                </td>
+                <td><img src="{{url_for('static',filename='image/find.png')}}" id="find" height="25" style="cursor:pointer;"></td>
+            </form>
     </tr>
     <tr style="height:30px"></tr>
 </table>
-<table class="table table-hover">
+<table class="table-light" align="center" style="width:450px;">
+    <thead>
     <tr align="center">
-        <td width="50"></td>
-        <td width="80">그룹</td>
-        <td>고객명</td>
+        <th scope="col" width="60"></th>
+        <th scope="col" width="90">고객그룹</th>
+        <th scope="col" >고객명</th>
     </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
-    <tr align="center">
-        <td>1</td><td>asd</td><td>asd</td>
-    </tr>
+    </thead>
 </table>
-<br>
-<br>
-
+<div class="container">
+<table class="table table-hover">
+    <tbody>
+    {% for i in range(queryData1|count) %}
+        <tr name="suikja_table" align="center">
+            <th scope="row" width="60">{{i+1}}</th>
+            <td width="90">{{queryData1[i][0]}}</td>
+            <td>{{queryData1[i][1]}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
 {% endblock %}
 </body>
 </html>
