@@ -17,14 +17,25 @@ div.container {
 <script>
 
 $(function() {
+
+    $('[name="suikja"]').focus();
+
     <!-- 아이콘 클릭 -->
     $('#find').click(function(){
     $('#submit').submit();
     });
 
-    <!-- 행 클릭 -->
+    <!-- 행 더블클릭 -->
     $('[name="suikja_table"]').click(function(){
-    alert($(this).find('td:eq(1)').text()); //클릭한 곳에 td값 중 2번째 텍스트값
+    var formInfo="tab5_suikja.html";
+    var cont=$(this).find('td:eq(1)').text(); //클릭한 곳에 td값 중 2번째 텍스트값
+    $('#find_arg1').val(cont);
+    $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow_suikja')}}");
+    $('#frm').attr("method", "POST");
+    $('#frm').attr("target", formInfo);
+    window.open("", formInfo, "height=1000, width=1400");
+    $('#frm').submit();
+    window.close();
     });
 
 
@@ -56,7 +67,7 @@ $(function() {
     </thead>
 </table>
 <div class="container">
-<table class="table table-hover">
+<table class="table table-hover" style=" cursor:pointer;">
     <tbody>
     {% for i in range(queryData1|count) %}
         <tr name="suikja_table" align="center">
@@ -68,6 +79,11 @@ $(function() {
     </tbody>
 </table>
 </div>
+
+<form id="frm" name="frm" method="post">
+    <input type="hidden" id="find_arg1" name="find_arg1"/>
+</form>
+
 {% endblock %}
 </body>
 </html>

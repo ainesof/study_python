@@ -42,10 +42,10 @@
             });
 
             <!-- 메뉴 설정 -->
-            $('button[name=menu1]').html('수탁고 현황');
-            $('button[name=menu2]').html('유형별 현황');
+            $('button[name=menu1]').html('그룹별 현황');
+            $('button[name=menu2]').html('자산별 현황');
             $('button[name=menu3]').html('자료실');
-            $('button[name=menu4]').html('메뉴4');
+            $('button[name=menu4]').html('레이아웃');
 
             $('button[name^=menu]').click(function(){
                 var menu=$(this).attr('name')
@@ -70,21 +70,23 @@
 
             <!-- 제목 설정 -->
             if($('input[name=logic]').val()==1 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 그룹별 수탁고 현황');
+                $('b[name=headtitle]').html('고객 그룹별 수탁고 총괄');
             }
             else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객별 설정액 현황/총괄');
+                $('b[name=headtitle]').html('고객 그룹별 순자산/설정액 현황');
             }
             else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==3){
-                $('b[name=headtitle]').html('고객 수익자별 순자산/설정액 현황');
+                $('b[name=headtitle]').html('아직 미구현');
             }
             else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 자산별 수탁고 현황');
+                $('b[name=headtitle]').html('고객 유형별 수탁고 총괄');
             }
             else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객 상품별 순자산/설정액 현황222');
+                $('b[name=headtitle]').html('고객 유형별 순자산/설정액 현황');
             }
-
+            else if($('input[name=logic]').val()==0 && $('input[name=win]').val()==0){
+                $('b[name=headtitle]').html('고객별 설정액 현황/유형별');
+            }
 
             <!-- 엑셀로 보내기 -->
             $("[name='toExcel']").click(function(){
@@ -156,8 +158,6 @@
         }
 
 
-
-
     </script>
 
 </head>
@@ -176,6 +176,7 @@
         background-size : 25px;
         background-position : center right;
         background-repeat : no-repeat;
+        cursor:pointer;
     }
 
 </style>

@@ -27,19 +27,21 @@ def returnSQL(para):
     # ---------------------------------------------------
     elif para == 'tab5_searchDateQuery':
         sql = tab5_searchDateQuery()
-    elif para == 'tab5_view1searchQuery1':
-        sql = tab5_view1searchQuery1()
-    elif para == 'tab5_view1searchQuery2':
-        sql = tab5_view1searchQuery2()
-    elif para == 'tab5_view2searchQuery':
-        sql = tab5_view2searchQuery()
+    elif para == 'tab5_viewSearchQuery_old':
+        sql = tab5_viewSearchQuery_old()
+    elif para == 'tab5_view1SearchQuery1':
+        sql = tab5_view1SearchQuery1()
+    elif para == 'tab5_view2SearchQuery1':
+        sql = tab5_view2SearchQuery1()
     # ----------------------------------------------------
     elif para == 'tab5_win1searchDateQuery':
         sql = tab5_win1searchDateQuery()
-    elif para == 'tab5_win1searchQuery':
-        sql = tab5_win1searchQuery()
-    elif para == 'tab5_win1searchQuery2':
-        sql = tab5_win1searchQuery2()
+    elif para == 'tab5_win1SearchQuery_old':
+        sql = tab5_win1SearchQuery_old()
+    elif para == 'tab5_group1SearchQuery1':
+        sql = tab5_group1SearchQuery1()
+    elif para == 'tab5_group2SearchQuery1':
+        sql = tab5_group2SearchQuery1()
 
     return sql
 
@@ -238,7 +240,7 @@ from dual
     return str
 
 
-def tab5_view1searchQuery1():
+def tab5_viewSearchQuery_old():
     """탭5"""
     str = \
 """  
@@ -327,7 +329,7 @@ group by rollup(SUIK_GROUP)
     return str
 
 
-def tab5_view1searchQuery2():
+def tab5_view1SearchQuery1():
     """inte_fund_type를 SUIK_FUND_TYPE로 기준 고침"""
     str = \
 """  
@@ -414,7 +416,7 @@ group by rollup(SUIK_GROUP)
 """
     return str
 
-def tab5_view2searchQuery():
+def tab5_view2SearchQuery1():
     """유형별 현황"""
     str=\
 """
@@ -502,7 +504,7 @@ group by rollup(SUIK_FUND_TYPE)
 """
     return str
 
-def tab5_win1searchQuery():
+def tab5_win1SearchQuery_old():
     "창 1,2에서 사용"
     str= \
 """    
@@ -563,7 +565,7 @@ order by SUIK_NAME, INTE_FUND_TYPE
     return str
 
 
-def tab5_win1searchQuery2():
+def tab5_group1SearchQuery1():
     """inte_fund_type를 SUIK_FUND_TYPE로 기준 고침"""
     str= \
 """    
@@ -623,7 +625,65 @@ order by SUIK_NAME, SUIK_FUND_TYPE
 """
     return str
 
-
+def tab5_group2SearchQuery1():
+    """inte_fund_type를 SUIK_FUND_TYPE로 기준 고침"""
+    str= \
+    """
+    select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
+decode(a.suik_group,'',decode(b.suik_group,'',decode(c.suik_group,'',decode(d.suik_group,'',e.suik_group,d.suik_group),c.suik_group),b.suik_group),a.suik_group) suik_group,
+nvl(a.suik_set_money,0) as suik_set_money,
+nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,nvl(b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,nvl(c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
+nvl(d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3, nvl(e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
+nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+from(
+select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+from SUIKJA_INFO a, FUND_INTEGRATE b
+where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
+and a.tr_ymd='{date}'and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+) a full outer join (
+select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+from SUIKJA_INFO a, FUND_INTEGRATE b
+where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
+and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+) b
+on  a.SUIK_NAME=b.SUIK_NAME and a.suik_group=b.suik_group and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ
+full outer join (
+select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+from SUIKJA_INFO a, FUND_INTEGRATE b
+where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
+and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+'06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+ ) c
+on a.SUIK_NAME=c.SUIK_NAME and a.suik_group=c.suik_group and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
+full outer join (
+select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+from SUIKJA_INFO a, FUND_INTEGRATE b
+where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
+and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+) d
+on a.SUIK_NAME=d.SUIK_NAME and a.suik_group=d.suik_group and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ
+full outer join (
+select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+from SUIKJA_INFO a, FUND_INTEGRATE b
+where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
+and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+) e
+on a.SUIK_NAME=e.SUIK_NAME and a.suik_group=e.suik_group and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
+order by SUIK_NAME, suik_group
+    """
+    return str
 
 def tab_hanaSearchQuery():
     """하나펀드에서 보내주는 테이블 위주로 사용시"""

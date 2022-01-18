@@ -15,24 +15,27 @@ $(function () {
     <!-- submit -->
     $('.tab5_td').dblclick(function(){ // dblclick
         var team=''
-        var group=''
+        var win1_arg2=''
         var x=$(this).closest('td').prevAll().length;
         var y=$(this).closest('tr').prevAll().length;
+        var ymax={{queryData1|count-2}} // row 수-2
+
         if (x>=2 && x<=5){
             team='1본부';
             }
         else if(x>=6 && x<=9){
             team='2본부';
             }
-        if (x>=2 && x<=9 && y<=11){
-            group=y;
+        if (x>=2 && x<=9 && y<=ymax){
+            win1_arg2=y;
+            var formInfo="tab5_group"+{{logic}}
             $('#win1_arg1').val(team);
-            $('#win1_arg2').val(group);
             $('#win1_arg3').val($("#datepicker").val());
-            $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow1')}}");
+            $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow1')}}"); //logic 1:본부,그룹,날짜,국민연금 여부, logic 2: 본부,유형,날짜
+            $('#win1_arg2').val(win1_arg2);
             $('#frm').attr("method", "POST");
-            $('#frm').attr("target", "formInfo");
-            window.open("", "formInfo", "height=1000, width=1400");
+            $('#frm').attr("target", formInfo);
+            window.open("", formInfo, "height=1000, width=1400");
             $('#frm').submit();
             }
     });
@@ -130,6 +133,7 @@ $(function () {
     <input type="hidden" id="win1_arg2" name="win1_arg2"/>
     <input type="hidden" id="win1_arg3" name="win1_arg3"/>
     <input type="hidden" id="win1_arg4" name="win1_arg4"/>
+    <input type="hidden" id="logic" name="logic" value="{{logic}}"/>
 </form>
 
 {% endblock %}

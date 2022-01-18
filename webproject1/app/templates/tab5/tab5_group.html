@@ -10,19 +10,31 @@
 <script>
 $(function() {
 
+<!-- 구분값 세팅 -->
+if({{logic}}==1){
+$('[name="gubun2"]').text("그룹");
+$('[name="gubun3"]').text("고객");
+}
+else if({{logic}}==2){
+$('[name="gubun2"]').text("유형");
+$('[name="gubun3"]').text("그룹");
+}
+
+
 <!-- submit -->
     $('.tab5_win1td').dblclick(function(){ // dblclick
     var x=$(this).closest('td').prevAll().length;
     var y=$(this).closest('tr').prevAll().length;
     if($(this).text().trim()){
         if(y<{{queryData1|length}}-1){
+            var formInfo="tab5_items"+{{logic}}
             var items=($(this).closest('tr').find('td:eq(0)').text()).trim(); // 클릭한 곳과 가장 가까운 tr태그에서 0번째 td를 찾아 값에서 null 제거
             $('#win2_arg3').val($("#datepicker").val());
             $('#win2_arg4').val(items);
             $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow2')}}");
             $('#frm').attr("method", "POST");
-            $('#frm').attr("target", "formInfo2");
-            window.open("", "formInfo2", "height=1000, width=1400");
+            $('#frm').attr("target", formInfo);
+            window.open("", formInfo, "height=1000, width=1400");
             $('#frm').submit();
             }
         }
@@ -73,9 +85,9 @@ $(function() {
                     <input type="hidden" name="win" value="{{win}}"/>
                     <input type="hidden" name="logic" value="{{logic}}"/>
                 </td>
-                <td align="center" style="width:60px";>그룹</td>
+                <td name="gubun2" align="center" style="width:60px";></td>
                 <td style="width:100px;"><input class="form-control" type="text" name="win1_arg2" value="{{group}}" style="width:100%;" readonly/></td>
-                <td align="center" style="width:60px";>고객</td>
+                <td name="gubun3" align="center" style="width:60px";></td>
                 <td style="width:220px"><select class="form-control" name="win1_arg4" id="suikja" style="width:100%;">
                     <option value="all">전체</option>
                     {% for i in range(suikja|length) %}

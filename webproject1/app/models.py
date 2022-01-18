@@ -1,38 +1,27 @@
 from app import db
 import cx_Oracle
-from datetime import date, timedelta
+
 from app import seqrchQuery
 import traceback, socket
 
-# class Question(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     subject = db.Column(db.String(200), nullable=False)
-#     content = db.Column(db.Text(), nullable=False)
-#     create_date = db.Column(db.DateTime(), nullable=False)
-#
-#
-# class Answer(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     question_id = db.Column(db.Integer, db.ForeignKey('tab5.id', ondelete='CASCADE'))
-#     tab5 = db.relationship('Question', backref=db.backref('answer_set'))
-#     content = db.Column(db.Text(), nullable=False)
-#     create_date = db.Column(db.DateTime(), nullable=False)
-
-
 def query(win,logic,date1,val1,val2,val3):
     try:
-
         if win is not None:
             cur = connect_hkfund()
             if win==1 and logic==1:
                 """date:날짜"""
-                sql = seqrchQuery.returnSQL('tab5_view1searchQuery2').format(date=date1)
+                sql = seqrchQuery.returnSQL('tab5_view1SearchQuery1').format(date=date1)
             elif win==1 and logic==2:
                 """date:날짜"""
-                sql = seqrchQuery.returnSQL('tab5_view2searchQuery').format(date=date1)
-            elif win==2 or win==3:
+                sql = seqrchQuery.returnSQL('tab5_view2SearchQuery1').format(date=date1)
+            elif (win==2 or win==3) and logic==1:
                 """date:날짜,val1:본부, val2:수익그룹, val3:NPS여부"""
-                sql=seqrchQuery.returnSQL('tab5_win1searchQuery2').format(date=date1,mg_bu=val1,suik_group=val2,nps=val3)
+                sql=seqrchQuery.returnSQL('tab5_group1SearchQuery1').format(date=date1,mg_bu=val1,suik_group=val2,nps=val3)
+            elif win==2 and logic==2:
+                """date:날짜,val1:본부, val2:항목, val3:"""
+                sql=seqrchQuery.returnSQL('tab5_group2SearchQuery1').format(date=date1,mg_bu=val1,item=val2,nps=val3)
+            else:
+                print('미구현')
             # print(sql)
             cur.execute(sql)
             row = cur.fetchall()
