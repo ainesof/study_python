@@ -3,7 +3,7 @@ import os.path
 
 from flask import Blueprint, render_template, request, send_file
 import traceback, socket
-from app.models import query, querydate, recentlydate, findSuikja
+from app.models import query, dateQuery
 import pandas as pd
 import json
 from collections import OrderedDict
@@ -20,15 +20,15 @@ def main():
         if request.method=='GET':
             win = 1
             logic = 1
-            date1 = recentlydate()
+            date1 = dateQuery('tab5_view', 'recently',win,'')
             date1 = date1[0][0]
         elif request.method=='POST':
             date1 = request.form['datepicker']
             win = int(request.form['win'])
             logic = int(request.form['logic'])
 
-        header, df, val, searchdate = cal(win, logic, date1, '', '', '', '')
-        df2 = setComma(df)
+        header, df, val, searchdate = cal('tab5_view',win, logic, date1, '', '', '', '')
+        df2 = setComma(df,1)
         """queryData1: 내용,searchdate: 조회기준날짜, header: 테이블 컬럼, data1:날짜, ip:접속자 IP """
         return render_template('tab5/tab5_view.html', queryData1=df2, header=header, searchdate=searchdate,
                                date1=date1, ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), win=win,
@@ -44,7 +44,7 @@ def main2():
         if request.method=='GET':
             win = 1
             logic = 2
-            date1 = recentlydate()
+            date1 = dateQuery('tab5_view', 'recently',win, '')
             date1 = date1[0][0]
         elif request.method=='POST':
             date1 = request.form['datepicker']
@@ -53,8 +53,8 @@ def main2():
 
         # tab5_readJson()
         # tab5_createJson()
-        header, df, val, searchdate = cal(win, logic, date1, '', '', '', '')
-        df2 = setComma(df)
+        header, df, val, searchdate = cal('tab5_view',win, logic, date1, '', '', '', '')
+        df2 = setComma(df,1)
         """queryData1: 내용,searchdate: 조회기준날짜, header: 테이블 컬럼, data1:날짜, ip:접속자 IP """
         return render_template('tab5/tab5_view.html', queryData1=df2, header=header, searchdate=searchdate,
                                date1=date1, ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), win=win,
@@ -102,8 +102,8 @@ def tab5_newwindow1():
             else:
                 group = win1_arg2
             date1 = request.form['win1_arg3']
-            header, df, val, searchdate = cal(win, logic, date1, team, group, NPS, request.form['win1_arg4'])
-            df2 = setComma(df)
+            header, df, val, searchdate = cal('tab5_group',win, logic, date1, team, group, NPS, request.form['win1_arg4'])
+            df2 = setComma(df,1)
 
             """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜 date1:조회일, group:고객그룹, team:본부, suikja:수익자,
              selected:선택된 수익자, ip:접속자 IP"""
@@ -121,8 +121,8 @@ def tab5_newwindow1():
             else:
                 item = request.form['win1_arg2']
             date1 = request.form['win1_arg3']
-            header, df, val, searchdate = cal(win, logic, date1, team, item, NPS, request.form['win1_arg4'])
-            df2 = setComma(df)
+            header, df, val, searchdate = cal('tab5_group',win, logic, date1, team, item, NPS, request.form['win1_arg4'])
+            df2 = setComma(df,1)
 
             """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜 date1:조회일, group:고객그룹, team:본부, suikja:수익자,
              selected:선택된 수익자, ip:접속자 IP"""
@@ -146,8 +146,8 @@ def tab5_newwindow2():
         items = request.form['win2_arg4']
         if group == 'NPS':
             NPS = 'NPS'
-        header, df, val, searchdate = cal(win, logic, date1, team, group, items, '')
-        df2 = setComma(df)
+        header, df, val, searchdate = cal('tab5_items',win, logic, date1, team, group, items, '')
+        df2 = setComma(df,1)
         """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜 date1:조회일, team:본부, group:고객그룹, items:상품유형,
          ip:접속자 IP"""
         return render_template('tab5/tab5_items.html', queryData1=df2, header=header, searchdate=searchdate,
@@ -159,16 +159,18 @@ def tab5_newwindow2():
 
 
 @bp.route('/find_suikja/', methods=["GET","POST"])
-def findpopup():
+def find_suikjaPopup():
     """수익자 찾는 팝업"""
     try:
+        logic = 99
+        win = 1
         if request.method=='GET':
             suikja=''
         elif request.method=='POST':
             suikja = request.form['suikja']
-        df = pd.DataFrame(findSuikja(suikja))
+        df = pd.DataFrame(query(win, logic, '', suikja, '', ''))
         df = df.values.tolist()
-        return render_template('tab5/find_suikja.html',queryData1=df, suikja=suikja)
+        return render_template('tab5/find_suikja.html',queryData1=df, suikja=suikja,logic=logic)
 
     except:
         traceback.print_exc()
@@ -178,10 +180,18 @@ def findpopup():
 def tab5_newwindow_suikja():
     """수익자 정보 다이렉트 검색"""
     try:
+        win=2
+        logic = int(request.form['logic'])
         suikja = request.form['find_arg1']
-        date1 = recentlydate()
+        date1 = dateQuery('tab5_suikja','recently',win,'')
         date1 = date1[0][0]
-        return render_template('tab5/tab5_suikja.html',date1=date1,suikja=suikja,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+        header, df, val, searchdate = cal('tab5_suikja',win, logic, date1, suikja, '', '', '')
+        df2 = setComma(df,2)
+
+        """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜 date1:조회일, team:본부, group:고객그룹, items:상품유형,
+         ip:접속자 IP"""
+        return render_template('tab5/tab5_suikja.html', queryData1=df2, header=header, searchdate=searchdate,
+                               date1=date1, suikja=suikja, ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), win=win, logic=logic)
 
     except:
         traceback.print_exc()
@@ -197,11 +207,14 @@ def layout():
         traceback.print_exc()
 
 
-def cal(win, logic, date1, val1, val2, val3, val4):
+def cal(gubun,win, logic, date1, val1, val2, val3, val4):
     """logic:페이지구분, date1:날짜"""
     try:
         val = ''
-        if win == 1:
+        df2 = pd.DataFrame(dateQuery(gubun,'header',win,date1))
+        searchdate = df2.values.tolist()
+
+        if gubun == 'tab5_view' and win == 1:
             if logic == 1:
                 header = ['고객그룹', '설정액 합', '설정액', '전월말대비', '전분기말대비', '전년말대비', '설정액',
                           '전월말대비', '전분기말대비', '전년말대비']
@@ -210,14 +223,11 @@ def cal(win, logic, date1, val1, val2, val3, val4):
                           '전월말대비', '전분기말대비', '전년말대비']
             df = pd.DataFrame(query(win, logic, date1, '', '', ''))
             df = df.values.tolist()
-            df2 = pd.DataFrame(querydate(date1, win))
-            searchdate = df2.values.tolist()
-            changeWon(df)
+            changeWon(df,1)
 
-        elif win == 2:
+        elif gubun == 'tab5_group' and win == 2:
             """logic 1 val1:본부, val2:수익그룹, val3:NPS여부, val4: 수익자명(재검색용)"""
-            """logic 2 val1:본부, val2:항목, val3:, val4: 고객그룹(재검색용)"""
-            valcal = 0
+            """logic 2 val1:본부, val2:항목, val4: 고객그룹(재검색용)"""
             if val2 == 'NPS':
                 val2 = '연기금'
                 val3 = '='
@@ -253,20 +263,10 @@ def cal(win, logic, date1, val1, val2, val3, val4):
                     for j in range(len(df)):
                         valsum[i] += math.floor(df[j][i])
                 df.append(valsum)
+                changeWon(df,1)
 
-                # 순자산 표시, 차액 표시 스위칭 용도
-                # for i in range(0, len(df)):
-                #     for j in range(len(df[0])):
-                #         if j == 2:
-                #             valcal = df[i][j]
-                #         if j > 2 and j < 7:
-                #             df[i][j] = valcal - df[i][j]
-                changeWon(df)
-                df2 = pd.DataFrame(querydate(date1, win))
-                searchdate = df2.values.tolist()
-
-        elif win == 3:
-            """val1:본부, val2:수익그룹, val3:항목, val4:"""
+        elif gubun == 'tab5_items' and win == 3:
+            """val1:본부, val2:수익그룹, val3:항목"""
 
             header = ['유형', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말',
                       '전분기말', '전년말', '전전년말']
@@ -298,18 +298,24 @@ def cal(win, logic, date1, val1, val2, val3, val4):
                         valsum[i] += math.floor(df[j][i])
                 df.append(valsum)
 
-                # 순자산 표시, 차액 표시 스위칭 용도
-                for i in range(0, len(df)):
-                    for j in range(len(df[0])):
-                        if j == 2:
-                            valcal = df[i][j]
-                        if j > 2 and j < 7:
-                            df[i][j] = valcal - df[i][j]
-                changeWon(df)
-            df2 = pd.DataFrame(querydate(date1, win))
-            searchdate = df2.values.tolist()
-        #  val이 없음
-        return header, df, val, searchdate 
+                # 순자산 표시, 차액 표시 스위칭 용도, 쿼리에 최종 뺄셈 연산 지워야함
+                # valcal = 0
+                # for i in range(0, len(df)):
+                #     for j in range(len(df[0])):
+                #         if j == 2:
+                #             valcal = df[i][j]
+                #         if j > 2 and j < 7:
+                #             df[i][j] = valcal - df[i][j]
+                changeWon(df,1)
+        elif gubun == 'tab5_suikja' and win == 2:
+            """date1:날짜, val1:수익자"""
+            header = ['펀드코드', '펀드명', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말',
+                      '전분기말', '전년말', '전전년말']
+            df = pd.DataFrame(query(win, logic, date1, val1, '', ''))
+            df = df.values.tolist()
+            changeWon(df,2)
+
+        return header, df, val, searchdate
     except:
         traceback.print_exc()
 
@@ -341,19 +347,19 @@ def download():
 
 # --------단순 메소드
 
-def changeWon(df):
-    """단위 억으로 변경"""
+def changeWon(df,start):
+    """단위 억으로 변경 df: 변경할 데이터프레임, start: 변환할 column 시작값"""
     for i in range(len(df)):
-        for j in range(1, len(df[0])):
+        for j in range(start, len(df[0])):
             if (str(type(df[i][j])).find('int') or str(type(df[i][j])).find('float')):
                 df[i][j] = math.floor(df[i][j] / 100000000)
 
 
-def setComma(df):
+def setComma(df,start):
     """콤마 찍어서 반환"""
     df2 = df.copy()
     for i in range(len(df)):
-        for j in range(1, len(df[0])):
+        for j in range(start, len(df[0])):
             if j > 0:
                 df2[i][j] = format(df[i][j], ',')
     return df2
