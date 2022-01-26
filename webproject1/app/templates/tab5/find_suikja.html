@@ -20,14 +20,26 @@ $(function() {
 
     $('[name="suikja"]').focus();
 
-    <!-- 아이콘 클릭 -->
+    <!-- 아이콘 클릭 빈값: 전체조회, 값:항목검색 -->
     $('#find').click(function(){
-    $('#submit').submit();
+        if($('[name="suikja"]').val()==''){
+        var formInfo="tab5_suikja";
+        $('#find_arg1').val('');
+        $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow_suikja')}}");
+        $('#frm').attr("method", "POST");
+        $('#frm').attr("target", formInfo);
+        window.open("", formInfo, "height=1000, width=1400");
+        $('#frm').submit();
+        window.close();
+        }
+        else{
+            $('#submit').submit();
+        }
     });
 
-    <!-- 행 더블클릭 -->
+    <!-- 행 클릭 -->
     $('[name="suikja_table"]').click(function(){
-    var formInfo="tab5_suikja.html";
+    var formInfo="tab5_suikja";
     var cont=$(this).find('td:eq(1)').text(); //클릭한 곳에 td값 중 2번째 텍스트값
     $('#find_arg1').val(cont);
     $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow_suikja')}}");
@@ -37,8 +49,6 @@ $(function() {
     $('#frm').submit();
     window.close();
     });
-
-
 });
 
 </script>
@@ -51,8 +61,11 @@ $(function() {
             <form action="{{ url_for('tab5.find_suikjaPopup')}}" id="submit" method="post">
                 <td style="width:150px;">
                     <input class="form-control" type="text" name="suikja" value="{{suikja}}"/>
+                    <input type="hidden" name="win" value="{{win}}"/>
+                    <input type="hidden" name="logic" value="{{logic}}"/>
+                    <input type="hidden" name="date1" value="{{date1}}"/>
                 </td>
-                <td><img src="{{url_for('static',filename='image/find.png')}}" id="find" height="25" style="cursor:pointer;"></td>
+                <td><img src="{{url_for('static',filename='images/find.png')}}" id="find" height="25" style="cursor:pointer;"></td>
             </form>
     </tr>
     <tr style="height:30px"></tr>
@@ -82,7 +95,9 @@ $(function() {
 
 <form id="frm" name="frm" method="post">
     <input type="hidden" id="find_arg1" name="find_arg1"/>
+    <input type="hidden" id="win" name="win" value="{{win}}"/>
     <input type="hidden" id="logic" name="logic" value="{{logic}}"/>
+    <input type="hidden" name="date1" value="{{date1}}"/>
 </form>
 
 {% endblock %}

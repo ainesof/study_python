@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <!--favicon -->
+    <link rel="icon" href="{{url_for('static',filename='images/icon.ico')}}" type="image/x-icon" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- bootstrapCSS -->
-    <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{url_for('static',filename='bootstrap.min.css')}}">
+    <script src="{{url_for('static',filename='jquery.min.js')}}"></script>
+    <script src="{{url_for('static',filename='popper.min.js')}}"></script>
+    <script src="{{url_for('static',filename='bootstrap.min.js')}}"></script>
     <!-- pybo CSS-->
     <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
     <!-- datapicker -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js" charset = "UTF-8"></script>
-    <link
-    rel="stylesheet"
-    href="//code.jquery.com/ui/1.8.23/themes/smoothness/jquery-ui.css"
-    />
+    <link rel="stylesheet" href="{{url_for('static',filename='bootstrap-datepicker.css')}}" charset = "UTF-8">
+    <link rel="stylesheet" href="{{url_for('static',filename='jquery-ui.css')}}"/>
         <!-- 필수, SheetJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+    <script src="{{url_for('static',filename='xlsx.full.min.js')}}"></script>
     <!--필수, FileSaver savaAs 이용 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+    <script src="{{url_for('static',filename='FileSaver.min.js')}}"></script>
+    <!-- DDoS 공격막는 스크립트 -->
     <script
       src="https://code.jquery.com/jquery-3.6.0.js"
       integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
       crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{url_for('static',filename='jquery-ui.js')}}"></script>
     <script>
         $(function() {
 
-
-
-            <!-- 메뉴헤더 더블클릭 -->
+            <!-- 테이블헤더 더블클릭 -->
             $('.tab5_th').dblclick(function(){
             var a=$(this).closest('th').prevAll().length; //클릭한 곳에서 가장 가까운 th태그들 개수 합의 길이
             {% for i in range(header|length) %}
@@ -38,15 +38,16 @@
                 {% for i in range(header|length) %}
                     $('.tab5_th').eq({{i}}).text('{{header[i]}}');
                 {% endfor %}
-            },4000);
+            },4000); // 4초
             });
 
-            <!-- 메뉴 설정 -->
+            <!-- 메뉴 제목 -->
             $('button[name=menu1]').html('그룹별 현황');
             $('button[name=menu2]').html('자산별 현황');
             $('button[name=menu3]').html('자료실');
             $('button[name=menu4]').html('레이아웃');
 
+            <!-- 메뉴 링크 -->
             $('button[name^=menu]').click(function(){
                 var menu=$(this).attr('name')
                 if(menu=='menu1'){
@@ -63,39 +64,61 @@
                 }
             });
 
-            <!-- 검색창 -->
+            <!-- 설명 -->
+            $('#datepicker').attr("title", "전 영업일까지 자료가 존재");
+            $('#find').attr("title", "검색어 없이 누르면 전체 검색");
+
+            <!-- 수익자 검색창 -->
             $('[name=find]').click(function(){
-                window.open("/find_suikja/", "findForm", "height=500, width=500");
+                if({{logic}}=='99'){
+                    var formInfo="find_suikja"+{{logic}}
+                    $('[name="arg1"]').val($("#datepicker").val());
+                    $('#frm').attr("action", "{{ url_for('tab5.find_suikjaPopup2')}}");
+                    $('#frm').attr("method", "POST");
+                    $('#frm').attr("target", formInfo);
+                    window.open("", formInfo, "height=500, width=500");
+                    $('#frm').submit();
+                }
+                else{
+                window.open("/find_suikja/", formInfo, "height=500, width=500");
+                }
             });
 
-            <!-- 제목 설정 -->
-            if($('input[name=logic]').val()==1 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 그룹별 수탁고 총괄');
-            }
-            else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객 그룹별 순자산/설정액 현황');
-            }
-            else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==3){
-                $('b[name=headtitle]').html('아직 미구현');
-            }
-            else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 유형별 수탁고 총괄');
-            }
-            else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객 유형별 순자산/설정액 현황');
-            }
-            else if($('input[name=logic]').val()==0 && $('input[name=win]').val()==0){
-                $('b[name=headtitle]').html('고객별 설정액 현황/유형별');
-            }
+            <!-- 제목 설정 logic,win,str 순 -->
+            var title = [
+                        [1,1,'고객 그룹별 수탁고 총괄'],
+                        [1,2,'고객 그룹별 순자산/설정액 현황'],
+                        [1,3,'유형별 펀드 현황'],
+                        [2,1,'고객 유형별 수탁고 총괄'],
+                        [2,2,'고객 유형별 순자산/설정액 현황'],
+                        [2,3,'그룹별 펀드 현황'],
+                        [99,2,'고객별 설정액 현황/유형별']
+                        ]
+            title.forEach(function(element){
+                if($('input[name=logic]').val()==element[0] && $('input[name=win]').val()==element[1]){
+                    $('b[name=headtitle]').html(element[2]);
+                    }
+                });
 
             <!-- 엑셀로 보내기 -->
             $("[name='toExcel']").click(function(){
                 exportExcel();
             });
 
-            <!-- 날짜변경시 -->
+            <!-- 날짜 변경시 -->
             $('#datepicker').datepicker(datepicker).change(function(e) {
-           $('#submit').submit();
+                var it='{{date1}}';
+                var modidate = $('#datepicker').val().split('-');
+                var modidate = new Date(modidate[0], modidate[1]-1, modidate[2]);
+                var recentlydate = '{{recentlydate}}'.split('-');
+                var recentlydate = new Date(recentlydate[0], recentlydate[1]-1, recentlydate[2]);
+                var diff = Math.floor((recentlydate-modidate)/(24*60*60*1000));
+                if(diff>=0){ $('#submit').submit(); }
+                else{
+                    alert('데이터가 존재하지 않습니다');
+                    $('#datepicker').val(it);
+                }
+
             });
 
         });
@@ -159,20 +182,17 @@
 
 
     </script>
-
 </head>
 <body>
 <style>
     .ui-datepicker{ font-size: 15px; width: 200px; }
     .ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
     .ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
-    table{
 
-        width:100%;
-    }
+    table{ width:100%; }
 
     input[name='find'] {
-        background-image : url('{{url_for('static',filename='image/find.png')}}');
+        background-image : url('{{url_for('static',filename='images/find.png')}}');
         background-size : 25px;
         background-position : center right;
         background-repeat : no-repeat;
@@ -182,13 +202,6 @@
 </style>
 <!-- 기본 템플릿 안에 삽입될 내용 start -->
 {% block content %}
-
-     <table>
-         <tr>
-             <td> 사용자 2IP: <mark>{{ip}}</mark></td>
-         </tr>
-    </table>
-
 
 {% endblock %}
 <!-- 기본 템플릿 안에 삽입될 내용 end -->

@@ -3,18 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-        {% extends 'base.html' %}
+    {% extends 'base_etc.html' %}
     {% block content %}
+<script>
+$(function () {
+
+    $('#paritycheck').click(function(){
+    var check='';
+
+    {% for i in range(queryData1|count) %}
+        if('{{queryData1[i][2]}}'==false){
+            check=false;
+        }
+    {% endfor %}
+        if(check==''){
+            $('#paritycheck').html('이상 없음');
+        }
+    });
+
+});
+
+</script>
+
+
 </head>
 <body>
-<br>
-<br>
+<div class="btn-group btn-group-lg" role="group" aria-label="...">
+    <button type="button" class="btn btn-outline-secondary" name="menu1"/>
+    <button type="button" class="btn btn-outline-secondary" name="menu2"/>
+    <button type="button" class="btn btn-outline-secondary" name="menu3"/>
+    <button type="button" class="btn btn-outline-secondary" name="menu4"/>
+</div>
+<br><br>
 
-1-1고객 그룹별 수탁고 총괄->1-2고객 그룹별 순자산/설정액 현황(본부/그룹+고객)->1-3펀드리스트 예정
-<br>
-2-1고객 유형별 수탁고 총괄->2-2고객 유형별 순자산/설정액 현황(본부/유형+그룹)->2-3펀드리스트 예정
-<br>
-다이렉트 고객정보 검색(새창)
+<ul class="list-group">
+  <li class="list-group-item active"> 레이아웃 구성</li>
+  <li class="list-group-item">1-1고객 그룹별 수탁고 총괄->1-2고객 그룹별 순자산/설정액 현황(본부/그룹+고객)->1-3펀드리스트 예정</li>
+  <li class="list-group-item">2-1고객 유형별 수탁고 총괄->2-2고객 유형별 순자산/설정액 현황(본부/유형+그룹)->2-3펀드리스트 예정</li>
+  <li class="list-group-item">99-1다이렉트 수익자정보 검색(새창)->99-2다이렉트 수익자정보</li>
+</ul>
+
+
+<div style="margin:10px;">
+<!-- Javascript가 필요없이 data-toggle에 collapse href에 대상 id을 설정합니다. -->
+<button id="paritycheck" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">테이블값 검증</button>
+</div>
+<!-- collapse 대상 태그는 class를 collapse로 설정합니다. -->
+<div class="collapse" id="collapseExample">
+    <div class="well">
+        <table class="table table-striped table-bordered table-hover" id="tab5_table" >
+            <thead>
+                <tr class="thead-dark" align="center">
+                    <th>No.</th>
+                    <th>펀드번호</th>
+                    <th>설정액</th>
+                    <th>금액 비교</th>
+                </tr>
+            </thead>
+            <tbody align="center">
+                {% for i in range(queryData1|count) %}
+                    <tr>
+                        {% for j in range(4) %}
+                            <td>{{queryData1[i][j]}}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}
+
 </body>
 </html>

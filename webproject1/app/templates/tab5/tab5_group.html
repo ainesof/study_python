@@ -9,7 +9,6 @@
 <body>
 <script>
 $(function() {
-
 <!-- 구분값 세팅 -->
 if({{logic}}==1){
 $('[name="gubun2"]').text("그룹");
@@ -21,6 +20,7 @@ $('[name="gubun3"]').text("그룹");
 }
 
 
+
 <!-- submit -->
     $('.tab5_win1td').dblclick(function(){ // dblclick
     var x=$(this).closest('td').prevAll().length;
@@ -28,9 +28,9 @@ $('[name="gubun3"]').text("그룹");
     if($(this).text().trim()){
         if(y<{{queryData1|length}}-1){
             var formInfo="tab5_items"+{{logic}}
-            var items=($(this).closest('tr').find('td:eq(0)').text()).trim(); // 클릭한 곳과 가장 가까운 tr태그에서 0번째 td를 찾아 값에서 null 제거
+            var clickvalue=($(this).closest('tr').find('td:eq(0)').text()).trim(); // 클릭한 곳과 가장 가까운 tr태그에서 0번째 td를 찾아 값에서 null 제거
             $('#win2_arg3').val($("#datepicker").val());
-            $('#win2_arg4').val(items);
+            $('#win2_arg4').val(clickvalue);
             $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow2')}}");
             $('#frm').attr("method", "POST");
             $('#frm').attr("target", formInfo);
@@ -41,7 +41,7 @@ $('[name="gubun3"]').text("그룹");
     });
 
     <!-- 수익자 변경시 -->
-    $('#suikja').change(function(){
+    $('#selection').change(function(){
         $('#submit').submit();
     });
 
@@ -51,9 +51,8 @@ $('[name="gubun3"]').text("그룹");
 
 
 <div class="container my-3">
-    <form action="{{ url_for('tab5.tab5_newwindow1')}}" id="submit" method="post">
-    <table>
 
+    <table>
         <tr><td colspan="6">
         <div class="btn-group btn-group-lg" role="group" aria-label="...">
             <button type="button" class="btn btn-outline-secondary" name="menu1"/>
@@ -65,15 +64,16 @@ $('[name="gubun3"]').text("그룹");
         <tr style="height:30px"></tr>
     </table>
     <table>
+        <form action="{{ url_for('tab5.tab5_newwindow1')}}" id="submit" method="post">
         <table>
-             <tr>
+            <tr>
                  <p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p>
-             </tr>
-             <tr align="right">
+            </tr>
+            <tr align="right">
                  <div class="d-flex flex-row-reverse bd-highlight">
-                      <input class="form-control" name="find" type="text" style="width:100px;"/>
+                      <input class="form-control" name="find" type="text" style="width:110px;"/>
                  </div>
-             </tr>
+            </tr>
             <tr>
                 <div class="d-flex justify-content-between">
                     <div>
@@ -86,34 +86,35 @@ $('[name="gubun3"]').text("그룹");
                     <input type="hidden" name="logic" value="{{logic}}"/>
                 </td>
                 <td name="gubun2" align="center" style="width:60px";></td>
-                <td style="width:100px;"><input class="form-control" type="text" name="win1_arg2" value="{{group}}" style="width:100%;" readonly/></td>
+                <td style="width:100px;"><input class="form-control" type="text" name="win1_arg2" value="{{readonly}}" style="width:100%;" readonly/></td>
                 <td name="gubun3" align="center" style="width:60px";></td>
-                <td style="width:220px"><select class="form-control" name="win1_arg4" id="suikja" style="width:100%;">
+                <td style="width:220px"><select class="form-control" name="win1_arg4" id="selection" style="width:100%;">
                     <option value="all">전체</option>
-                    {% for i in range(suikja|length) %}
-                    {% if suikja[i]==selected %}
-                        <option value="{{suikja[i]}}" selected>{{suikja[i]}}</option>
+                    {% for i in range(selection|length) %}
+                    {% if selection[i]==selected %}
+                        <option value="{{selection[i]}}" selected>{{selection[i]}}</option>
                     {% else %}
-                        <option value="{{suikja[i]}}">{{suikja[i]}}</option>
+                        <option value="{{selection[i]}}">{{selection[i]}}</option>
                     {% endif %}
                     {% endfor %}
                 </select></td>
+                    </div>
+                    <div><td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
                 </div>
-                <div><td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
-            </tr></form>
-        </table>
-        </form>
+            </tr>
+        </table></form>
+    </form>
         <div align="right"><b>단위: (억)</b></div>
         <table class="table table-striped table-bordered table-hover" id="tab5_table">
             <thead>
-                <tr class="thead-dark" align="center">
+                <tr class="thead-dark"  style="font-size:12pt;" align="center">
                     <th colspan="2"></th>
                     <th colspan="5">순자산</th>
                     <th colspan="4">설정액</th>
                 </tr>
                 <tr class="thead-dark" align="center">
                     {% for i in range(header|length) %}
-                    <th class="tab5_th"><span style="font-size:12pt;">{{header[i]}}</span></th>
+                    <th class="tab5_th" style="font-size:10pt;">{{header[i]}}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -122,11 +123,11 @@ $('[name="gubun3"]').text("그룹");
                 <tr id="row{{i}}">
                     {% for j in range(header|length) %}
                         {% if j==0 %}
-                        <td class="tab5_win1td" align="left" bgcolor=#CCCCCC>
+                        <td class="tab5_win1td" align="left" bgcolor=#CCCCCC style="font-size:11pt;">
                         {% else %}
-                        <td class="tab5_win1td" align="right">
+                        <td class="tab5_win1td" align="right" style="font-size:11pt;">
                         {% endif %}
-                        <span style="font-size:11pt;">{{queryData1[i][j]}}</span>
+                        {{queryData1[i][j]}}
                         </td>
                     {% endfor %}
                 </tr>
@@ -139,9 +140,11 @@ $('[name="gubun3"]').text("그룹");
 
 <form id="frm" name="frm" method="post">
     <input type="hidden" id="win2_arg1" name="win2_arg1" value="{{team}}"/>
-    <input type="hidden" id="win2_arg2" name="win2_arg2" value="{{group}}"/>
+    <input type="hidden" id="win2_arg2" name="win2_arg2" value="{{readonly}}"/>
     <input type="hidden" id="win2_arg3" name="win2_arg3"/>
     <input type="hidden" id="win2_arg4" name="win2_arg4"/>
+    <input type="hidden" name="win" value="{{win}}"/>
+    <input type="hidden" name="logic" value="{{logic}}"/>
 </form>
 {% endblock %}
 </body>

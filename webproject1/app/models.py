@@ -1,33 +1,46 @@
 from app import db
 import cx_Oracle
+import pandas as pd
 
-from app import seqrchQuery
+from app import searchQuery
 import traceback, socket
 
 def query(win,logic,date1,val1,val2,val3):
+    """자료 뿌리는 쿼리"""
     try:
         if win is not None:
             cur = connect_hkfund()
             if win == 1 and logic == 1:
                 """date1:날짜"""
-                sql = seqrchQuery.returnSQL('tab5_view1SearchQuery1').format(date=date1)
+                sql = searchQuery.returnSQL('tab5_view1SearchQuery1').format(date=date1)
             elif win == 1 and logic == 2:
                 """date1:날짜"""
-                sql = seqrchQuery.returnSQL('tab5_view2SearchQuery1').format(date=date1)
-            elif (win == 2 or win == 3) and logic == 1:
+                sql = searchQuery.returnSQL('tab5_view2SearchQuery1').format(date=date1)
+            elif win == 2 and logic == 1:
                 """date1:날짜,val1:본부, val2:수익그룹, val3:NPS여부"""
-                sql = seqrchQuery.returnSQL('tab5_group1SearchQuery1').format(date=date1,mg_bu=val1,suik_group=val2,nps=val3)
+                sql = searchQuery.returnSQL('tab5_group1SearchQuery1').format(date=date1,mg_bu=val1,suik_group=val2,nps=val3)
             elif win == 2 and logic == 2:
                 """date1:날짜,val1:본부, val2:항목, val3:NPS여부"""
-                sql = seqrchQuery.returnSQL('tab5_group2SearchQuery1').format(date=date1,mg_bu=val1,item=val2,nps=val3)
+                sql = searchQuery.returnSQL('tab5_group2SearchQuery1').format(date=date1,mg_bu=val1,item=val2,nps=val3)
+            elif win == 3 and logic == 1:
+                """date1:날짜"""
+                sql = searchQuery.returnSQL('tab5_items1SearchQuery1').format(date=date1)
+            elif win == 3 and logic == 2:
+                """date1:날짜"""
+                sql = searchQuery.returnSQL('tab5_items1SearchQuery1').format(date=date1)
             elif win == 1 and logic == 99:
                 """val1:수익자"""
-                sql = seqrchQuery.returnSQL('find_SuikjaSearchQuery').format(suikja=val1)
+                sql = searchQuery.returnSQL('find_SuikjaSearchQuery').format(suikja=val1)
             elif win == 2 and logic == 99:
                 """date1:날짜,val1:수익자"""
-                sql = seqrchQuery.returnSQL('tab5_suikjaSearchQuery1').format(date=date1,suikja=val1)
+                if val1=='전체':
+                    suikja=''
+                else:
+                    suikja=val1
+                sql = searchQuery.returnSQL('tab5_suikjaSearchQuery1').format(date=date1,suikja=suikja)
             else:
                 print('미구현')
+                print(win,logic,date1,val1,val2,val3)
             # print(sql)
             cur.execute(sql)
             row = cur.fetchall()
@@ -41,26 +54,57 @@ def dateQuery(gubun,module,win,date1):
         sql=''
         cur = connect_hkfund()
         if module == 'recently':
-            """DB 최근날짜 가져옴"""
-            sql = seqrchQuery.returnSQL('tab5_recDateQuery')
+            """DB 최근자료 날짜 가져옴"""
+            sql = searchQuery.returnSQL('tab5_recentlyDateSearchQuery')
         elif module == 'header':
-            """조회 쿼리의 기준 날짜조회"""
-            if win == 1:
-                query = 'tab5_searchDateQuery'
-            elif win == 2 or win == 3:
-                query = 'tab5_win1searchDateQuery'
-            if gubun == 'tab5_suikja':
-                print('헤더클릭 안 만듬')
-            sql = seqrchQuery.returnSQL(query).format(date=date1)
+            """조회 쿼리의 기준별 일자 조회"""
+            query = 'tab5_headerDateSearchQuery'
+            sql = searchQuery.returnSQL(query).format(date=date1)
+        elif module == 'parity':
+            """조회값 하나펀드 자료테이블과 비교"""
+            query = 'tableParityCheck'
+            sql = searchQuery.returnSQL(query).format(date=date1)
         # print(sql)
         cur.execute(sql)
         row = cur.fetchall()
-        return row
+        df=pd.DataFrame(row)
+
+        if module == 'header':
+            df.columns = ['null', 'str', 'today', 'lastmonth', 'lastquater', 'lastyear', 'last2year']
+            if gubun == 'tab5_suikja':
+                df=df[['str','null','today','today','lastmonth','lastquater','lastyear','last2year','lastmonth','lastquater',
+                       'lastyear','last2year']]
+            elif win == 1:
+                df=df[['str','today','today','lastmonth','lastquater','lastyear','today','lastmonth','lastquater','lastyear']]
+            elif win == 2:
+                df = df[['str', 'today', 'today', 'lastmonth', 'lastquater', 'lastyear', 'last2year', 'lastmonth', 'lastquater',
+                     'lastyear', 'last2year']]
+            elif win == 3:
+                df = df[['str', 'null', 'today', 'lastmonth', 'lastquater', 'lastyear', 'last2year', 'lastmonth', 'lastquater',
+                     'lastyear', 'last2year']]
+        return df
+    except:
+        traceback.print_exc()
+
+def etcQuery(module,val1):
+    """기타 쿼리들"""
+    try:
+        sql=''
+        cur = connect_hkfund()
+        if module == 'group':
+            """DB 최근자료 날짜 가져옴"""
+            query = 'findGroup'
+            sql = searchQuery.returnSQL(query).format(suikja=val1)
+        # print(sql)
+        cur.execute(sql)
+        row = cur.fetchall()
+        df = pd.DataFrame(row)
+        return df
     except:
         traceback.print_exc()
 
 def connect_hkfund():
-    """HKfund DB에 접속"""
+    """오라클 DB에 접속"""
     try:
         conn={}
         server = [{'id': 'system', 'pw': '1234', 'connect': 'localhost:1521/xe'},

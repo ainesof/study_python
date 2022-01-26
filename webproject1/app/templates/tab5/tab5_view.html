@@ -12,8 +12,10 @@
 
 <!-- 위치값을 ID로 받아서 팝업 x=row(group파악용), y=column(team 파악용) -->
 $(function () {
+
     <!-- submit -->
     $('.tab5_td').dblclick(function(){ // dblclick
+        var clickvalue=''
         var team=''
         var win1_arg2=''
         var x=$(this).closest('td').prevAll().length;
@@ -22,11 +24,13 @@ $(function () {
 
         if (x>=2 && x<=5){
             team='1본부';
+            var clickvalue=($(this).closest('tr').find('td:eq(2)').text()).trim();
             }
         else if(x>=6 && x<=9){
             team='2본부';
+            var clickvalue=($(this).closest('tr').find('td:eq(6)').text()).trim();
             }
-        if (x>=2 && x<=9 && y<=ymax){
+        if (x>=2 && x<=9 && y<=ymax && clickvalue!=0){
             win1_arg2=y;
             var formInfo="tab5_group"+{{logic}}
             $('#win1_arg1').val(team);
@@ -39,7 +43,6 @@ $(function () {
             $('#frm').submit();
             }
     });
-
 
 });
 
@@ -66,7 +69,7 @@ $(function () {
              </tr>
              <tr align="right">
                  <div class="d-flex flex-row-reverse bd-highlight">
-                      <input class="form-control" name="find" type="text" style="width:120px;"/>
+                      <input class="form-control" name="find" type="text" style="width:110px;"/>
                  </div>
              </tr>
             <tr>
@@ -87,16 +90,16 @@ $(function () {
         </table>
 
         <div align="right"><b>단위: (억)</b></div>
-        <table class="table table-striped table-bordered table-hover" id="tab5_table">
+        <table class="table table-striped table-bordered table-hover" id="tab5_table" style="">
             <thead>
-                <tr class="thead-dark" align="center">
+                <tr class="thead-dark" style="font-size:12pt;" align="center">
                     <th colspan="2"></th>
                     <th colspan="4">홀세일 1본부</th>
                     <th colspan="4">홀세일 2본부</th>
                 </tr>
                 <tr class="thead-dark" align="center">
                     {% for i in range(header|length) %}
-                    <th class="tab5_th"><span style="font-size:12pt;">{{header[i]}}</span></th>
+                    <th class="tab5_th" style="font-size:10pt;">{{header[i]}}</th>
                     {% endfor %}
                 </tr>
                 </thead>

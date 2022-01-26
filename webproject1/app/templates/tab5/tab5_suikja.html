@@ -13,8 +13,15 @@
 <!-- 위치값을 ID로 받아서 팝업 x=row(group파악용), y=column(team 파악용) -->
 $(function () {
 
-    });
+    <!-- 빈값 '전체'로 변경 -->
+    if($('[name="find"]').val()==''){
+    $('[name="find"]').val('전체');
+    }
 
+    <!-- 수익자 변경시 -->
+    $('#suikja').change(function(){
+        $('#submit').submit();
+    });
 
 });
 
@@ -36,34 +43,42 @@ $(function () {
     </table>
     <table>
          <table>
+             <form action="{{ url_for('tab5.tab5_newwindow_suikja')}}" id="submit" method="post">
              <tr>
                  <p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p>
              </tr>
              <tr align="right">
                  <div class="d-flex justify-content-between">
                      <td align="center" style="width:50px;">고객</td>
-                     <td style="width:120px";><input class="form-control" name="find" type="text" style="width:200px;" value="{{suikja}}"/></td>
+                     <td style="width:120px";>
+                         <input class="form-control" name="find" type="text" style="width:200px;" value="{{suikja}}"/>
+                     </td>
                      <td></td>
                  </div>
                  <div>
                      <td align="center" style="width:50px;">기준일</td>
                      <td align="left" style="width:110px;">
-                        <form action="{{ url_for('tab5.main')}}" id="submit" method="post">
+
                         <input class="form-control" type="text" id="datepicker" name="datepicker" value="{{date1}}"/>
-                        </form>
+                        <input type="hidden" name="win" value="{{win}}"/>
+                        <input type="hidden" name="logic" value="{{logic}}"/>
                      </td>
                  </div>
              </tr>
-            <tr>
+             <tr>
                 <div class="d-flex justify-content-between">
                     <div>
                          <td align="center" style="width:50px;">유형</td>
                         <td style="width:200px;">
-                            <select class="form-control" name="win1_arg4" id="suikja" style="width:100%;">
+                            <select class="form-control" name="items" id="suikja" style="width:100%;">
                             <option value="all">전체</option>
-
-
-
+                            {% for i in range(items|length) %}
+                            {% if items[i]==selected %}
+                                <option value="{{items[i]}}" selected>{{items[i]}}</option>
+                            {% else %}
+                                <option value="{{items[i]}}">{{items[i]}}</option>
+                            {% endif %}
+                            {% endfor %}
                             </select>
                         </td>
                         <td colspan="2"></td>
@@ -71,6 +86,7 @@ $(function () {
                     <div><td align="right"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
                 </div>
             </tr>
+            </form>
         </table>
 
         <div align="right"><b>단위: (억)</b></div>
@@ -78,12 +94,12 @@ $(function () {
             <thead>
                 <tr class="thead-dark" align="center">
                     <th colspan="3"></th>
-                    <th colspan="5">증감</th>
+                    <th colspan="5">순자산 증감</th>
                     <th colspan="4">수탁고</th>
                 </tr>
                 <tr class="thead-dark" align="center">
                     {% for i in range(header|length) %}
-                    <th class="tab5_th"><span style="font-size:12pt;">{{header[i]}}</span></th>
+                    <th class="tab5_th" style="font-size:10pt;">{{header[i]}}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -92,11 +108,13 @@ $(function () {
                 <tr id="row{{i}}">
                     {% for j in range(header|length) %}
                         {% if j==0 %}
-                        <td class="tab5_win1td" align="left" bgcolor=#CCCCCC>
+                        <td class="tab5_win1td" align="center" bgcolor=#CCCCCC style="width:80px; font-size:11pt;">
+                        {% elif j==1 %}
+                        <td class="tab5_win1td" align="left" style="width:160px; font-size:10pt; word-break:break-all;">
                         {% else %}
-                        <td class="tab5_win1td" align="right">
+                        <td class="tab5_win1td" align="right" style="font-size:11pt;">
                         {% endif %}
-                        <span style="font-size:11pt;">{{queryData1[i][j]}}</span>
+                            {{queryData1[i][j]}}
                         </td>
                     {% endfor %}
                 </tr>
@@ -108,10 +126,10 @@ $(function () {
 </div>
 
 <form id="frm" name="frm" method="post">
-</form>
-    <input type="hidden" name="win"/>
+    <input type="hidden" name="arg1"/>
+    <input type="hidden" name="win" value="{{win}}"/>
     <input type="hidden" name="logic" value="{{logic}}"/>
-
+</form>
 
 {% endblock %}
 
