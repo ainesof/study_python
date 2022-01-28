@@ -1,24 +1,6 @@
 def returnSQL(para):
-    if para == 'tableCount':
-        sql = tableCount()
-    elif para == 'searchColumn':
-        sql = searchColumn()
-    elif para == 'searchValue':
-        sql = searchValue()
-    elif para == 'tab3_SearchQuery':
-        sql = tab3_SearchQuery()
-    elif para == 'tab3_win1SearchQuery':
-        sql = tab3_win1SearchQuery()
-    elif para == 'tab3_win2SearchQuery':
-        sql = tab3_win2SearchQuery()
-    elif para == 'tab3_win3SearchQuery':
-        sql = tab3_win3SearchQuery()
-    elif para == 'tab3_win3ChangeSelectComboBoxQuery':
-        sql = tab3_win3ChangeSelectComboBoxQuery()
-    elif para == 'tab4_searchQuery':
-        sql = tab4_searchQuery()
-    # ---------------------------------------------------
-    elif para == 'tableParityCheck':
+    # --------------------------------------------------- common
+    if para == 'tableParityCheck':
         sql = tableParityCheck()
     elif para == 'findGroup':
         sql = findGroup()
@@ -28,147 +10,43 @@ def returnSQL(para):
         sql = find_SuikjaSearchQuery()
     elif para == 'tab5_headerDateSearchQuery':
         sql = tab5_headerDateSearchQuery()
-    # ---------------------------------------------------
+
+    # --------------------------------------------------- tab5_view
+    elif para == 'tab5_viewCommonSearchQuery':
+        sql = tab5_viewCommonSearchQuery()
+    elif para == 'tab5_view1Table1':
+        sql = tab5_view1Table1()
+    elif para == 'tab5_view1Table2':
+        sql = tab5_view1Table2()
+    elif para == 'tab5_view2Table':
+        sql = tab5_view2Table()
+    # ---------------------------------------------------- tab5_group
+    elif para == 'tab5_groupCommonSearchQuery':
+        sql = tab5_groupCommonSearchQuery()
+    # ---------------------------------------------------- tab5_item
+    elif para == 'tab5_itemCommonSearchQuery':
+        sql = tab5_itemCommonSearchQuery()
+    # ---------------------------------------------------- tab5_suikja
+    elif para == 'tab5_suikjaSearchQuery1':
+        sql = tab5_suikjaSearchQuery1()
+    # ---------------------------------------------------- 미사용
     elif para == 'tab5_viewSearchQuery_old':
         sql = tab5_viewSearchQuery_old()
     elif para == 'tab5_view1SearchQuery1':
         sql = tab5_view1SearchQuery1()
     elif para == 'tab5_view2SearchQuery1':
         sql = tab5_view2SearchQuery1()
-    # ----------------------------------------------------
     elif para == 'tab5_win1SearchQuery_old':
         sql = tab5_win1SearchQuery_old()
     elif para == 'tab5_group1SearchQuery1':
         sql = tab5_group1SearchQuery1()
     elif para == 'tab5_group2SearchQuery1':
         sql = tab5_group2SearchQuery1()
-    # ----------------------------------------------------
     elif para == 'tab5_items1SearchQuery1_old':
         sql = tab5_items1SearchQuery1_old()
-    elif para == 'tab5_items1SearchQuery1':
-        sql = tab5_items1SearchQuery1()
-    # ----------------------------------------------------
-    elif para == 'tab5_suikjaSearchQuery1':
-        sql = tab5_suikjaSearchQuery1()
-
     return sql
 
-def tableCount():
-    """테이블 자료수 조회"""
-    str = \
-"select count(*) from {}"
-    return str
 
-def searchColumn():
-    """ 테이블 컬럼을 가지고와서 DB리스트에 입력"""
-    str = \
-"select column_name from cols where table_name = '{}' order by COLUMN_ID ASC"
-    return str
-
-def searchValue():
-    """ SQL 값 리턴"""
-    str = \
-"select * from {} where 1=1"
-    return str
-
-def tab3_SearchQuery():
-    """탭3 메인부분"""
-    str = \
-"""
-select b.tr_ymd as 기준일, a.펀드코드, b.fund_full_nm,
-(select 공통코드값명 from 공통코드 where b.fund_sintak_mm=공통코드값 and 공통코드ID='001049')수익자구분, 
-(select listagg(수익자명, ',') from (select 수익자명 from 정보_수익자 f, 펀드_수익자정보 e where a.펀드코드=e.펀드코드(+) and e.수익자코드=f.수익자코드 group by 수익자명)) as 수익자, 
- (select 펀드회계유형명 from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 펀드종류구분, b.fund_type as 펀드유형,
-(select decode(substr(펀드회계유형명,3,2),'신탁','','일임','일임',substr(펀드회계유형명,3,2)) from 정보_펀드회계유형 where a.펀드회계유형코드=펀드회계유형코드) as 일임_자문, b.fund_gongmo_samo as 공모사모구분, b.fund_in_foreign as 국내해외, b.fund_moja_gu as 모자구분, 
-  decode(a.펀드구조구분코드,'04','클래스운용펀드','05','클래스펀드','06','클래스운용펀드','') 종류형구분, '?' as 펀드구분, 
- (select 공통코드값명 from 공통코드 where a.적용법령구분코드=공통코드값 and 공통코드ID='000436') as 적용법률, a.자본시장통합법적용일자 as 자통법적용일, a.최초설정일자, 
- (select min(tr_ymd) from FUND_INTEGRATE where a.펀드코드=FUND_CD) as 운용개시일, 
-a.다음결산일자,a.상환예정일자 as 상환일,a.다음보수인출일자, 
-nvl(round(b.FUND_PANMEBOSU_BP,2),0) as 판매보수,nvl(round(b.FUND_MANBOSU_BP,2),0) as 운용보수,nvl(round(b.FUND_SAMUBOSU_BP,2),0) as 사무관리보수,nvl(round(b.FUND_SUTAKBOSU_BP,2),0) as 수탁보수,nvl(round(b.FUND_EVALBOSU_BP,2),0) as 펀드평가보수,
-nvl(round(b.FUND_JAMUNBOSU_BP,2),0) as 자산관리보수,'?'상품관리보수,nvl(round(b.FUND_ADDBOSU_BP,2),0) as 성과보수율,a.성과보수여부,
- round(b.FUND_PANMEBOSU_BP,2)+round(b.FUND_MANBOSU_BP,2)+round(b.FUND_SAMUBOSU_BP,2)+round(b.FUND_SUTAKBOSU_BP,2)+round(b.FUND_EVALBOSU_BP,2)+nvl(round(b.FUND_JAMUNBOSU_BP,2),0)+nvl(round(b.FUND_ADDBOSU_BP,2),0) as total,
-  to_char(c.INTE_SET_VOL, '999,999,999,999,999') as 설정액, to_char(c.INTE_ORIGIN_MONEY, '999,999,999,999,999') as 설정좌수, to_char(b.FUND_TOT_JASAN, '999,999,999,999,999') as 총자산, 
- to_char(round(c.INTE_NET_MONEY_AF,2), '999,999,999,999,999') as 순자산,to_char(round(e.OPER_RAT_PRICE), '999,999,999,999,999') as 기준가,c.inte_modi_price as 누적수익지수,b.fund_nm as 펀드약명, 
-b.fund_eng_full_nm as 영문명,c.inte_man 운용역,(select 공통코드값명 from 공통코드 where a.운용회사코드=공통코드값정의 and 공통코드ID='001128') as 운용사명,(select 공통코드값명 from 공통코드 where a.증권예탁원수탁사코드=공통코드값 and 공통코드ID='000976') as 수탁은행,b.fund_sutak_nm as 수탁사명, b.fund_samusutak_nm as 사무수탁사명,b.fund_pungsa_nm as 펀드평가사, 
-(select count(*) from(select x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd group by x.comp_sale_nm)) as 판매사갯수,
-(select listagg(comp_sale_nm,', ') from(select x.comp_sale_nm from  FUND_COMPANY x where a.펀드코드=x.fund_cd group by x.comp_sale_nm)) as 판매사,
-금융투자협회종목코드 as 협회표준코드,금융감독원코드 as 금감원코드,증권예탁원펀드코드 as 예탁원펀드코드,증권예탁원종목코드 as 예탁원종목코드,a.상품분류코드,'?'상품분류2차, 
-집합투자기구1차분류코드||집합투자기구2차분류코드||집합투자기구3차분류코드||집합투자기구4차분류코드||집합투자기구5차분류코드||집합투자기구6차분류코드||집합투자기구7차분류코드||집합투자기구8차분류코드||집합투자기구9차분류코드||집합투자기구10차분류코드||  
-집합투자기구11차분류코드||집합투자기구12차분류코드||집합투자기구13차분류코드||집합투자기구14차분류코드 as 집합투자기구구분, 
-a.펀드결제수수료계상여부 as 펀드결제수수료여부, 
-(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 분배방식, 
-(select 공통코드값명 from 공통코드 where a.분배방법구분코드=공통코드값 and 공통코드ID='000221') as 당기결산방식,a.시가평가여부,'?'장단기부분,a.국외세액환급여부,(select d.유효시작일자 from 펀드_운용회사변경내역 d where a.펀드코드=d.펀드코드(+) and 변경이전운용회사코드=244)이관일, 
-(select d.유효시작일자 from 펀드_운용회사변경내역 d where a.펀드코드=d.펀드코드(+) and 운용회사코드=244) as 이수일,'?'투자자,(select 공통코드값정의 from 공통코드 where a.부사무관리펀드코드=공통코드값 and 공통코드ID='001030') as 부사무관리사,a.해외주식비과표대상여부,a.해외주식비과표적용일자,
-(select 공통코드값명 from 공통코드 where a.이전설정확정일구분코드=공통코드값 and 공통코드ID='000139')설정대금확정일1,(select 공통코드값명 from 공통코드 where a.이전설정일구분코드=공통코드값 and 공통코드ID='000139')설정일1,
-(select 공통코드값명 from 공통코드 where a.이전환매일구분코드=공통코드값 and 공통코드ID='000139')환매대금확정일1,(select 공통코드값명 from 공통코드 where a.이전환매일구분코드=공통코드값 and 공통코드ID='000139')환매일1,
-(select 공통코드값명 from 공통코드 where a.이후환매일구분코드=공통코드값 and 공통코드ID='000139')환매대금확정일2,(select 공통코드값명 from 공통코드 where a.이후환매일구분코드=공통코드값 and 공통코드ID='000139')환매일2,
-e.oper_bm_way as BM명,'?'GIPS펀드유형,'?'채권평가사보수유예시작일,'?'채권평가사보수유예종료일,'?'배당기준운용사,'?'신주인수권증서평가기준_폐지일,
-'?'공모청약수수료기준,b.fund_danwi_gu as 단위형구분,'?'수익차등여부, 
-(select 공통코드값명 from 공통코드 where a.사모구분코드=공통코드값 and 공통코드ID='001015') as 사모분류, '?'일반투자자포함여부 
-from 펀드_마스터 a, FUND_BASIC b, FUND_INTEGRATE c, FUND_OPERATE e 
-where a.펀드코드=b.fund_cd 
-and a.펀드코드=c.fund_cd 
-and a.펀드코드 = e.fund_cd 
-and b.tr_ymd = e.tr_ymd 
-and b.tr_ymd=c.tr_ymd 
-"""
-    return str
-
-
-def tab3_win1SearchQuery():
-    """탭3 새창 더블클릭시 내용읽는 부분"""
-    str = \
-"""    
-select a.TR_YMD,b.inte_modi_price, 
-nvl(b.inte_modi_price - lead(b.inte_modi_price) over (order by a.TR_YMD desc),0) a, 
-a.FUND_SET_MONEY,a.FUND_SET_VOL, 
-c.당일설정좌수,c.당일해지좌수,nvl(a.FUND_SET_VOL - lead(a.FUND_SET_VOL) over (order by a.TR_YMD desc),0) as aa, 
-a.FUND_TOT_JASAN, nvl(a.FUND_TOT_JASAN - lead(a.FUND_TOT_JASAN) over (order by a.TR_YMD desc),0) b, 
-a.FUND_NET_JASAN, nvl(a.FUND_NET_JASAN - lead(a.FUND_NET_JASAN) over (order by a.TR_YMD desc),0) c   
-from FUND_BASIC a, FUND_INTEGRATE b, 펀드_설정해지원장 c 
-where b.fund_cd=a.fund_cd and a.TR_YMD=b.TR_YMD  and b.fund_cd=c.펀드코드 and a.tr_ymd=c.기준일자 and TO_CHAR(a.FUND_CD) = '{}' order by a.TR_YMD desc
-"""
-    return str
-
-def tab3_win2SearchQuery():
-    str = \
-"select 펀드코드, 위탁사펀드명 from 펀드_위탁사별펀드정보"
-    return str
-
-def tab3_win3ChangeSelectComboBoxQuery():
-    """콤보박스 값 동적입력"""
-    str = \
-"select suik_seq from SUIKJA_INFO where fund_cd='{}' and suik_name='{}' group by suik_name,suik_seq"
-    return str
-
-def tab3_win3SearchQuery():
-    """새창 특정컬럼 더블클릭시"""
-    str = \
-"""  
-select tr_ymd,suik_group,suik_name,suik_seq,suik_set_money,
-nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a,suik_set_vol,
-nvl(suik_set_vol - lag(suik_set_vol) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as b,suik_sale_comp
-from SUIKJA_INFO where 1=1 and fund_cd='{}'
-"""
-    return str
-
-def tab4_searchQuery():
-    """탭4"""
-    str = \
-"""   
-select *
-from( select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a,
-suik_mg_bu,suik_gubun_type,suik_fund_type
-from SUIKJA_INFO
-minus
-select *
-from (select tr_ymd,suik_group,suik_name,suik_seq, suik_set_money,nvl(suik_set_money - lag(suik_set_money) over (partition by suik_name, suik_seq order by  tr_ymd,suik_name,suik_seq desc),0) as a,
-suik_mg_bu,suik_gubun_type,suik_fund_type
-from SUIKJA_INFO)
-where suik_set_money=0 and a=0
-)where 1=1 and tr_ymd >= '{}' and tr_ymd <= '{}'
-"""
-    return str
 
 def tableParityCheck():
     """조회값 하나펀드 자료테이블과 비교"""
@@ -176,9 +54,10 @@ def tableParityCheck():
 """
 /* tableParityCheck */
 
-select rownum,a.FUND_CD,a.suik_set_money,decode(a.suik_set_money-b.suik_set_money,0,'True','False') as parity 
+select rownum,a.FUND_CD,a.suik_set_money,decode(a.suik_set_money-b.suik_set_money,0,'True',b.suik_set_money) as parity 
 from (
-    select rownum as idx, decode(rownum,1,'1236',2,'1280',3,'1281',4,'1282',5,'1283',6,'1556',7,'1944',
+    select rownum as idx, 
+    decode(rownum,1,'1236',2,'1280',3,'1281',4,'1282',5,'1283',6,'1556',7,'1944',
     8,'1959',9,'1961',10,'1980',11,'4001',12,'4003',13,'5555',14,'5832',15,'DD43',16,'DD45',17,'DD47',
     18,'DD49',19,'DD97',20,'ER11',21,'ER22',22,'ER23',23,'GE01',24,'GH07',25,'HS01',26,'KL21',27,'NPS4',
     28,'PM01',29,'RW01',30,'SC01',31,'SC02',32,'SC07',33,'SS07',34,'TP01',35,'TY01',36,'TY03',37,'TY04',38,'TY21'
@@ -260,6 +139,359 @@ select ' ','기준일자',
 from dual
 """
     return str
+
+
+#   ----------------------------------------------
+
+def tab5_view1Table1():
+    """1테이블"""
+    str = \
+"""
+select rownum as idx, decode(rownum,1,'NPS',2,'공제회',3,'금융일반',4,'생보사',5,'손보사',6,'연기금',7,'은행',8,'일반법인',9,'자산운용',10,'저축은행',11,'중앙회',12,'증권') suik_group
+from dual connect by level<=12
+"""
+    return str
+
+def tab5_view1Table2():
+    """1테이블"""
+    str = \
+"""
+select rownum as idx, decode(rownum,1,'공제회',2,'금융일반',3,'생보사',4,'손보사',5,'연기금',6,'은행',7,'일반법인',8,'자산운용',9,'저축은행',10,'중앙회',11,'증권',12,'') suik_group
+from dual connect by level<=12
+"""
+    return str
+
+def tab5_view2Table():
+    """2테이블"""
+    str = \
+"""
+select rownum as idx, decode(rownum,1,'채권형',2,'주식형',3,'글로벌') SUIK_FUND_TYPE
+from dual connect by level<=3
+"""
+    return str
+
+def tab5_viewCommonSearchQuery():
+    """테이블 자료수 조회"""
+    str = \
+"""
+
+/* tab5_viewCommonSearchQuery */
+
+select decode({val},'','합계',{val}), sum(bu_sum),
+sum(TODAY), sum(LASTMONTH), sum(LASTQUATER), sum(LASTYEAR),
+sum(TODAY2), sum(LASTMONTH2), sum(LASTQUATER2), sum(LASTYEAR2)
+from(
+    select idx,{val},today+today2 as bu_sum,today,today-lastmonth as lastmonth,today-lastquater as lastquater,today-lastyear as lastyear,
+    today2,today2-lastmonth2 as lastmonth2,today2-lastquater2 as lastquater2,today2-lastyear2 as lastyear2
+    from(
+        select idx,A.{val}, A.today, A.lastmonth, A.lastquater, A.lastyear,B.today2, B.lastmonth2, B.lastquater2, B.lastyear2
+        from(
+            select idx, x.{val}, nvl(a.today,0) today, nvl(b.lastmonth,0) lastmonth,
+            nvl(c.lastquater,0) lastquater, nvl(d.lastyear,0) lastyear
+            from( {table1} ) x,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as today
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd='{date}' and a.fund_cd<>'1522' and a.suik_mg_bu='1본부'
+                group by a.{val}
+                ) a,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastmonth
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.fund_cd<>'1522' and a.suik_mg_bu='1본부'
+                group by a.{val}
+                ) b,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastquater
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05',
+                '04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) and a.fund_cd<>'1522' and a.suik_mg_bu='1본부'
+                group by a.{val}
+                ) c,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastyear
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31') and a.fund_cd<>'1522' and a.suik_mg_bu='1본부'
+                group by a.{val}
+                ) d
+            where x.{val}=a.{val}(+) and x.{val}=b.{val}(+) and x.{val}=c.{val}(+) and x.{val}=d.{val}(+)
+            ) A,
+            (
+            select decode(x.{val},'연기금','NPS','','연기금',x.{val}) as {val}, nvl(a.today2,0) today2, nvl(b.lastmonth2,0) lastmonth2,
+            nvl(c.lastquater2,0) lastquater2, nvl(d.lastyear2,0) lastyear2
+            from( {table2} ) x,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) today2
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd='{date}' and a.fund_cd<>'1522' and a.suik_mg_bu='2본부'
+                group by a.{val}
+                ) a,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastmonth2
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.fund_cd<>'1522' and a.suik_mg_bu='2본부'
+                group by a.{val}
+                ) b,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastquater2
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01','04','04',
+                '05','04','06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1) and a.fund_cd<>'1522' and a.suik_mg_bu='2본부'
+                group by a.{val}
+                ) c,(
+                select a.{val},decode(sum(a.suik_set_money),0,0,sum(a.suik_set_money)) as lastyear2
+                from SUIKJA_INFO a,FUND_INTEGRATE b
+                where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null
+                and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31') and a.fund_cd<>'1522' and a.suik_mg_bu='2본부'
+                group by a.{val}
+                ) d
+            where x.{val}=b.{val}(+) and x.{val}=a.{val}(+) and x.{val}=c.{val}(+) and x.{val}=d.{val}(+)
+            ) B
+        where a.{val}=b.{val}(+)
+        order by idx
+        )
+    )
+group by rollup({val})
+
+"""
+    return str
+
+def tab5_groupCommonSearchQuery():
+    """테이블 자료수 조회"""
+    str = \
+"""
+/* tab5_groupCommonSearchQuery */
+
+select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
+decode(a.{val},'',decode(b.{val},'',decode(c.{val},'',decode(d.{val},'',e.{val},d.{val}),c.{val}),b.{val}),a.{val}) {val},
+nvl(a.suik_set_money,0) as suik_set_money,
+nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,
+nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
+nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
+nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3,
+nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
+nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+from(
+    select a.tr_ymd,a.suik_name,a.{val},a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd like'%{nps}%' and a.SUIK_FUND_TYPE is not null
+    and a.tr_ymd='{date}'and a.{val2}='{select}' and a.suik_mg_bu='{mg_bu}'
+) a full outer join (
+    select a.tr_ymd,a.suik_name,a.{val},a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd like'%{nps}%' and a.SUIK_FUND_TYPE is not null
+    and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.{val2}='{select}' and a.suik_mg_bu='{mg_bu}'
+) b
+on  a.SUIK_NAME=b.SUIK_NAME and a.{val}=b.{val} and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ
+full outer join (
+    select a.tr_ymd,a.suik_name,a.{val},a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd like'%{nps}%' and a.SUIK_FUND_TYPE is not null
+    and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+    '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+    and a.{val2}='{select}' and a.suik_mg_bu='{mg_bu}'
+ ) c
+on a.SUIK_NAME=c.SUIK_NAME and a.{val}=c.{val} and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
+full outer join (
+    select a.tr_ymd,a.suik_name,a.{val},a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd like'%{nps}%' and a.SUIK_FUND_TYPE is not null
+    and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.{val2}='{select}' and a.suik_mg_bu='{mg_bu}'
+) d
+on a.SUIK_NAME=d.SUIK_NAME and a.{val}=d.{val} and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ
+full outer join (
+    select a.tr_ymd,a.suik_name,a.{val},a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd like'%{nps}%' and a.SUIK_FUND_TYPE is not null
+    and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.{val2}='{select}' and a.suik_mg_bu='{mg_bu}'
+) e
+on a.SUIK_NAME=e.SUIK_NAME and a.{val}=e.{val} and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
+order by SUIK_NAME, {val}
+"""
+    return str
+
+
+def tab5_itemCommonSearchQuery():
+    """펀드정보까지 보여주는 조회"""
+    str = \
+"""
+/* tab5_itemCommonSearchQuery */
+
+select a.SUIK_NAME,a.suik_group,a.SUIK_FUND_TYPE,a.fund_cd,fund_nm,suik_set_money,
+SUIK_SET_MONEYSUM1,SUIK_SET_MONEYSUM2,SUIK_SET_MONEYSUM3,SUIK_SET_MONEYSUM4,
+suik_set_money1,suik_set_money2,suik_set_money3,suik_set_money4
+from(
+    select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
+    decode(a.suik_group,'',decode(b.suik_group,'',decode(c.suik_group,'',decode(d.suik_group,'',e.suik_group,d.suik_group),c.suik_group),b.suik_group),a.suik_group) suik_group,
+    decode(a.SUIK_FUND_TYPE,'',decode(b.SUIK_FUND_TYPE,'',decode(c.SUIK_FUND_TYPE,'',decode(d.SUIK_FUND_TYPE,'',e.SUIK_FUND_TYPE,d.SUIK_FUND_TYPE),c.SUIK_FUND_TYPE),b.SUIK_FUND_TYPE),a.SUIK_FUND_TYPE) SUIK_FUND_TYPE,
+    decode(a.fund_cd,'',decode(b.fund_cd,'',decode(c.fund_cd,'',decode(d.fund_cd,'',e.fund_cd,d.fund_cd),c.fund_cd),b.fund_cd),a.fund_cd) fund_cd,
+    nvl(a.suik_set_money,0) as suik_set_money,
+    nvl(a.suik_set_money-b.suik_set_money,0) as SUIK_SET_MONEYSUM1,
+    nvl(a.suik_set_money-c.suik_set_money,0) as SUIK_SET_MONEYSUM2,
+    nvl(a.suik_set_money-d.suik_set_money,0) as SUIK_SET_MONEYSUM3,
+    nvl(a.suik_set_money-e.suik_set_money,0) as SUIK_SET_MONEYSUM4,
+    nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+    nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+    from(
+        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd='{date}'
+        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
+        ) a full outer join (
+        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month))
+        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
+        ) b
+        on  a.SUIK_NAME=b.SUIK_NAME and a.SUIK_FUND_TYPE=b.SUIK_FUND_TYPE and a.FUND_CD=b.FUND_CD
+        full outer join (
+        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+        '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
+         ) c
+        on a.SUIK_NAME=c.SUIK_NAME and a.SUIK_FUND_TYPE=c.SUIK_FUND_TYPE and a.FUND_CD=c.FUND_CD
+        full outer join (
+        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')
+        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
+        ) d
+        on a.SUIK_NAME=d.SUIK_NAME and a.SUIK_FUND_TYPE=d.SUIK_FUND_TYPE and a.FUND_CD=d.FUND_CD
+        full outer join (
+        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')
+        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
+    ) e
+    on a.SUIK_NAME=e.SUIK_NAME and a.SUIK_FUND_TYPE=e.SUIK_FUND_TYPE and a.FUND_CD=e.FUND_CD
+    ) A, (
+    select FUND_CD,fund_nm,tr_ymd
+    from  FUND_BASIC a
+    where tr_ymd=(select max(tr_ymd)
+                    from FUND_BASIC
+                    where a.FUND_CD=FUND_CD)
+    ) B
+where A.fund_cd=B.fund_cd
+order by a.FUND_CD, fund_nm
+
+
+   
+"""
+    return str
+
+def tab5_suikjaSearchQuery1():
+    """다이렉트로 수익자정보 검색"""
+    str= \
+"""
+/* tab5_group2SearchQuery1 */
+
+select a.fund_cd,b.fund_nm,SUIK_FUND_TYPE, suik_set_money, SUIK_NET_MONEY, 
+SUIK_NET_MONEY1, SUIK_NET_MONEY2, SUIK_NET_MONEY3, SUIK_NET_MONEY4,
+suik_set_money1, suik_set_money2, suik_set_money3, suik_set_money4
+from(
+    select a.tr_ymd, decode(a.fund_cd,'',decode(b.fund_cd,'',decode(c.fund_cd,'',decode(d.fund_cd,'',e.fund_cd,d.fund_cd),c.fund_cd),b.fund_cd),a.fund_cd) fund_cd,
+    decode(a.SUIK_FUND_TYPE,'',decode(b.SUIK_FUND_TYPE,'',decode(c.SUIK_FUND_TYPE,'',decode(d.SUIK_FUND_TYPE,'',e.SUIK_FUND_TYPE,d.SUIK_FUND_TYPE),
+    c.SUIK_FUND_TYPE),b.SUIK_FUND_TYPE),a.SUIK_FUND_TYPE) SUIK_FUND_TYPE,
+    nvl(a.suik_set_money,0) as suik_set_money,nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,
+    nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
+    nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
+    nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3,
+    nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
+    nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+    nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+    from(
+        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
+        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.SUIK_FUND_TYPE is not null 
+        and a.suik_name like '%{suikja}%'
+        and a.tr_ymd='{date}'
+        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
+    ) a full outer join(
+        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
+        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
+        and a.suik_name like '%{suikja}%'
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month))
+        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
+        ) b
+    on  a.FUND_CD=b.FUND_CD
+    full outer join(
+        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
+        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
+        and a.suik_name like '%{suikja}%'
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+        '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
+        ) c
+    on a.FUND_CD=c.FUND_CD
+    full outer join(
+        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
+        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
+        and a.suik_name like '%{suikja}%'
+        and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')
+        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
+        ) d
+    on a.FUND_CD=d.FUND_CD
+    full outer join(
+        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
+        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
+        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
+        and a.suik_name like '%{suikja}%'
+        and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')
+        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
+    ) e
+    on a.FUND_CD=e.FUND_CD
+    order by a.FUND_CD
+) A, (
+    select FUND_CD,fund_nm,tr_ymd
+    from  FUND_BASIC a
+    where tr_ymd=(select max(tr_ymd)
+                    from FUND_BASIC
+                    where a.FUND_CD=FUND_CD)
+    order by tr_ymd desc         
+    ) B
+where A.fund_cd=B.fund_cd
+order by FUND_CD, fund_nm
+"""
+    return str
+
+
+# --------------------------------------- 미사용
 
 def tab5_viewSearchQuery_old():
     """탭5"""
@@ -531,196 +763,198 @@ group by rollup(SUIK_FUND_TYPE)
 """
     return str
 
+
 def tab5_win1SearchQuery_old():
     "창 1,2에서 사용"
-    str= \
-"""    
-/* tab5_win1SearchQuery_old */
-
-select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
-decode(a.INTE_FUND_TYPE,'',decode(b.INTE_FUND_TYPE,'',decode(c.INTE_FUND_TYPE,'',decode(d.INTE_FUND_TYPE,'',e.INTE_FUND_TYPE,d.INTE_FUND_TYPE),c.INTE_FUND_TYPE),b.INTE_FUND_TYPE),a.INTE_FUND_TYPE) INTE_FUND_TYPE,
-nvl(a.suik_set_money,0) as suik_set_money,
-nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,nvl(b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,nvl(c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
-nvl(d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3, nvl(e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
-nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
-nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
-from(
-select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
-and a.tr_ymd='{date}'and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
-) a full outer join (
-select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
-and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
-) b 
-on  a.SUIK_NAME=b.SUIK_NAME and a.INTE_FUND_TYPE=b.INTE_FUND_TYPE and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ  
-full outer join (
-select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
-and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
-'06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
-and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
- ) c
-on a.SUIK_NAME=c.SUIK_NAME and a.INTE_FUND_TYPE=c.INTE_FUND_TYPE and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
-full outer join (        
-select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
-and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'       
-) d
-on a.SUIK_NAME=d.SUIK_NAME and a.INTE_FUND_TYPE=d.INTE_FUND_TYPE and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ 
-full outer join (      
-select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
-and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
-) e
-on a.SUIK_NAME=e.SUIK_NAME and a.INTE_FUND_TYPE=e.INTE_FUND_TYPE and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
-order by SUIK_NAME, INTE_FUND_TYPE
-"""
+    str = \
+        """    
+        /* tab5_win1SearchQuery_old */
+        
+        select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
+        decode(a.INTE_FUND_TYPE,'',decode(b.INTE_FUND_TYPE,'',decode(c.INTE_FUND_TYPE,'',decode(d.INTE_FUND_TYPE,'',e.INTE_FUND_TYPE,d.INTE_FUND_TYPE),c.INTE_FUND_TYPE),b.INTE_FUND_TYPE),a.INTE_FUND_TYPE) INTE_FUND_TYPE,
+        nvl(a.suik_set_money,0) as suik_set_money,
+        nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,nvl(b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,nvl(c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
+        nvl(d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3, nvl(e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
+        nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+        nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+        from(
+        select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
+        and a.tr_ymd='{date}'and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
+        ) a full outer join (
+        select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
+        ) b 
+        on  a.SUIK_NAME=b.SUIK_NAME and a.INTE_FUND_TYPE=b.INTE_FUND_TYPE and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ  
+        full outer join (
+        select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+        '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+        and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
+         ) c
+        on a.SUIK_NAME=c.SUIK_NAME and a.INTE_FUND_TYPE=c.INTE_FUND_TYPE and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
+        full outer join (        
+        select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
+        and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'       
+        ) d
+        on a.SUIK_NAME=d.SUIK_NAME and a.INTE_FUND_TYPE=d.INTE_FUND_TYPE and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ 
+        full outer join (      
+        select a.tr_ymd,a.suik_name,b.inte_fund_type,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and b.inte_fund_type is not null
+        and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
+        ) e
+        on a.SUIK_NAME=e.SUIK_NAME and a.INTE_FUND_TYPE=e.INTE_FUND_TYPE and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
+        order by SUIK_NAME, INTE_FUND_TYPE
+        """
     return str
 
 
 def tab5_group1SearchQuery1():
     """inte_fund_type를 SUIK_FUND_TYPE로 기준 고침"""
-    str= \
-"""    
-/* tab5_group1SearchQuery1 */
-
-select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
-decode(a.SUIK_FUND_TYPE,'',decode(b.SUIK_FUND_TYPE,'',decode(c.SUIK_FUND_TYPE,'',decode(d.SUIK_FUND_TYPE,'',e.SUIK_FUND_TYPE,d.SUIK_FUND_TYPE),c.SUIK_FUND_TYPE),b.SUIK_FUND_TYPE),a.SUIK_FUND_TYPE) SUIK_FUND_TYPE,
-nvl(a.suik_set_money,0) as suik_set_money,nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY, 
-nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
-nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
-nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3, 
-nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
-nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
-nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
-from(
-select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
-and a.tr_ymd='{date}'and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
-) a full outer join (
-select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
-and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
-) b 
-on  a.SUIK_NAME=b.SUIK_NAME and a.SUIK_FUND_TYPE=b.SUIK_FUND_TYPE and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ  
-full outer join (
-select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
-and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
-'06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
-and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
- ) c
-on a.SUIK_NAME=c.SUIK_NAME and a.SUIK_FUND_TYPE=c.SUIK_FUND_TYPE and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
-full outer join (        
-select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
-and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'       
-) d
-on a.SUIK_NAME=d.SUIK_NAME and a.SUIK_FUND_TYPE=d.SUIK_FUND_TYPE and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ 
-full outer join (      
-select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
-and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
-) e
-on a.SUIK_NAME=e.SUIK_NAME and a.SUIK_FUND_TYPE=e.SUIK_FUND_TYPE and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
-order by SUIK_NAME, SUIK_FUND_TYPE
-"""
+    str = \
+        """    
+        /* tab5_group1SearchQuery1 */
+        
+        select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
+        decode(a.SUIK_FUND_TYPE,'',decode(b.SUIK_FUND_TYPE,'',decode(c.SUIK_FUND_TYPE,'',decode(d.SUIK_FUND_TYPE,'',e.SUIK_FUND_TYPE,d.SUIK_FUND_TYPE),c.SUIK_FUND_TYPE),b.SUIK_FUND_TYPE),a.SUIK_FUND_TYPE) SUIK_FUND_TYPE,
+        nvl(a.suik_set_money,0) as suik_set_money,nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY, 
+        nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
+        nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
+        nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3, 
+        nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
+        nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+        nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+        from(
+        select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd='{date}'and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
+        ) a full outer join (
+        select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
+        ) b 
+        on  a.SUIK_NAME=b.SUIK_NAME and a.SUIK_FUND_TYPE=b.SUIK_FUND_TYPE and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ  
+        full outer join (
+        select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+        '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+        and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'        
+         ) c
+        on a.SUIK_NAME=c.SUIK_NAME and a.SUIK_FUND_TYPE=c.SUIK_FUND_TYPE and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
+        full outer join (        
+        select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'       
+        ) d
+        on a.SUIK_NAME=d.SUIK_NAME and a.SUIK_FUND_TYPE=d.SUIK_FUND_TYPE and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ 
+        full outer join (      
+        select a.tr_ymd,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,a.suik_seq,
+        decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+        decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+        from SUIKJA_INFO a, FUND_INTEGRATE b
+        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.SUIK_FUND_TYPE is not null
+        and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.suik_group='{suik_group}' and a.suik_mg_bu='{mg_bu}'
+        ) e
+        on a.SUIK_NAME=e.SUIK_NAME and a.SUIK_FUND_TYPE=e.SUIK_FUND_TYPE and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
+        order by SUIK_NAME, SUIK_FUND_TYPE
+        """
     return str
+
 
 def tab5_group2SearchQuery1():
     """inte_fund_type를 SUIK_FUND_TYPE로 기준 고침"""
-    str= \
-    """
-/* tab5_group2SearchQuery1 */
+    str = \
+        """
+    /* tab5_group2SearchQuery1 */
     
-select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
-decode(a.suik_group,'',decode(b.suik_group,'',decode(c.suik_group,'',decode(d.suik_group,'',e.suik_group,d.suik_group),c.suik_group),b.suik_group),a.suik_group) suik_group,
-nvl(a.suik_set_money,0) as suik_set_money,
-nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,
-nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
-nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
-nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3,
-nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
-nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
-nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
-from(
-select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
-and a.tr_ymd='{date}'and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
-) a full outer join (
-select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
-and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
-) b
-on  a.SUIK_NAME=b.SUIK_NAME and a.suik_group=b.suik_group and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ
-full outer join (
-select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
-and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
-'06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
-and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
- ) c
-on a.SUIK_NAME=c.SUIK_NAME and a.suik_group=c.suik_group and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
-full outer join (
-select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
-and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
-) d
-on a.SUIK_NAME=d.SUIK_NAME and a.suik_group=d.suik_group and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ
-full outer join (
-select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
-decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
-decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
-from SUIKJA_INFO a, FUND_INTEGRATE b
-where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_cd{nps}'PN_NPS' and a.suik_group is not null
-and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
-) e
-on a.SUIK_NAME=e.SUIK_NAME and a.suik_group=e.suik_group and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
-order by SUIK_NAME, suik_group
-    """
+    select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
+    decode(a.suik_group,'',decode(b.suik_group,'',decode(c.suik_group,'',decode(d.suik_group,'',e.suik_group,d.suik_group),c.suik_group),b.suik_group),a.suik_group) suik_group,
+    nvl(a.suik_set_money,0) as suik_set_money,
+    nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,
+    nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
+    nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
+    nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3,
+    nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
+    nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
+    nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
+    from(
+    select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_group is not null
+    and a.tr_ymd='{date}'and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+    ) a full outer join (
+    select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_group is not null
+    and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month)) and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+    ) b
+    on  a.SUIK_NAME=b.SUIK_NAME and a.suik_group=b.suik_group and a.FUND_CD=b.FUND_CD and a.SUIK_SEQ=b.SUIK_SEQ
+    full outer join (
+    select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_group is not null
+    and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
+    '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
+    and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+     ) c
+    on a.SUIK_NAME=c.SUIK_NAME and a.suik_group=c.suik_group and a.FUND_CD=c.FUND_CD and a.SUIK_SEQ=c.SUIK_SEQ
+    full outer join (
+    select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_group is not null
+    and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+    ) d
+    on a.SUIK_NAME=d.SUIK_NAME and a.suik_group=d.suik_group and a.FUND_CD=d.FUND_CD and a.SUIK_SEQ=d.SUIK_SEQ
+    full outer join (
+    select a.tr_ymd,a.suik_name,a.suik_group,a.fund_cd,a.suik_seq,
+    decode(a.suik_set_money,0,0,a.suik_set_money) as suik_set_money,
+    decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000) as suik_net_money
+    from SUIKJA_INFO a, FUND_INTEGRATE b
+    where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.suik_group is not null
+    and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')and a.SUIK_FUND_TYPE='{item}' and a.suik_mg_bu='{mg_bu}'
+    ) e
+    on a.SUIK_NAME=e.SUIK_NAME and a.suik_group=e.suik_group and a.FUND_CD=e.FUND_CD and a.SUIK_SEQ=e.SUIK_SEQ
+    order by SUIK_NAME, suik_group
+        """
     return str
 
 
@@ -729,7 +963,7 @@ def tab5_items1SearchQuery1_old():
     str = \
         """
         /* tab5_items1SearchQuery1_old */
-        
+
         select a.SUIK_NAME,a.suik_group,a.SUIK_FUND_TYPE,a.fund_cd,fund_nm,
         SUIK_NET_MONEY,SUIK_NET_MONEY1,SUIK_NET_MONEY2,SUIK_NET_MONEY3,SUIK_NET_MONEY4,
         suik_set_money1,suik_set_money2,suik_set_money3,suik_set_money4
@@ -803,178 +1037,9 @@ def tab5_items1SearchQuery1_old():
             ) b
         where a.fund_cd=b.fund_cd
         order by a.FUND_CD, fund_nm
-        
-        
+
+
         """
-    return str
-
-
-def tab5_items1SearchQuery1():
-    """펀드정보까지 보여주는 조회"""
-    str = \
-"""
-/* tab5_items1SearchQuery1 */
-
-select a.SUIK_NAME,a.suik_group,a.SUIK_FUND_TYPE,a.fund_cd,fund_nm,suik_set_money,
-SUIK_SET_MONEYSUM1,SUIK_SET_MONEYSUM2,SUIK_SET_MONEYSUM3,SUIK_SET_MONEYSUM4,
-suik_set_money1,suik_set_money2,suik_set_money3,suik_set_money4
-from(
-    select decode(a.SUIK_NAME,'',decode(b.SUIK_NAME,'',decode(c.SUIK_NAME,'',decode(d.SUIK_NAME,'',e.SUIK_NAME,d.SUIK_NAME),c.SUIK_NAME),b.SUIK_NAME),a.SUIK_NAME) SUIK_NAME,
-    decode(a.suik_group,'',decode(b.suik_group,'',decode(c.suik_group,'',decode(d.suik_group,'',e.suik_group,d.suik_group),c.suik_group),b.suik_group),a.suik_group) suik_group,
-    decode(a.SUIK_FUND_TYPE,'',decode(b.SUIK_FUND_TYPE,'',decode(c.SUIK_FUND_TYPE,'',decode(d.SUIK_FUND_TYPE,'',e.SUIK_FUND_TYPE,d.SUIK_FUND_TYPE),c.SUIK_FUND_TYPE),b.SUIK_FUND_TYPE),a.SUIK_FUND_TYPE) SUIK_FUND_TYPE,
-    decode(a.fund_cd,'',decode(b.fund_cd,'',decode(c.fund_cd,'',decode(d.fund_cd,'',e.fund_cd,d.fund_cd),c.fund_cd),b.fund_cd),a.fund_cd) fund_cd,
-    nvl(a.suik_set_money,0) as suik_set_money,
-    nvl(a.suik_set_money-b.suik_set_money,0) as SUIK_SET_MONEYSUM1,
-    nvl(a.suik_set_money-c.suik_set_money,0) as SUIK_SET_MONEYSUM2,
-    nvl(a.suik_set_money-d.suik_set_money,0) as SUIK_SET_MONEYSUM3,
-    nvl(a.suik_set_money-e.suik_set_money,0) as SUIK_SET_MONEYSUM4,
-    nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
-    nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
-    from(
-        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where  a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
-        and a.tr_ymd='{date}'
-        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
-        ) a full outer join (
-        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
-        and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month))
-        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
-        ) b
-        on  a.SUIK_NAME=b.SUIK_NAME and a.SUIK_FUND_TYPE=b.SUIK_FUND_TYPE and a.FUND_CD=b.FUND_CD
-        full outer join (
-        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
-        and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
-        '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
-        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
-         ) c
-        on a.SUIK_NAME=c.SUIK_NAME and a.SUIK_FUND_TYPE=c.SUIK_FUND_TYPE and a.FUND_CD=c.FUND_CD
-        full outer join (
-        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
-        and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')
-        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
-        ) d
-        on a.SUIK_NAME=d.SUIK_NAME and a.SUIK_FUND_TYPE=d.SUIK_FUND_TYPE and a.FUND_CD=d.FUND_CD
-        full outer join (
-        select a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null
-        and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')
-        group by a.tr_ymd,a.suik_group,a.suik_name,a.SUIK_FUND_TYPE,a.fund_cd
-    ) e
-    on a.SUIK_NAME=e.SUIK_NAME and a.SUIK_FUND_TYPE=e.SUIK_FUND_TYPE and a.FUND_CD=e.FUND_CD
-    ) a, (
-    select FUND_CD,fund_nm,tr_ymd
-    from  FUND_BASIC a
-    where tr_ymd=(select max(tr_ymd)
-                    from FUND_BASIC
-                    where a.FUND_CD=FUND_CD)
-    ) b
-where a.fund_cd=b.fund_cd
-order by a.FUND_CD, fund_nm
-
-
-   
-"""
-    return str
-
-def tab5_suikjaSearchQuery1():
-    """다이렉트로 수익자정보 검색"""
-    str= \
-"""
-/* tab5_group2SearchQuery1 */
-
-select a.fund_cd,b.fund_nm,SUIK_FUND_TYPE, suik_set_money, SUIK_NET_MONEY, 
-SUIK_NET_MONEY1, SUIK_NET_MONEY2, SUIK_NET_MONEY3, SUIK_NET_MONEY4,
-suik_set_money1, suik_set_money2, suik_set_money3, suik_set_money4
-from(
-    select a.tr_ymd, decode(a.fund_cd,'',decode(b.fund_cd,'',decode(c.fund_cd,'',decode(d.fund_cd,'',e.fund_cd,d.fund_cd),c.fund_cd),b.fund_cd),a.fund_cd) fund_cd,
-    decode(a.SUIK_FUND_TYPE,'',decode(b.SUIK_FUND_TYPE,'',decode(c.SUIK_FUND_TYPE,'',decode(d.SUIK_FUND_TYPE,'',e.SUIK_FUND_TYPE,d.SUIK_FUND_TYPE),
-    c.SUIK_FUND_TYPE),b.SUIK_FUND_TYPE),a.SUIK_FUND_TYPE) SUIK_FUND_TYPE,
-    nvl(a.suik_set_money,0) as suik_set_money,nvl(a.SUIK_NET_MONEY,0) as SUIK_NET_MONEY,
-    nvl(a.SUIK_NET_MONEY-b.SUIK_NET_MONEY,0) as SUIK_NET_MONEY1,
-    nvl(a.SUIK_NET_MONEY-c.SUIK_NET_MONEY,0) as SUIK_NET_MONEY2,
-    nvl(a.SUIK_NET_MONEY-d.SUIK_NET_MONEY,0) as SUIK_NET_MONEY3,
-    nvl(a.SUIK_NET_MONEY-e.SUIK_NET_MONEY,0) as SUIK_NET_MONEY4,
-    nvl(b.suik_set_money,0) as suik_set_money1,nvl(c.suik_set_money,0) as suik_set_money2,
-    nvl(d.suik_set_money,0) as suik_set_money3,nvl(e.suik_set_money,0) as suik_set_money4
-    from(
-        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
-        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
-        and a.suik_name like '%{suikja}%'
-        and a.tr_ymd='{date}'
-        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
-    ) a full outer join(
-        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
-        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
-        and a.suik_name like '%{suikja}%'
-        and a.tr_ymd=last_day(to_date(substr('{date}',0,7),'yyyy-mm')-(interval'1'month))
-        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
-        ) b
-    on  a.FUND_CD=b.FUND_CD
-    full outer join(
-        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
-        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
-        and a.suik_name like '%{suikja}%'
-        and a.tr_ymd=last_day(to_date(substr('{date}',0,4)||decode(substr('{date}',6,2),'01','01','02','01','03','01', '04','04','05','04',
-        '06','04', '07','07','08','07','09','07', '10','10','11','10','12','10'),'yyyy/mm')-1)
-        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
-        ) c
-    on a.FUND_CD=c.FUND_CD
-    full outer join(
-        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
-        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
-        and a.suik_name like '%{suikja}%'
-        and a.tr_ymd=to_date(substr('{date}',0,4)-1||'/12/31')
-        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
-        ) d
-    on a.FUND_CD=d.FUND_CD
-    full outer join(
-        select a.tr_ymd,a.fund_cd,a.SUIK_FUND_TYPE,
-        sum(decode(a.suik_set_money,0,0,a.suik_set_money)) as suik_set_money,
-        sum(decode(a.suik_set_vol*b.inte_basic_price,0,0,a.suik_set_vol*b.inte_basic_price/1000)) as suik_net_money
-        from SUIKJA_INFO a, FUND_INTEGRATE b
-        where 1=1 and a.fund_cd=b.fund_cd and a.tr_ymd=b.tr_ymd and a.fund_cd<>'1522' and a.SUIK_FUND_TYPE is not null 
-        and a.suik_name like '%{suikja}%'
-        and a.tr_ymd=to_date(substr('{date}',0,4)-2||'/12/31')
-        group by a.tr_ymd,a.FUND_CD,a.SUIK_FUND_TYPE
-    ) e
-    on a.FUND_CD=e.FUND_CD
-    order by a.FUND_CD
-) a, (
-    select FUND_CD,fund_nm,tr_ymd
-    from  FUND_BASIC a
-    where tr_ymd=(select max(tr_ymd)
-                    from FUND_BASIC
-                    where a.FUND_CD=FUND_CD)
-    order by tr_ymd desc         
-    ) b
-where a.fund_cd=b.fund_cd
-order by FUND_CD, fund_nm
-"""
     return str
 
 

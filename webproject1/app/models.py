@@ -6,28 +6,31 @@ from app import searchQuery
 import traceback, socket
 
 def query(win,logic,date1,val1,val2,val3):
-    """자료 뿌리는 쿼리"""
+    """메인 쿼리"""
     try:
         if win is not None:
             cur = connect_hkfund()
             if win == 1 and logic == 1:
                 """date1:날짜"""
-                sql = searchQuery.returnSQL('tab5_view1SearchQuery1').format(date=date1)
+                view1table1 = searchQuery.returnSQL('tab5_view1Table1')
+                view1table2 = searchQuery.returnSQL('tab5_view1Table2')
+                sql = searchQuery.returnSQL('tab5_viewCommonSearchQuery').format(table1=view1table1, table2=view1table2, val='suik_group', date=date1)
             elif win == 1 and logic == 2:
                 """date1:날짜"""
-                sql = searchQuery.returnSQL('tab5_view2SearchQuery1').format(date=date1)
+                view2table = searchQuery.returnSQL('tab5_view2Table')
+                sql = searchQuery.returnSQL('tab5_viewCommonSearchQuery').format(table1=view2table, table2=view2table, val='SUIK_FUND_TYPE', date=date1)
             elif win == 2 and logic == 1:
-                """date1:날짜,val1:본부, val2:수익그룹, val3:NPS여부"""
-                sql = searchQuery.returnSQL('tab5_group1SearchQuery1').format(date=date1,mg_bu=val1,suik_group=val2,nps=val3)
+                """date1:날짜,val1:본부, val2:수익그룹, val3:PN_NPS"""
+                sql = searchQuery.returnSQL('tab5_groupCommonSearchQuery').format(date=date1, mg_bu=val1, val='SUIK_FUND_TYPE',val2='suik_group',select=val2,nps=val3)
             elif win == 2 and logic == 2:
-                """date1:날짜,val1:본부, val2:항목, val3:NPS여부"""
-                sql = searchQuery.returnSQL('tab5_group2SearchQuery1').format(date=date1,mg_bu=val1,item=val2,nps=val3)
+                """date1:날짜,val1:본부, val2:항목, val3:PN_NPS"""
+                sql = searchQuery.returnSQL('tab5_groupCommonSearchQuery').format(date=date1, mg_bu=val1, val='suik_group',val2='SUIK_FUND_TYPE',select=val2,nps=val3)
             elif win == 3 and logic == 1:
                 """date1:날짜"""
-                sql = searchQuery.returnSQL('tab5_items1SearchQuery1').format(date=date1)
+                sql = searchQuery.returnSQL('tab5_itemCommonSearchQuery').format(date=date1)
             elif win == 3 and logic == 2:
                 """date1:날짜"""
-                sql = searchQuery.returnSQL('tab5_items1SearchQuery1').format(date=date1)
+                sql = searchQuery.returnSQL('tab5_itemCommonSearchQuery').format(date=date1)
             elif win == 1 and logic == 99:
                 """val1:수익자"""
                 sql = searchQuery.returnSQL('find_SuikjaSearchQuery').format(suikja=val1)

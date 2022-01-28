@@ -65,8 +65,8 @@
             });
 
             <!-- 설명 -->
-            $('#datepicker').attr("title", "전 영업일까지 자료가 존재");
-            $('#find').attr("title", "검색어 없이 누르면 전체 검색");
+            $('#datepicker').prop("title", "전 영업일이 최신 값");
+            $('#find').prop("title", "검색어 없이 누르면 전체 검색");
 
             <!-- 수익자 검색창 -->
             $('[name=find]').click(function(){
@@ -158,9 +158,9 @@
         var excelHandler = {
 
             getExcelFileName : function(){
-                var i=$(document).find('title').text()
+                var j=$('b[name=headtitle]').html();
                 var day=$("#datepicker").val().replaceAll('-','');
-                return day+i+'.xlsx';
+                return day+j+'.xlsx';
             },
             getSheetName : function(){
                 return 'Sheet1';

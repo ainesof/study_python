@@ -8,24 +8,54 @@
 <script>
 $(function () {
 
-    $('#paritycheck').click(function(){
-    var check='';
 
-    {% for i in range(queryData1|count) %}
-        if('{{queryData1[i][2]}}'==false){
-            check=false;
-        }
-    {% endfor %}
-        if(check==''){
-            $('#paritycheck').html('이상 없음');
-        }
-    });
 
 });
 
+btnstatus='close'
+
+function checkdata(){
+
+
+        if(btnstatus=='close'){
+            var check='';
+<!--            var text_data = ['가','나'];-->
+            $.ajax({
+                    url : {{ url_for('tab5.callAjax2')}}
+                    ,type : 'POST'
+                    ,dataType : 'json'
+                    ,traditional : true
+<!--                    ,data : {sendMSG: JSON.stringify(text_data)}-->
+
+            })
+            .done(function(value){
+                for(var i=0;i<value.length;i++){
+                    if(value[i][3]!='True'){
+                    check+=value[i][1]+" ";
+                    }
+                }
+                if(check==''){
+                    $('#paritycheck').html('이상 없음');
+                }
+                else{
+                    $('#paritycheck').html('펀드번호: '+check);
+                }
+
+                for(var i=0;i<value.length;i++){
+                    for(var j=0;j<value[0].length;j++){
+                        $('[name='+i+'-'+j+']').html(value[i][j]);
+                    }
+                }
+                btnstatus='open';
+        });
+     }
+     else if(btnstatus='open'){
+     $('#paritycheck').html('테이블값 검증');
+     btnstatus='close';
+     }
+};
+
 </script>
-
-
 </head>
 <body>
 <div class="btn-group btn-group-lg" role="group" aria-label="...">
@@ -38,16 +68,19 @@ $(function () {
 
 <ul class="list-group">
   <li class="list-group-item active"> 레이아웃 구성</li>
-  <li class="list-group-item">1-1고객 그룹별 수탁고 총괄->1-2고객 그룹별 순자산/설정액 현황(본부/그룹+고객)->1-3펀드리스트 예정</li>
-  <li class="list-group-item">2-1고객 유형별 수탁고 총괄->2-2고객 유형별 순자산/설정액 현황(본부/유형+그룹)->2-3펀드리스트 예정</li>
+  <li class="list-group-item">1-1고객 그룹별 수탁고 총괄->1-2고객 그룹별 순자산/설정액 현황(본부/그룹+고객)->1-3펀드리스트</li>
+  <li class="list-group-item">2-1고객 유형별 수탁고 총괄->2-2고객 유형별 순자산/설정액 현황(본부/유형+그룹)->2-3펀드리스트</li>
   <li class="list-group-item">99-1다이렉트 수익자정보 검색(새창)->99-2다이렉트 수익자정보</li>
 </ul>
 
 
 <div style="margin:10px;">
 <!-- Javascript가 필요없이 data-toggle에 collapse href에 대상 id을 설정합니다. -->
-<button id="paritycheck" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">테이블값 검증</button>
+<button id="paritycheck" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" onclick="checkdata()">테이블값 검증</button>
+<button id="getfile" class="btn btn-primary">파일 가져오기</button>
 </div>
+
+
 <!-- collapse 대상 태그는 class를 collapse로 설정합니다. -->
 <div class="collapse" id="collapseExample">
     <div class="well">
@@ -64,7 +97,7 @@ $(function () {
                 {% for i in range(queryData1|count) %}
                     <tr>
                         {% for j in range(4) %}
-                            <td>{{queryData1[i][j]}}</td>
+                            <td name={{i}}-{{j}}></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}

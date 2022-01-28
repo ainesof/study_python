@@ -6,6 +6,7 @@ import traceback, socket
 from app.models import query, dateQuery, etcQuery
 import pandas as pd
 import json
+import ftplib
 from collections import OrderedDict
 
 bp = Blueprint('tab5', __name__, url_prefix='/')
@@ -71,7 +72,6 @@ def tab5_newwindow1():
     """logic1 win1_arg1:본부, win1_arg2:그룹, win1_arg3:날짜, win1_arg4:국민연금 여부"""
     """logic2 win1_arg1:본부, win1_arg2:유형, win1_arg3:날짜, win1_arg4:국민연금 여부"""
     try:
-        NPS = ''
         win = 2
         logic = int(request.form['logic'])
         team = request.form['win1_arg1']
@@ -81,7 +81,6 @@ def tab5_newwindow1():
         if logic==1:
             if win1_arg2 == '0' or request.form['win1_arg4'] == '국민연금':
                 group = 'NPS'
-                NPS = 'NPS'
             elif win1_arg2 == '1':
                 group = '공제회'
             elif win1_arg2 == '2':
@@ -107,7 +106,7 @@ def tab5_newwindow1():
             else:
                 group = win1_arg2
             date1 = request.form['win1_arg3']
-            header, df, selectlist, searchdate = cal('tab5_group',win, logic, date1, team, group, NPS, request.form['win1_arg4'])
+            header, df, selectlist, searchdate = cal('tab5_group',win, logic, date1, team, group, '', request.form['win1_arg4'])
             df2 = setComma(df,1)
             if len(selectlist)==0:
                 selectlist['selectlist1']=''
@@ -127,7 +126,7 @@ def tab5_newwindow1():
             else:
                 item = request.form['win1_arg2']
             date1 = request.form['win1_arg3']
-            header, df, selectlist, searchdate = cal('tab5_group',win, logic, date1, team, item, NPS, request.form['win1_arg4'])
+            header, df, selectlist, searchdate = cal('tab5_group',win, logic, date1, team, item, '', request.form['win1_arg4'])
             df2 = setComma(df,1)
 
             """queryData1:내용, header:테이블 컬럼, searchdate:조회기준 날짜, recentlydate: 최근 데이터 날짜,
@@ -278,6 +277,20 @@ def layout():
     except:
         traceback.print_exc()
 
+@bp.route('/jsontest2/', methods=['POST'])
+def callAjax2():
+    """버튼 클릭시 refresh"""
+    try:
+        # arr=request.form['sendMSG']
+        recentlydate = dateQuery('tab5_view', 'recently', '', '')
+        df = dateQuery('layout', 'parity', '', recentlydate[0][0])
+        df.columns=["No","index","suik_set_money","parity"]
+        value = df.values.tolist()
+
+        return json.dumps(value)
+
+    except:
+        traceback.print_exc()
 
 def cal(gubun,win, logic, date1, val1, val2, val3, val4):
     """logic:페이지구분, date1:날짜"""
@@ -301,7 +314,7 @@ def cal(gubun,win, logic, date1, val1, val2, val3, val4):
 
 
         elif gubun == 'tab5_group' and win == 2:
-            """logic 1 val1:본부, val2:수익그룹, val3:NPS여부, val4: 수익자명(재검색용)"""
+            """logic 1 val1:본부, val2:수익그룹, val4: 수익자명(재검색용)"""
             """logic 2 val1:본부, val2:항목, val4: 고객그룹(재검색용)"""
 
             header = ['NULL', '설정액', '순자산', '전월말대비', '전분기말대비', '전년말대비', '전전년말대비', '전월말',
@@ -309,9 +322,9 @@ def cal(gubun,win, logic, date1, val1, val2, val3, val4):
 
             if val2 == 'NPS':
                 val2 = '연기금'
-                val3 = '='
+                val3 = 'PN_NPS'
             else:
-                val3 = '<>'
+                val3 = ''
             df = pd.DataFrame(query(win, logic, date1, val1, val2, val3))
             if len(df.index) == 0:
                 df = [['값 없음', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
@@ -436,7 +449,6 @@ def cal(gubun,win, logic, date1, val1, val2, val3, val4):
     except:
         traceback.print_exc()
 
-
 @bp.route('/file_down/', methods=['GET', 'POST'])
 def file_down():
     '''최근버전은 main, 그 외는 풀네임으로 찾음'''
@@ -458,9 +470,9 @@ def file_down():
         traceback.print_exc()
 
 
+
 @bp.route('/download/')
 def download():
-
     return render_template('tab5/download.html')
 
 
@@ -478,6 +490,7 @@ def changeWon(df,start):
 
     for i in range(len(df)):
         for j in range(start, len(df[0])):
+            # print(df[i][j])
             if is_digit(df[i][j])==True:
                 # if (str(type(df[i][j])).find('int') or str(type(df[i][j])).find('float')):
                     df[i][j] = math.floor(int(df[i][j]) / 100000000)
@@ -494,12 +507,12 @@ def setComma(df,start):
 
 def tab5_createJson():
     """JSON파일 생성"""
-    if os.path.isfile(f"app\static\\file\\setting\\userimsi.json") == False:
+    if os.path.isfile(f"app\static\\setting\\userimsi.json") == False:
         file_data = OrderedDict()
         file_data['ip'] = socket.gethostbyname(socket.gethostname())
         file_data['info1'] = '2'
         file_data['info2'] = '3'
-        with open('app\static\\file\\setting\\userimsi.json', 'w', encoding="utf-8") as makefile:
+        with open('app\static\\setting\\userimsi.json', 'w', encoding="utf-8") as makefile:
             json.dump(file_data, makefile, ensure_ascii=False, indent='\t')
 
 
@@ -511,8 +524,35 @@ def tab5_readJson():
             # print(content)
             # print(content['ip'])
 
+def getfile():
+    try:
+        user={'id':'heungkuk', 'password': 'gmdrnr!@'}
+        ftp=ftplib.FTP()
+        ftp.connect('211.62.79.4',21)
+        ftp.login(user['id'],user['password'])
+        ftp.cwd('/heungkuk')
+    # https: // itcenter.yju.ac.kr / xe_board_tech_python / 8416
+
+
+
+    except:
+        traceback.print_exc()
+
 
 # --------------------안씀
+
+
+
+# 연습용 ajax
+@bp.route('/jsontest/', methods=['POST'])
+def callAjax():
+    value = request.form['SensorID']
+    value2 = request.form['tt']
+    print(value,value2)
+    tab5_createJson()
+    return value2
+
+
 @bp.route('/set_info')
 def set_info():
     '''들어오는 IP 기준으로 설정정보 가져옴'''
