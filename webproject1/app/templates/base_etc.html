@@ -36,8 +36,9 @@
             <!-- 메뉴 설정 -->
             $('button[name=menu1]').html('그룹별 현황');
             $('button[name=menu2]').html('자산별 현황');
-            $('button[name=menu3]').html('자료실');
-            $('button[name=menu4]').html('레이아웃');
+            $('button[name=menu3]').html('ESG평가');
+            $('button[name=menu4]').html('자료실');
+            $('button[name=menu5]').html('레이아웃');
 
             $('button[name^=menu]').click(function(){
                 var menu=$(this).attr('name')
@@ -48,9 +49,12 @@
                     window.open("/main2/", "");
                 }
                 else if(menu=='menu3'){
-                    window.open("/download/", "");
+<!--                    window.open("/download/", "");-->
                 }
                 else if(menu=='menu4'){
+                    window.open("/download/", "");
+                }
+                else if(menu=='menu5'){
                     window.open("/layout/", "");
                 }
             });

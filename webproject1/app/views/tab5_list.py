@@ -2,11 +2,11 @@ import math
 import os.path
 
 from flask import Blueprint, render_template, request, send_file
-import traceback, socket
+import traceback, socket, datetime
 from app.models import query, dateQuery, etcQuery
 import pandas as pd
 import json
-import ftplib
+import ftplib,logging,logging.handlers
 from collections import OrderedDict
 
 bp = Blueprint('tab5', __name__, url_prefix='/')
@@ -37,7 +37,7 @@ def main():
                                logic=logic)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 @bp.route('/main2/', methods=["GET","POST"])
 def main2():
@@ -63,7 +63,7 @@ def main2():
                                date1=date1, recentlydate=recentlydate, ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), win=win,
                                logic=logic)
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 # -----------------------------------
 
@@ -135,7 +135,7 @@ def tab5_newwindow1():
                                    team=team, date1=date1, readonly=item,  selection=selectlist['selectlist1'], selected=request.form['win1_arg4'],
                                    ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), win=win, logic=logic)
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 @bp.route('/tab5_items/', methods=["POST"])
@@ -184,7 +184,7 @@ def tab5_newwindow2():
                                ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), win=win, logic=logic)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 @bp.route('/find_suikja/', methods=["GET","POST"])
@@ -207,7 +207,7 @@ def find_suikjaPopup():
         return render_template('tab5/find_suikja.html',queryData1=df,date1='',suikja=suikja,win=win,logic=logic)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 @bp.route('/find_suikja2/', methods=["GET","POST"])
 def find_suikjaPopup2():
@@ -221,7 +221,7 @@ def find_suikjaPopup2():
         return render_template('tab5/find_suikja.html',queryData1=df,date1=date1,win=win,logic=logic)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 @bp.route('/tab5_suikja/', methods=["GET","POST"])
@@ -260,7 +260,7 @@ def tab5_newwindow_suikja():
                                ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),win=win, logic=logic)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 @bp.route('/layout/')
@@ -275,11 +275,11 @@ def layout():
         return render_template('tab5/layout.html', queryData1=df)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
-@bp.route('/jsontest2/', methods=['POST'])
-def callAjax2():
-    """버튼 클릭시 refresh"""
+@bp.route('/jsontest/', methods=['POST'])
+def callAjax():
+    """버튼 클릭시 비교값 refresh"""
     try:
         # arr=request.form['sendMSG']
         recentlydate = dateQuery('tab5_view', 'recently', '', '')
@@ -290,7 +290,71 @@ def callAjax2():
         return json.dumps(value)
 
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
+
+@bp.route('/getfile/', methods=['GET','POST'])
+def getfile():
+    """ftp에서 특정파일 받음"""
+    path = 'C:/Users/User/Desktop/테스트/'
+    logger, logfile = setlog(path)
+
+    try:
+        def findfile(filename,cnt):
+            timediff = datetime.timedelta(days=cnt)
+            days = (today + timediff).strftime('%Y%m%d')
+            downfile = filename + '.' + days
+            folder = path + downfile
+
+            if downfile in ftp.nlst():
+                if(os.path.exists(folder)):
+                    print(downfile+' 이미 존재')
+                else:
+                    with open(folder, 'wb') as file:
+                        print(downfile)
+                        ftp.retrbinary('RETR %s' % downfile, file.write)
+            elif cnt>-7:
+                findfile(filename,cnt-1)
+            else:
+                print(filename+' 다운로드 실패')
+                logger.debug(filename+' 다운로드 실패')
+
+        user={'id':'heungkuk', 'password': 'gmdrnr!@'}
+        ftp=ftplib.FTP('211.62.79.4',user['id'],user['password'])
+        # ftp.retrlines('LIST')
+        files=['KFRFV42','KFRFV34','KFRFV33','KFRFV30','KFRFV29','KFRCV25','KFRCV24','KFRCV23','KFRCV22','KFRCV21',
+               'KFRCV20','KFRCV19','KFRCM99','KFRCM32','KFRFV28','KFRFV26','KFRFV18','KFRFV17','KFRFV16','KFRFV15',
+               'KFRFV14','KFRFV13','KFRFV12','KFRFV11','KFRCM10','KFRCM09','KFRCM08','KFRCM07','KFRCM06','KFRCM05',
+               'KFRCM04','KFRCM02','KFRCM01']
+
+        today=datetime.date.today()
+        cnt=-1
+        logger.debug('다운로드 시작 '+str(files))
+        for i in files:
+            findfile(i,cnt)
+        print('끝')
+        logger.debug('종료')
+        logger.removeHandler(logfile)
+
+
+        # https://jinisbonusbook.tistory.com/62
+        # https://kgu0724.tistory.com/49
+        return '0'
+
+    except:
+        print(traceback.format_exc())
+        logger.debug(traceback.format_exc())
+
+def setlog(path):
+    """로그파일 세팅"""
+    logger = logging.getLogger('root')
+    filename='log_test.log'
+    logfile = logging.handlers.RotatingFileHandler(path+filename, maxBytes=1024 * 1024 * 10,backupCount=10)
+    formatter = logging.Formatter(' %(asctime)s %(message)s')
+    logfile.setFormatter(formatter)
+    logger.addHandler(logfile)
+    logger.setLevel(logging.DEBUG)
+    return logger, logfile
+
 
 def cal(gubun,win, logic, date1, val1, val2, val3, val4):
     """logic:페이지구분, date1:날짜"""
@@ -447,7 +511,7 @@ def cal(gubun,win, logic, date1, val1, val2, val3, val4):
 
         return header, df, selectlist, searchdate
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 @bp.route('/file_down/', methods=['GET', 'POST'])
 def file_down():
@@ -467,7 +531,7 @@ def file_down():
                          as_attachment=True
                          )
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 
@@ -524,19 +588,7 @@ def tab5_readJson():
             # print(content)
             # print(content['ip'])
 
-def getfile():
-    try:
-        user={'id':'heungkuk', 'password': 'gmdrnr!@'}
-        ftp=ftplib.FTP()
-        ftp.connect('211.62.79.4',21)
-        ftp.login(user['id'],user['password'])
-        ftp.cwd('/heungkuk')
-    # https: // itcenter.yju.ac.kr / xe_board_tech_python / 8416
 
-
-
-    except:
-        traceback.print_exc()
 
 
 # --------------------안씀
@@ -544,8 +596,7 @@ def getfile():
 
 
 # 연습용 ajax
-@bp.route('/jsontest/', methods=['POST'])
-def callAjax():
+def callAjax2():
     value = request.form['SensorID']
     value2 = request.form['tt']
     print(value,value2)
@@ -559,7 +610,7 @@ def set_info():
     try:
         return render_template('tab5/download.html')
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 @bp.route('/main/<int:question_id>/')
@@ -569,7 +620,7 @@ def detail(question_id):
         return render_template('tab5/tab5_view.html', queryData1='', link1='http://127.0.0.1:5000/main',
                                val1=question_id)
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 
 @bp.route('/list/')
@@ -577,7 +628,7 @@ def q():
     try:
         return '다른페이지'
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 # https://wikidocs.net/book/4542
 # Method Not Allowed 값 넘기는데서 get, post 방식이 안 맞는거
@@ -590,3 +641,4 @@ def q():
 # 현재 시점 리비전과 최종 리비전이 같아야 migrate가 됨 https://programmer-ririhan.tistory.com/222
 # https://wikidocs.net/81046
 # https://coderap.tistory.com/447
+# 테이블 생성시에 free사이즈로 하면 DB 플났을때 방법이 안 나옴(다른 테이블이 다 접근 안됨), 크기를 조절하면 넘칠시 거기만 에러나니 용량이 다 차면 다른 DB에 삽입하도록 변경

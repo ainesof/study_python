@@ -49,7 +49,7 @@ def query(win,logic,date1,val1,val2,val3):
             row = cur.fetchall()
             return row
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 def dateQuery(gubun,module,win,date1):
     """날짜 관련 쿼리"""
@@ -87,7 +87,7 @@ def dateQuery(gubun,module,win,date1):
                      'lastyear', 'last2year']]
         return df
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 def etcQuery(module,val1):
     """기타 쿼리들"""
@@ -104,7 +104,7 @@ def etcQuery(module,val1):
         df = pd.DataFrame(row)
         return df
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 
 def connect_hkfund():
     """오라클 DB에 접속"""
@@ -124,7 +124,7 @@ def connect_hkfund():
         cur = conn.cursor()
         return cur
     except:
-        traceback.print_exc()
+        print(traceback.format_exc())
 # conn = cx_Oracle.connect("HKCL", "hkcl", "11.10.5.11:1521/hkfund")
 # conn = cx_Oracle.connect("system", "1234", "localhost:1521/xe")
 # https://wikidocs.net/81051

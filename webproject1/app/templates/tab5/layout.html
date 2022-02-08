@@ -6,26 +6,61 @@
     {% extends 'base_etc.html' %}
     {% block content %}
 <script>
+
+schdule_status='close';
+checkbtn_status='close';
+
+
 $(function () {
 
-
+        setInterval('btn_time()', 1000);
 
 });
 
-btnstatus='close'
+function btn_click(){
+<!-- 스케쥴러 기능 ON/OFF -->
+    if(schdule_status=='close'){    schdule_status='open';  }
+    else{
+        schdule_status='close';
+        $('#do_scheduler').html('스케쥴러 중지');}
+}
+
+function btn_time(){
+<!-- 24시간 기준 00:00형식 -->
+    const task=[['15:02','test1()'],
+                ['15:16','test2()'],
+                ['14:56','getfile()']];
+
+    if(schdule_status=='open'){
+        var nowHour = String(new Date().getHours()).padStart(2,'0');
+        var nowMin = String(new Date().getMinutes()).padStart(2,'0');
+        var nowSec = String(new Date().getSeconds()).padStart(2,'0');
+        var nowtime = nowHour + ":" + nowMin;
+        $('#do_scheduler').html('스케쥴러 '+nowtime+ ":" + nowSec);
+
+        if(nowSec=='00'){
+            for(var i=0;i<task.length;i++){
+                if(task[i][0]==nowtime) eval(task[i][1]);
+            }
+        }
+    }
+}
+
+function test1(){ alert('111') }
+function test2(){ alert('222') }
+
 
 function checkdata(){
-
-
-        if(btnstatus=='close'){
+<!-- 테이블 자료가 하나쪽 자료와 맞는지 체크용 -->
+        if(checkbtn_status=='close'){
             var check='';
-<!--            var text_data = ['가','나'];-->
+<!--            var text_data = ['가','나']; -->
             $.ajax({
-                    url : {{ url_for('tab5.callAjax2')}}
+                    url : {{ url_for('tab5.callAjax')}}
                     ,type : 'POST'
                     ,dataType : 'json'
                     ,traditional : true
-<!--                    ,data : {sendMSG: JSON.stringify(text_data)}-->
+<!--                    ,data : {sendMSG: JSON.stringify(text_data)} -->
 
             })
             .done(function(value){
@@ -46,14 +81,31 @@ function checkdata(){
                         $('[name='+i+'-'+j+']').html(value[i][j]);
                     }
                 }
-                btnstatus='open';
-        });
-     }
-     else if(btnstatus='open'){
-     $('#paritycheck').html('테이블값 검증');
-     btnstatus='close';
-     }
-};
+                checkbtn_status='open';
+            });
+        }
+         else if(checkbtn_status='open'){
+         $('#paritycheck').html('테이블값 검증');
+         checkbtn_status='close';
+         }
+}
+
+function getfile(){
+<!-- 한국펀드평가 파일 받음 -->
+    $('#getfile').attr('disabled',true);
+    $('#getfile').html('다운로드 중');
+
+    $.ajax({
+        url : {{ url_for('tab5.getfile')}}
+        ,type: 'post'
+<!--        ,dataType: 'JSON' -->
+<!--        ,traditional: true -->
+    })
+    .done(function() {
+        $('#getfile').attr('disabled',false);
+        $('#getfile').html('파일 가져오기');
+    });
+}
 
 </script>
 </head>
@@ -63,6 +115,7 @@ function checkdata(){
     <button type="button" class="btn btn-outline-secondary" name="menu2"/>
     <button type="button" class="btn btn-outline-secondary" name="menu3"/>
     <button type="button" class="btn btn-outline-secondary" name="menu4"/>
+    <button type="button" class="btn btn-outline-secondary" name="menu5"/>
 </div>
 <br><br>
 
@@ -77,7 +130,8 @@ function checkdata(){
 <div style="margin:10px;">
 <!-- Javascript가 필요없이 data-toggle에 collapse href에 대상 id을 설정합니다. -->
 <button id="paritycheck" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" onclick="checkdata()">테이블값 검증</button>
-<button id="getfile" class="btn btn-primary">파일 가져오기</button>
+<button id="getfile" class="btn btn-primary" onclick="getfile()">파일 가져오기</button>
+<button id="do_scheduler" class="btn btn-primary" onclick="btn_click()">스케쥴러 중지</button>
 </div>
 
 
