@@ -292,13 +292,12 @@ def callAjax():
     except:
         print(traceback.format_exc())
 
-@bp.route('/getfile/', methods=['GET','POST'])
-def getfile():
+@bp.route('/kfr_getfile/', methods=['GET','POST'])
+def kfr_getfile():
     """ftp에서 특정파일 받음"""
-    path = 'C:/Users/User/Desktop/테스트/'
-    logger, logfile = setlog(path)
-
     try:
+        path = ''
+
         def findfile(filename,cnt):
             timediff = datetime.timedelta(days=cnt)
             days = (today + timediff).strftime('%Y%m%d')
@@ -306,35 +305,39 @@ def getfile():
             folder = path + downfile
 
             if downfile in ftp.nlst():
-                if(os.path.exists(folder)):
+                if os.path.exists(folder):
                     print(downfile+' 이미 존재')
                 else:
                     with open(folder, 'wb') as file:
-                        print(downfile)
                         ftp.retrbinary('RETR %s' % downfile, file.write)
+                        print(downfile + ' 다운로드')
+                        logger.debug(downfile + ' 다운로드')
             elif cnt>-7:
                 findfile(filename,cnt-1)
             else:
                 print(filename+' 다운로드 실패')
                 logger.debug(filename+' 다운로드 실패')
 
-        user={'id':'heungkuk', 'password': 'gmdrnr!@'}
-        ftp=ftplib.FTP('211.62.79.4',user['id'],user['password'])
-        # ftp.retrlines('LIST')
-        files=['KFRFV42','KFRFV34','KFRFV33','KFRFV30','KFRFV29','KFRCV25','KFRCV24','KFRCV23','KFRCV22','KFRCV21',
-               'KFRCV20','KFRCV19','KFRCM99','KFRCM32','KFRFV28','KFRFV26','KFRFV18','KFRFV17','KFRFV16','KFRFV15',
-               'KFRFV14','KFRFV13','KFRFV12','KFRFV11','KFRCM10','KFRCM09','KFRCM08','KFRCM07','KFRCM06','KFRCM05',
-               'KFRCM04','KFRCM02','KFRCM01']
+        json_path = json.loads(request.form['kfr_info'])
+        path = json_path['filepath']
 
-        today=datetime.date.today()
-        cnt=-1
-        logger.debug('다운로드 시작 '+str(files))
-        for i in files:
-            findfile(i,cnt)
-        print('끝')
-        logger.debug('종료')
-        logger.removeHandler(logfile)
+        if os.path.exists(path):
+            logger, logfile = setlog(path)
+            user={'id':'heungkuk', 'password': 'gmdrnr!@'}
+            ftp=ftplib.FTP('211.62.79.4',user['id'],user['password'])
+            # ftp.retrlines('LIST')
 
+            files = json_path['files']
+            today=datetime.date.today()
+            cnt=-1
+            logger.debug('다운로드 시작 '+str(files))
+            for i in files:
+                findfile(i,cnt)
+            print('끝')
+            logger.debug('종료')
+            logger.removeHandler(logfile)
+        else:
+            print('저장경로가 존재하지 않습니다 ' + path)
 
         # https://jinisbonusbook.tistory.com/62
         # https://kgu0724.tistory.com/49

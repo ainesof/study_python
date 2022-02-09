@@ -5,49 +5,31 @@
     <title>Title</title>
     {% extends 'base_etc.html' %}
     {% block content %}
+<script src="{{url_for('static',filename='schedule.js')}}"></script>
 <script>
 
-schdule_status='close';
-checkbtn_status='close';
-
+    var schdule_status='close';
+    var checkbtn_status='close';
 
 $(function () {
 
-        setInterval('btn_time()', 1000);
+        setInterval('schedule_set()', 1000);
+
+
 
 });
+
+function modal(){
+    $('.modal').fadeIn();
+}
 
 function btn_click(){
 <!-- 스케쥴러 기능 ON/OFF -->
     if(schdule_status=='close'){    schdule_status='open';  }
     else{
         schdule_status='close';
-        $('#do_scheduler').html('스케쥴러 중지');}
+        $('#scheduler_do').html('스케쥴러 중지');}
 }
-
-function btn_time(){
-<!-- 24시간 기준 00:00형식 -->
-    const task=[['15:02','test1()'],
-                ['15:16','test2()'],
-                ['14:56','getfile()']];
-
-    if(schdule_status=='open'){
-        var nowHour = String(new Date().getHours()).padStart(2,'0');
-        var nowMin = String(new Date().getMinutes()).padStart(2,'0');
-        var nowSec = String(new Date().getSeconds()).padStart(2,'0');
-        var nowtime = nowHour + ":" + nowMin;
-        $('#do_scheduler').html('스케쥴러 '+nowtime+ ":" + nowSec);
-
-        if(nowSec=='00'){
-            for(var i=0;i<task.length;i++){
-                if(task[i][0]==nowtime) eval(task[i][1]);
-            }
-        }
-    }
-}
-
-function test1(){ alert('111') }
-function test2(){ alert('222') }
 
 
 function checkdata(){
@@ -90,26 +72,40 @@ function checkdata(){
          }
 }
 
-function getfile(){
+function kfr_getfile(){
 <!-- 한국펀드평가 파일 받음 -->
-    $('#getfile').attr('disabled',true);
-    $('#getfile').html('다운로드 중');
+
+    var kfr_info = {filepath :'C:/Users/User/Desktop/테스트/',
+                files : ['KFRFV42','KFRFV34','KFRFV33','KFRFV30','KFRFV29',
+                        'KFRCV25','KFRCV24','KFRCV23','KFRCV22','KFRCV21',
+                        'KFRCV20','KFRCV19','KFRCM99','KFRCM32','KFRFV28',
+                        'KFRFV26','KFRFV18','KFRFV17','KFRFV16','KFRFV15',
+                        'KFRFV14','KFRFV13','KFRFV12','KFRFV11','KFRCM10',
+                        'KFRCM09','KFRCM08','KFRCM07','KFRCM06','KFRCM05',
+                        'KFRCM04','KFRCM02','KFRCM01']};
+
+    $('#kfr_getfile').attr('disabled',true);
+    $('#kfr_getfile').html('다운로드 중');
+    $('#kfr_getfile').attr('title','저장경로:\n'+kfr_info['filepath']);
 
     $.ajax({
-        url : {{ url_for('tab5.getfile')}}
+        url : {{ url_for('tab5.kfr_getfile')}}
         ,type: 'post'
-<!--        ,dataType: 'JSON' -->
-<!--        ,traditional: true -->
+        ,dataType: 'JSON'
+        ,traditional: true
+        ,data : {kfr_info: JSON.stringify(kfr_info)}
     })
     .done(function() {
-        $('#getfile').attr('disabled',false);
-        $('#getfile').html('파일 가져오기');
+        $('#kfr_getfile').attr('disabled',false);
+        $('#kfr_getfile').html('파일 가져오기');
     });
 }
+
 
 </script>
 </head>
 <body>
+<br>
 <div class="btn-group btn-group-lg" role="group" aria-label="...">
     <button type="button" class="btn btn-outline-secondary" name="menu1"/>
     <button type="button" class="btn btn-outline-secondary" name="menu2"/>
@@ -129,9 +125,11 @@ function getfile(){
 
 <div style="margin:10px;">
 <!-- Javascript가 필요없이 data-toggle에 collapse href에 대상 id을 설정합니다. -->
-<button id="paritycheck" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" onclick="checkdata()">테이블값 검증</button>
-<button id="getfile" class="btn btn-primary" onclick="getfile()">파일 가져오기</button>
-<button id="do_scheduler" class="btn btn-primary" onclick="btn_click()">스케쥴러 중지</button>
+<button id="paritycheck" class="btn btn-primary" data-toggle="collapse" href="#collapseExample"
+        aria-expanded="false" aria-controls="collapseExample" onclick="checkdata()">테이블값 검증</button>
+<button id="kfr_getfile" class="btn btn-primary" onclick="kfr_getfile()">파일 가져오기</button>
+<button id="scheduler_do" class="btn btn-primary" onclick="btn_click()">스케쥴러 중지</button>
+<button name="modal_btn" class="btn btn-primary" onclick="modal()">메세지창 테스트</button>
 </div>
 
 
@@ -159,6 +157,7 @@ function getfile(){
         </table>
     </div>
 </div>
+
 
 {% endblock %}
 

@@ -5,8 +5,7 @@
     <title>다운로드 페이지</title>
     {% extends 'base_etc.html' %}
     {% block content %}
-</head>
-<body>
+
 <script>
 $(function () {
     <!-- 파일 다운 -->
@@ -26,9 +25,12 @@ $(function () {
     });
 
 });
-</script>
-<br>
 
+</script>
+</head>
+<body>
+
+<br>
 <div class="btn-group btn-group-lg" role="group" aria-label="...">
     <button type="button" class="btn btn-outline-secondary" name="menu1"/>
     <button type="button" class="btn btn-outline-secondary" name="menu2"/>
@@ -103,6 +105,7 @@ $(function () {
     <input type="hidden" id="arg1" name="arg1"/>
     <input type="hidden" id="arg2" name="arg2"/>
 </form>
+
 {% endblock %}
 </body>
 </html>

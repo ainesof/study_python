@@ -1,91 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <!--favicon -->
-    <link rel="icon" href="{{url_for('static',filename='images/icon.ico')}}" type="image/x-icon" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- bootstrapCSS -->
-    <link rel="stylesheet" href="//unpkg.com/bootstrap@4/dist/css/bootstrap.min.css">
-    <script src='//unpkg.com/jquery@3/dist/jquery.min.js'></script>
-    <script src='//unpkg.com/popper.js@1/dist/umd/popper.min.js'></script>
-    <script src='//unpkg.com/bootstrap@4/dist/js/bootstrap.min.js'></script>
-    <!-- pybo CSS-->
-    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
-    <!-- datapicker -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js" charset = "UTF-8"></script>
-    <link
-    rel="stylesheet"
-    href="//code.jquery.com/ui/1.8.23/themes/smoothness/jquery-ui.css"
-    />
-        <!-- 필수, SheetJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
-    <!--필수, FileSaver savaAs 이용 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
-        <!-- DDoS 공격막는 스크립트 -->
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.js"
-      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-      crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-        $(function() {
+<!--favicon -->
+<link rel="icon" href="{{url_for('static',filename='images/icon.ico')}}" type="image/x-icon" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- bootstrapCSS -->
+<link rel="stylesheet" href="//unpkg.com/bootstrap@4/dist/css/bootstrap.min.css">
+<script src='//unpkg.com/jquery@3/dist/jquery.min.js'></script>
+<script src='//unpkg.com/popper.js@1/dist/umd/popper.min.js'></script>
+<script src='//unpkg.com/bootstrap@4/dist/js/bootstrap.min.js'></script>
+<!-- pybo CSS-->
+<link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+<!-- datapicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js" charset = "UTF-8"></script>
+<link
+rel="stylesheet"
+href="//code.jquery.com/ui/1.8.23/themes/smoothness/jquery-ui.css"
+/>
+    <!-- 필수, SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+<!--필수, FileSaver savaAs 이용 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+    <!-- DDoS 공격막는 스크립트 -->
+<script
+  src="https://code.jquery.com/jquery-3.6.0.js"
+  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
 
+$(function() {
 
-            <!-- 메뉴 설정 -->
-            $('button[name=menu1]').html('그룹별 현황');
-            $('button[name=menu2]').html('자산별 현황');
-            $('button[name=menu3]').html('ESG평가');
-            $('button[name=menu4]').html('자료실');
-            $('button[name=menu5]').html('레이아웃');
+    <!-- 메세지창 띄우기 -->
+    $('[name=modal_btn]').click(function(){ $('.modal').fadeIn(); });
+    $('.modal-content').click(function(){ $('.modal').fadeOut();  });
 
-            $('button[name^=menu]').click(function(){
-                var menu=$(this).attr('name')
-                if(menu=='menu1'){
-                    window.open("/main/", "");
-                }
-                else if(menu=='menu2'){
-                    window.open("/main2/", "");
-                }
-                else if(menu=='menu3'){
+    <!-- 메뉴 설정 -->
+    $('button[name=menu1]').html('그룹별 현황');
+    $('button[name=menu2]').html('자산별 현황');
+    $('button[name=menu3]').html('ESG평가');
+    $('button[name=menu4]').html('자료실');
+    $('button[name=menu5]').html('레이아웃');
+
+    $('button[name^=menu]').click(function(){
+        var menu=$(this).attr('name')
+        if(menu=='menu1'){
+            window.open("/main/", "");
+        }
+        else if(menu=='menu2'){
+            window.open("/main2/", "");
+        }
+        else if(menu=='menu3'){
 <!--                    window.open("/download/", "");-->
-                }
-                else if(menu=='menu4'){
-                    window.open("/download/", "");
-                }
-                else if(menu=='menu5'){
-                    window.open("/layout/", "");
-                }
-            });
+        }
+        else if(menu=='menu4'){
+            window.open("/download/", "");
+        }
+        else if(menu=='menu5'){
+            window.open("/layout/", "");
+        }
+    });
 
-            <!-- 제목 설정 -->
-            if($('input[name=logic]').val()==1 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 그룹별 수탁고 총괄');
-            }
-            else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객 그룹별 순자산/설정액 현황');
-            }
-            else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==3){
-                $('b[name=headtitle]').html('아직 미구현');
-            }
-            else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==1){
-                $('b[name=headtitle]').html('고객 유형별 수탁고 총괄');
-            }
-            else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==2){
-                $('b[name=headtitle]').html('고객 유형별 순자산/설정액 현황');
-            }
-            else if($('input[name=logic]').val()==0 && $('input[name=win]').val()==0){
-                $('b[name=headtitle]').html('고객별 설정액 현황/유형별');
-            }
-        });
+    <!-- 제목 설정 -->
+    if($('input[name=logic]').val()==1 && $('input[name=win]').val()==1){
+        $('b[name=headtitle]').html('고객 그룹별 수탁고 총괄');
+    }
+    else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==2){
+        $('b[name=headtitle]').html('고객 그룹별 순자산/설정액 현황');
+    }
+    else if($('input[name=logic]').val()==1 && $('input[name=win]').val()==3){
+        $('b[name=headtitle]').html('아직 미구현');
+    }
+    else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==1){
+        $('b[name=headtitle]').html('고객 유형별 수탁고 총괄');
+    }
+    else if($('input[name=logic]').val()==2 && $('input[name=win]').val()==2){
+        $('b[name=headtitle]').html('고객 유형별 순자산/설정액 현황');
+    }
+    else if($('input[name=logic]').val()==0 && $('input[name=win]').val()==0){
+        $('b[name=headtitle]').html('고객별 설정액 현황/유형별');
+    }
+});
 
-    </script>
+</script>
 </head>
 <body>
-<style>
 
-</style>
+<!-- 메세지창 -->
+<div class="modal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <div class="modal-header"> 제목 </div>
+        <div class="modal-body" style="font-size:10pt;">
+            <p>내용</p>
+        </div>
+        <div class="modal-footer" style="font-size:8pt;">
+            클릭시 창이 닫힙니다
+        </div>
+    </div>
+  </div>
+</div>
+
 <!-- 기본 템플릿 안에 삽입될 내용 start -->
 {% block content %}
 
