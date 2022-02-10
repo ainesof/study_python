@@ -347,6 +347,7 @@ def kfr_getfile():
         print(traceback.format_exc())
         logger.debug(traceback.format_exc())
 
+
 def setlog(path):
     """로그파일 세팅"""
     logger = logging.getLogger('root')

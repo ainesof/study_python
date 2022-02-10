@@ -15,7 +15,7 @@
 <!-- datapicker -->
 <link rel="stylesheet" href="{{url_for('static',filename='bootstrap-datepicker.css')}}" charset = "UTF-8">
 <link rel="stylesheet" href="{{url_for('static',filename='jquery-ui.css')}}"/>
-    <!-- 필수, SheetJS -->
+<!-- 필수, SheetJS -->
 <script src="{{url_for('static',filename='xlsx.full.min.js')}}"></script>
 <!--필수, FileSaver savaAs 이용 -->
 <script src="{{url_for('static',filename='FileSaver.min.js')}}"></script>
@@ -26,9 +26,27 @@
   crossorigin="anonymous"></script>
 <script src="{{url_for('static',filename='jquery-ui.js')}}"></script>
 <script>
+
+    <!-- 메세지창 관리1 -->
+function call_msg(gubun){
+    if(gubun<modal_msg.length){
+        header=modal_msg[gubun][0];
+        body=modal_msg[gubun][1];
+        $('.modal-header').html(header);
+        $('.modal-body').html(body);
+        $('.modal').fadeIn();
+    }
+    else if(gubun>=modal_msg.length){ alert('메세지 구분 값('+gubun+')은 '+modal_msg.length+'보다 작아야 합니다.'); }
+    else{
+        $('.modal-header').html('제목');
+        $('.modal-body').html('내용');
+        $('.modal').fadeIn();
+    }
+}
+
 $(function() {
 
-    <!-- 메세지창 띄우기 -->
+    <!-- 메세지창 관리2 -->
     $('[name=modal_btn]').click(function(){ $('.modal').fadeIn(); });
     $('.modal-content').click(function(){ $('.modal').fadeOut();  });
 
@@ -212,16 +230,13 @@ function s2ab(s) {
 <div class="modal" tabindex="-1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
-        <div class="modal-header"> 제목 </div>
-        <div class="modal-body" style="font-size:10pt;">
-            <p>내용</p>
-        </div>
-        <div class="modal-footer" style="font-size:8pt;">
-            클릭시 창이 닫힙니다
-        </div>
+        <div class="modal-header" style="font-size:13pt; font-weight:bold;"></div>
+        <div class="modal-body" style="font-size:10pt;"></div>
+        <div class="modal-footer" style="font-size:8pt;">클릭시 창이 닫힙니다</div>
     </div>
   </div>
 </div>
+
 
 <!-- 상위메뉴 -->
 <div class="container my-3">

@@ -16,12 +16,7 @@ $(function () {
         setInterval('schedule_set()', 1000);
 
 
-
 });
-
-function modal(){
-    $('.modal').fadeIn();
-}
 
 function btn_click(){
 <!-- 스케쥴러 기능 ON/OFF -->
@@ -74,8 +69,9 @@ function checkdata(){
 
 function kfr_getfile(){
 <!-- 한국펀드평가 파일 받음 -->
+<!-- 저장경로는 \가 아닌 //를 사용. 예시 C://Users//User//Desktop//테스트// -->
 
-    var kfr_info = {filepath :'C:/Users/User/Desktop/테스트/',
+    var kfr_info = {filepath :'D://kfr_data//imsi//',
                 files : ['KFRFV42','KFRFV34','KFRFV33','KFRFV30','KFRFV29',
                         'KFRCV25','KFRCV24','KFRCV23','KFRCV22','KFRCV21',
                         'KFRCV20','KFRCV19','KFRCM99','KFRCM32','KFRFV28',
@@ -101,6 +97,9 @@ function kfr_getfile(){
     });
 }
 
+    <!-- 메세지창 내용-->
+modal_msg=[['홀세일1본부','이것은 내용1 입니다.'],
+            ['홀세일2본부','내용2']];
 
 </script>
 </head>
@@ -129,7 +128,7 @@ function kfr_getfile(){
         aria-expanded="false" aria-controls="collapseExample" onclick="checkdata()">테이블값 검증</button>
 <button id="kfr_getfile" class="btn btn-primary" onclick="kfr_getfile()">파일 가져오기</button>
 <button id="scheduler_do" class="btn btn-primary" onclick="btn_click()">스케쥴러 중지</button>
-<button name="modal_btn" class="btn btn-primary" onclick="modal()">메세지창 테스트</button>
+<button name="modal_btn" class="btn btn-primary" onclick="call_msg(0)">메세지창 테스트</button>
 </div>
 
 
