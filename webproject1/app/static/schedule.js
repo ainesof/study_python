@@ -1,8 +1,8 @@
 function schedule_set(){
 <!-- 24시간 기준 00:00형식 시간, 함수명, 설명 순 -->
-    const task=[['14:15','test1()','테스트1'],
-                ['08:14','test2()','테스트2'],
-                ['08:09','getfile()','FTP자료 다운']];
+    const task=[['11:19','test1()','테스트1'],
+                ['11:18','test2()','테스트2'],
+                ['13:08','kfr_getfile()','FTP자료 다운']];
     var comment='';
     for(var i=0;i<task.length;i++){
         comment=comment+task[i][0]+' '+task[i][2]+'\n';

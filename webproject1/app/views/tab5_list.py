@@ -262,6 +262,7 @@ def tab5_newwindow_suikja():
     except:
         print(traceback.format_exc())
 
+# -------------------
 
 @bp.route('/layout/')
 def layout():
@@ -318,6 +319,17 @@ def kfr_getfile():
                 print(filename+' 다운로드 실패')
                 logger.debug(filename+' 다운로드 실패')
 
+        def setlog(path):
+            """로그파일 세팅"""
+            logger = logging.getLogger('root')
+            filename = 'log_test.log'
+            logfile = logging.handlers.RotatingFileHandler(path + filename, maxBytes=1024 * 1024 * 10, backupCount=10)
+            formatter = logging.Formatter(' %(asctime)s %(message)s')
+            logfile.setFormatter(formatter)
+            logger.addHandler(logfile)
+            logger.setLevel(logging.DEBUG)
+            return logger, logfile
+
         json_path = json.loads(request.form['kfr_info'])
         path = json_path['filepath']
 
@@ -348,17 +360,43 @@ def kfr_getfile():
         logger.debug(traceback.format_exc())
 
 
-def setlog(path):
-    """로그파일 세팅"""
-    logger = logging.getLogger('root')
-    filename='log_test.log'
-    logfile = logging.handlers.RotatingFileHandler(path+filename, maxBytes=1024 * 1024 * 10,backupCount=10)
-    formatter = logging.Formatter(' %(asctime)s %(message)s')
-    logfile.setFormatter(formatter)
-    logger.addHandler(logfile)
-    logger.setLevel(logging.DEBUG)
-    return logger, logfile
+@bp.route('/file_down/', methods=['GET', 'POST'])
+def file_down():
+    """최근버전은 main, 그 외는 풀네임으로 찾음"""
+    try:
+        fileType = request.form['arg1']
+        name = request.form['arg2']
+        if fileType == 'file_py_recently':
+            name = 'main.exe'
+        elif fileType == 'file_py':
+            name = 'main' + name.replace('/', '')[2:] + '.exe'
+        fileName = f'static/file/' + name
 
+        return send_file(fileName,
+                         mimetype='application/octet-stream',
+                         attachment_filename=name,
+                         as_attachment=True
+                         )
+    except:
+        print(traceback.format_exc())
+
+@bp.route('/download/')
+def download():
+    """다운로드 페이지"""
+    try:
+        return render_template('tab5/download.html')
+
+    except:
+        print(traceback.format_exc())
+
+@bp.route('/pdf_view/', methods=['get','post'])
+def pdf_view():
+    """PDF 뷰어 페이지"""
+    pdfname = request.form['arg1']
+    print(pdfname)
+    return render_template('tab5/pdf_view.html',pdfname=pdfname)
+
+# --------내부 함수
 
 def cal(gubun,win, logic, date1, val1, val2, val3, val4):
     """logic:페이지구분, date1:날짜"""
@@ -462,7 +500,7 @@ def cal(gubun,win, logic, date1, val1, val2, val3, val4):
                 if val3!='all' and val3!='':
                     df = df.query("SUIK_NAME==@val3")
                 del columns[1:2] # 공간부족으로 제거
-                df = df[columns]  
+                df = df[columns]
                 valsum = ['합계', str(len(df.index))+'개', '', 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 df = df.values.tolist()
 
@@ -517,34 +555,6 @@ def cal(gubun,win, logic, date1, val1, val2, val3, val4):
     except:
         print(traceback.format_exc())
 
-@bp.route('/file_down/', methods=['GET', 'POST'])
-def file_down():
-    '''최근버전은 main, 그 외는 풀네임으로 찾음'''
-    try:
-        fileType = request.form['arg1']
-        name = request.form['arg2']
-        if fileType == 'file_py_recently':
-            name = 'main.exe'
-        elif fileType == 'file_py':
-            name = 'main' + name.replace('/', '')[2:] + '.exe'
-        fileName = f'static/file/' + name
-
-        return send_file(fileName,
-                         mimetype='application/octet-stream',
-                         attachment_filename=name,
-                         as_attachment=True
-                         )
-    except:
-        print(traceback.format_exc())
-
-
-
-@bp.route('/download/')
-def download():
-    return render_template('tab5/download.html')
-
-
-# --------단순 메소드
 
 def changeWon(df,start):
     """단위 억으로 변경 df: 변경할 데이터프레임, start: 변환할 column 시작값"""

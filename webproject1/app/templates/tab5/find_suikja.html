@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>search</title>
-    {% extends 'base_etc.html' %}
+    {% extends 'base.html' %}
     {% block content %}
 
 <style>
@@ -18,7 +18,8 @@ div.container {
 
 $(function() {
 
-    $('.container my-3').disabled();
+    $("#top_menu").css("display" ,"none");
+
     $('[name="suikja"]').focus();
 
     <!-- 아이콘 클릭 빈값: 전체조회, 값:항목검색 -->

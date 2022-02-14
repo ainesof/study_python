@@ -19,11 +19,6 @@
 <script src="{{url_for('static',filename='xlsx.full.min.js')}}"></script>
 <!--필수, FileSaver savaAs 이용 -->
 <script src="{{url_for('static',filename='FileSaver.min.js')}}"></script>
-<!-- DDoS 공격막는 스크립트 -->
-<script
-  src="https://code.jquery.com/jquery-3.6.0.js"
-  integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-  crossorigin="anonymous"></script>
 <script src="{{url_for('static',filename='jquery-ui.js')}}"></script>
 <script>
 
@@ -42,6 +37,7 @@ function call_msg(gubun){
         $('.modal-body').html('내용');
         $('.modal').fadeIn();
     }
+    setTimeout(() => $('.modal').fadeOut(), 5000);
 }
 
 $(function() {
@@ -49,6 +45,29 @@ $(function() {
     <!-- 메세지창 관리2 -->
     $('[name=modal_btn]').click(function(){ $('.modal').fadeIn(); });
     $('.modal-content').click(function(){ $('.modal').fadeOut();  });
+
+    <!-- 메뉴 제목 -->
+    $('button[name=menu1]').html('그룹별 현황');
+    $('button[name=menu2]').html('자산별 현황');
+    $('button[name=menu3]').html('ESG평가');
+    $('button[name=menu4]').html('자료실');
+    $('button[name=menu5]').html('기타');
+
+    <!-- 메뉴 링크 -->
+    $('button[name^=menu]').click(function(){
+        var menu=$(this).attr('name')
+        if(menu=='menu1'){  window.open("/main/", "");   }
+        else if(menu=='menu2'){ window.open("/main2/", "");  }
+        else if(menu=='menu3'){
+<!--                    window.open("/download/", "");-->
+        }
+        else if(menu=='menu4'){ window.open("/download/", "");  }
+        else if(menu=='menu5'){ window.open("/layout/", "");    }
+    });
+
+    <!-- 설명 -->
+    $('#datepicker').prop("title", "전 영업일이 최신 값");
+    $('#find').prop("title", "검색어 없이 누르면 전체 검색");
 
     <!-- 테이블헤더 더블클릭 -->
     $('.tab5_th').dblclick(function(){
@@ -62,37 +81,6 @@ $(function() {
         {% endfor %}
     },4000); // 4초
     });
-
-    <!-- 메뉴 제목 -->
-    $('button[name=menu1]').html('그룹별 현황');
-    $('button[name=menu2]').html('자산별 현황');
-    $('button[name=menu3]').html('ESG평가');
-    $('button[name=menu4]').html('자료실');
-    $('button[name=menu5]').html('레이아웃');
-
-    <!-- 메뉴 링크 -->
-    $('button[name^=menu]').click(function(){
-        var menu=$(this).attr('name')
-        if(menu=='menu1'){
-            window.open("/main/", "");
-        }
-        else if(menu=='menu2'){
-            window.open("/main2/", "");
-        }
-        else if(menu=='menu3'){
-<!--                    window.open("/download/", "");-->
-        }
-        else if(menu=='menu4'){
-            window.open("/download/", "");
-        }
-        else if(menu=='menu5'){
-            window.open("/layout/", "");
-        }
-    });
-
-    <!-- 설명 -->
-    $('#datepicker').prop("title", "전 영업일이 최신 값");
-    $('#find').prop("title", "검색어 없이 누르면 전체 검색");
 
     <!-- 수익자 검색창 -->
     $('[name=find]').click(function(){
@@ -145,6 +133,18 @@ $(function() {
             $('#datepicker').val(it);
         }
 
+    });
+
+  <!-- PDF 뷰어 -->
+    $('[name="pdf_btn"]').click(function(){
+        var formInfo='pdf_view';
+        var pdf_name=$(this).val();
+        $('[name="arg1"]').val(pdf_name);
+        $('#pdf_viewer').attr("action", "{{ url_for('tab5.pdf_view')}}");
+        $('#pdf_viewer').attr("method", "POST");
+        $('#pdf_viewer').attr("target", formInfo);
+        window.open("", formInfo, 'height='+screen.height+',width=1000');
+        $('#pdf_viewer').submit();
     });
 
 });
@@ -239,7 +239,7 @@ function s2ab(s) {
 
 
 <!-- 상위메뉴 -->
-<div class="container my-3">
+<div id="top_menu" class="container my-3">
      <table>
         <tr><td colspan="3">
         <div class="btn-group btn-group-lg" role="group" aria-label="...">
@@ -253,6 +253,11 @@ function s2ab(s) {
         <tr style="height:30px"></tr>
     </table>
 </div>
+
+<!-- pdf뷰어 -->
+<form id="pdf_viewer" name="pdf_viewer" method="post">
+    <input type="hidden" id="arg1" name="arg1"/>
+</form>
 
 <!-- 기본 템플릿 안에 삽입될 내용 start -->
 {% block content %}
