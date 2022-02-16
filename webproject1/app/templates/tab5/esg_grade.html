@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>ESG평가</title>
+    <title>ESG 등급</title>
     {% extends 'base.html' %}
     {% block content %}
 
@@ -10,39 +10,8 @@
 </style>
 <script>
 
-<!-- 위치값을 ID로 받아서 팝업 x=row(group파악용), y=column(team 파악용) -->
 $(function () {
 
-    <!-- submit -->
-    $('.tab5_td').dblclick(function(){ // dblclick
-        var clickvalue=''
-        var team=''
-        var win1_arg2=''
-        var x=$(this).closest('td').prevAll().length;
-        var y=$(this).closest('tr').prevAll().length;
-        var ymax={{queryData1|count-2}} // row 수-2
-
-        if (x>=2 && x<=5){
-            team='1본부';
-            var clickvalue=($(this).closest('tr').find('td:eq(2)').text()).trim();
-            }
-        else if(x>=6 && x<=9){
-            team='2본부';
-            var clickvalue=($(this).closest('tr').find('td:eq(6)').text()).trim();
-            }
-        if (x>=2 && x<=9 && y<=ymax && clickvalue!=0){
-            win1_arg2=y;
-            var formInfo="tab5_group"+{{logic}}
-            $('#win1_arg1').val(team);
-            $('#win1_arg3').val($("#datepicker").val());
-            $('#frm').attr("action", "{{ url_for('tab5.tab5_newwindow1')}}"); //logic 1:본부,그룹,날짜,국민연금 여부, logic 2: 본부,유형,날짜
-            $('#win1_arg2').val(win1_arg2);
-            $('#frm').attr("method", "POST");
-            $('#frm').attr("target", formInfo);
-            window.open("", formInfo, "height=1000, width=1400");
-            $('#frm').submit();
-            }
-    });
 
 });
 
@@ -53,46 +22,22 @@ modal_msg=[['홀세일1본부','이것은 내용1 입니다.'],
 </script>
 </head>
 <body>
-
 <div class="container my-3">
     <table>
          <table>
              <tr>
                  <p class="text-center" style="font-size:20pt;"><b name="headtitle"></b></p>
              </tr>
-             <tr align="right">
-                 <div class="d-flex flex-row-reverse bd-highlight">
-                      <input class="form-control" name="find" type="text" style="width:110px;"/>
-                 </div>
-             </tr>
             <tr>
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <td align="center" style="width:50px";>기준일</td>
-                        <td align="left" style="width:80px;">
-                            <form action="{{ url_for('tab5.main')}}" id="submit" method="post">
-                            <input class="form-control" type="text" id="datepicker" name="datepicker" value="{{date1}}"/>
-                            <input type="hidden" name="win" value="{{win}}"/>
-                            <input type="hidden" name="logic" value="{{logic}}"/>
-                            </form>
-                        </td>
-                    </div>
-                    <div><td align="right" style="width:600px;"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
-                </div>
+                <div><td align="right" style="width:600px;"><input class="btn btn-dark" type="button" name="toExcel" value="excel"/></td></div>
             </tr>
         </table>
 
-        <div align="right"><b>단위: (억)</b></div>
         <table class="table table-striped table-bordered table-hover" id="tab5_table" style="">
             <thead>
-                <tr class="thead-dark" style="font-size:12pt;" align="center">
-                    <th colspan="2"></th>
-                    <th colspan="4" onclick="call_msg(0)">홀세일 1본부</th>
-                    <th colspan="4" onclick="call_msg(1)">홀세일 2본부</th>
-                </tr>
                 <tr class="thead-dark" align="center">
                     {% for i in range(header|length) %}
-                    <th class="tab5_th" style="font-size:10pt;">{{header[i]}}</th>
+                    <th style="font-size:10pt;">{{header[i]}}</th>
                     {% endfor %}
                 </tr>
                 </thead>
@@ -100,38 +45,19 @@ modal_msg=[['홀세일1본부','이것은 내용1 입니다.'],
                     {% for i in range(queryData1|count) %}
                 <tr>
                     {% for j in range(header|length) %}
-                        {% if j==0 %}
-                        <td class="tab5_td" align="left" bgcolor=#CCCCCC>
-                        {% elif j==1 %}
-                        <td class="tab5_td" align="right" bgcolor=#CCCCCC>
-                        {% else %}
-                        <td class="tab5_td" align="right">
-                        {% endif %}
-                        {% if j>=2 and j<=5 and queryData1[i][2]=='0' %}
-                        <span style="font-size:11pt; color:#CCCCCC">{{queryData1[i][j]}}</span>
-                        {% elif j>=6 and j<=9 and queryData1[i][6]=='0' %}
-                        <span style="font-size:11pt; color:#CCCCCC">{{queryData1[i][j]}}</span>
-                        {% else %}
+                        <td align="right">
                         <span style="font-size:11pt;">{{queryData1[i][j]}}</span>
-                        {% endif %}
                         </td>
                     {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-         사용자 IP: <mark>{{ip}}</mark>
     </table>
 </div>
 
-<form id="frm" name="frm" method="post">
-    <input type="hidden" id="win1_arg1" name="win1_arg1"/>
-    <input type="hidden" id="win1_arg2" name="win1_arg2"/>
-    <input type="hidden" id="win1_arg3" name="win1_arg3"/>
-    <input type="hidden" id="win1_arg4" name="win1_arg4"/>
-    <input type="hidden" id="logic" name="logic" value="{{logic}}"/>
-</form>
-
+<input type="hidden" name="win" value="{{win}}"/>
+<input type="hidden" name="logic" value="{{logic}}"/>
 {% endblock %}
 
 </body>

@@ -50,8 +50,9 @@ $(function() {
     $('button[name=menu1]').html('그룹별 현황');
     $('button[name=menu2]').html('자산별 현황');
     $('button[name=menu3]').html('ESG평가');
-    $('button[name=menu4]').html('자료실');
-    $('button[name=menu5]').html('기타');
+    $('button[name=menu4]').html('자산관리');
+    $('button[name=menu5]').html('자료실');
+    $('button[name=menu6]').html('기타');
 
     <!-- 메뉴 링크 -->
     $('button[name^=menu]').click(function(){
@@ -61,8 +62,9 @@ $(function() {
         else if(menu=='menu3'){
 <!--                    window.open("/download/", "");-->
         }
-        else if(menu=='menu4'){ window.open("/download/", "");  }
-        else if(menu=='menu5'){ window.open("/layout/", "");    }
+        else if(menu=='menu4'){ window.open("/jasan/0", "");  }
+        else if(menu=='menu5'){ window.open("/download/", "");  }
+        else if(menu=='menu6'){ window.open("/layout/", "");    }
     });
 
     <!-- 설명 -->
@@ -106,6 +108,7 @@ $(function() {
                 [2,1,'고객 유형별 수탁고 총괄'],
                 [2,2,'고객 유형별 순자산/설정액 현황'],
                 [2,3,'그룹별 펀드 현황'],
+                [3,1,'평가 ESG 등급'],
                 [99,2,'고객별 설정액 현황/유형별']
                 ];
     title.forEach(function(element){
@@ -183,18 +186,31 @@ function exportExcel(){
 
 var excelHandler = {
 
+
     getExcelFileName : function(){
-        var j=$('b[name=headtitle]').html();
-        var day=$("#datepicker").val().replaceAll('-','');
+        var j;
+        var day;
+
+        if ( $("b[name=headtitle]").length>0 ){
+            j=$('b[name=headtitle]').html();
+        }
+        else{ j='noname'}
+        if ( $("#datepicker").length>0 ){
+             day=$("#datepicker").val().replaceAll('-','');
+        }
+        else{ day='' }
         return day+j+'.xlsx';
     },
     getSheetName : function(){
         return 'Sheet1';
     },
     getExcelData : function(){
+        if ( $("#tab5_table").length>0 ){
         return document.getElementById('tab5_table');
+        }
     },
     getWorksheet : function(){
+
         return XLSX.utils.table_to_sheet(this.getExcelData());
     }
 }
@@ -248,6 +264,7 @@ function s2ab(s) {
             <button type="button" class="btn btn-outline-secondary" name="menu3"/>
             <button type="button" class="btn btn-outline-secondary" name="menu4"/>
             <button type="button" class="btn btn-outline-secondary" name="menu5"/>
+            <button type="button" class="btn btn-outline-secondary" name="menu6"/>
         </div>
         </td></tr>
         <tr style="height:30px"></tr>

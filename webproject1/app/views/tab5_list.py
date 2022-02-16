@@ -6,6 +6,7 @@ import traceback, socket, datetime
 from app.models import query, dateQuery, etcQuery
 import pandas as pd
 import json
+import csv
 import ftplib,logging,logging.handlers
 from collections import OrderedDict
 
@@ -389,12 +390,51 @@ def download():
     except:
         print(traceback.format_exc())
 
+
 @bp.route('/pdf_view/', methods=['get','post'])
 def pdf_view():
     """PDF 뷰어 페이지"""
     pdfname = request.form['arg1']
     print(pdfname)
     return render_template('tab5/pdf_view.html',pdfname=pdfname)
+
+@bp.route('/jasan/<int:gubun>/', methods=['get','post'])
+def jasan(gubun):
+    """자산관리 페이지"""
+    try:
+        header=[]
+        title=['출입증 발급기록','전체 출입증','비고']
+        filename="card.xlsx"
+        if os.path.isfile(f"app\static\\setting\\"+filename):
+            sheet1 = pd.read_excel(f"app\static\\setting\\"+filename, sheet_name=gubun)
+            df1 = pd.DataFrame(sheet1)
+            print(df1)
+            header=df1.columns.tolist()
+            # with pd.ExcelWriter(f"app\static\\setting\\test2.xlsx") as writer:
+            #     df1['사용자'].to_excel(writer, sheet_name='sheet1')
+            #     df1['대여일자'].to_excel(writer, sheet_name='sheet2')
+            df1 = df1.values.tolist()
+        else:
+            print('파일이 없습니다')
+        return render_template('tab5/jasan.html', queryData1=df1, header=header, logic=4, win=1, searchdate=' ',title=title,headtitle=title[gubun],readmode='y')
+
+    except:
+        print(traceback.format_exc())
+
+@bp.route('/jasan_modi/', methods=['get','post'])
+def jasan_modi():
+    """수정/저장"""
+    readmode = request.form['readmode']
+    if readmode=='y':
+        readmode='n'
+        print(readmode)
+        return json.dumps(readmode)
+    elif readmode=='n':
+        dataset = request.form['dataset']
+        print(dataset)
+    return '0'
+
+
 
 # --------내부 함수
 
@@ -596,8 +636,8 @@ def tab5_createJson():
 
 def tab5_readJson():
     """JSON파일 읽기"""
-    if os.path.isfile(f"app\static\\file\\setting\\userimsi.json"):
-        with open(f'app\static\\file\\setting\\userimsi.json', 'r', encoding='utf-8') as readfile:
+    if os.path.isfile(f"app\static\\setting\\userimsi.json"):
+        with open(f'app\static\\setting\\userimsi.json', 'r', encoding='utf-8') as readfile:
             content = json.load(readfile)
             # print(content)
             # print(content['ip'])
@@ -627,14 +667,7 @@ def set_info():
         print(traceback.format_exc())
 
 
-@bp.route('/main/<int:question_id>/')
-def detail(question_id):
-    """변수 받음"""
-    try:
-        return render_template('tab5/tab5_view.html', queryData1='', link1='http://127.0.0.1:5000/main',
-                               val1=question_id)
-    except:
-        print(traceback.format_exc())
+
 
 
 @bp.route('/list/')
