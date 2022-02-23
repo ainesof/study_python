@@ -1,12 +1,13 @@
 import math
 import os.path
 
+import openpyxl
 from flask import Blueprint, render_template, request, send_file
 import traceback, socket, datetime
 from app.models import query, dateQuery, etcQuery
 import pandas as pd
 import json
-import csv
+import numpy
 import ftplib,logging,logging.handlers
 from collections import OrderedDict
 
@@ -400,40 +401,173 @@ def pdf_view():
 
 @bp.route('/jasan/<int:gubun>/', methods=['get','post'])
 def jasan(gubun):
-    """자산관리 페이지"""
     try:
-        header=[]
-        title=['출입증 발급기록','전체 출입증','비고']
-        filename="card.xlsx"
-        if os.path.isfile(f"app\static\\setting\\"+filename):
-            sheet1 = pd.read_excel(f"app\static\\setting\\"+filename, sheet_name=gubun)
-            df1 = pd.DataFrame(sheet1)
-            print(df1)
-            header=df1.columns.tolist()
-            # with pd.ExcelWriter(f"app\static\\setting\\test2.xlsx") as writer:
-            #     df1['사용자'].to_excel(writer, sheet_name='sheet1')
-            #     df1['대여일자'].to_excel(writer, sheet_name='sheet2')
-            df1 = df1.values.tolist()
-        else:
-            print('파일이 없습니다')
-        return render_template('tab5/jasan.html', queryData1=df1, header=header, logic=4, win=1, searchdate=' ',title=title,headtitle=title[gubun],readmode='y')
+        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록']
+        index_name = ['사용자','카드번호','성명','성명']
+        filepath = "app\static\\setting\\"
+        readfile=["card.xlsx","notebook.xlsx"]
+        filename_bak=["card_bak.xlsx","notebook_bak.xlsx"]
+        file_coltype=[{'카드번호':str,'카드번호':str},{'수량':str,'대여 수':str,'반납 수':str}]
+
+        '''출입증 관리'''
+        if gubun in [0,1]:
+            filename=readfile[0]
+            usecard = []
+            usecardlist = ''
+
+            if os.path.isfile(filepath+filename)==False:
+                print('백업파일 사용')
+                filename=filename_bak[0]
+
+            if os.path.isfile(filepath+filename):
+                sheet1 = pd.read_excel(filepath + filename, sheet_name=0,converters=file_coltype[0])
+                sheet2 = pd.read_excel(filepath + filename, sheet_name=1,converters=file_coltype[0])
+                df1 = pd.DataFrame(sheet1)
+                df2 = pd.DataFrame(sheet2)
+
+                imsicard=df2.query('소지자=="임시카드"')
+                imsicard=imsicard['카드번호'].tolist()
+
+                imsicard= list(map(str,imsicard))
+
+                uselist = df1.query('반납일자.isnull() & 카드번호 in @imsicard', engine='python')
+                uselist = uselist[['카드번호','사용자']]
+                uselist=uselist.sort_values(by=['카드번호'], axis=0)
+
+                for i in range(len(uselist.index)):
+                    usecard.append(uselist.iloc[i,0])
+                    usecardlist+=str(uselist.iloc[i,0])+"("+str(uselist.iloc[i,1])+") "
+                imsicard=set(imsicard)
+                usecard=set(usecard)
+                remaincard=list(imsicard-usecard)
+                remaincard.sort()
+                remaincard= list(map(str,remaincard))
+                remaincard=','.join(remaincard)
+
+                header1 = df1.columns.tolist()
+                header2 = df2.columns.tolist()
+                df1 = df1.values.tolist()
+                df2 = df2.values.tolist()
+
+                if gubun == 0:
+                    df=df1
+                    header=header1
+                    etc_dataset=df2
+                    etc_header=header2
+                elif gubun == 1:
+                    df=df2
+                    header=header2
+                    etc_dataset=df1
+                    etc_header=header1
+
+
+            else:
+                print('파일이 없습니다')
+
+                """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부,
+                etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,remaincard=남은카드,usecardlist:사용중카드
+                index:값 지울때 기준"""
+            return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[0],
+                                   title=title,headtitle=title[gubun],readmode='y',
+                                   queryData1=df, header=header,
+                                   etc_dataset=etc_dataset,etc_header=etc_header, gubun=gubun,
+                                   remaincard=remaincard,usecardlist=usecardlist,
+                                   index=index_name)
+
+        elif gubun in [2,3]:
+            filename=readfile[1]
+            if os.path.isfile(filepath+filename)==False:
+                print('백업파일 사용')
+                filename=filename_bak[1]
+
+            if os.path.isfile(filepath+filename):
+                sheet1 = pd.read_excel(filepath + filename, sheet_name=0, converters=file_coltype[1])
+                sheet2 = pd.read_excel(filepath + filename, sheet_name=1, converters=file_coltype[1])
+                df1 = pd.DataFrame(sheet1)
+                df2 = pd.DataFrame(sheet2)
+
+                header1 = df1.columns.tolist()
+                header2 = df2.columns.tolist()
+                df1 = df1.values.tolist()
+                df2 = df2.values.tolist()
+
+                if gubun == 2:
+                    df=df1
+                    header=header1
+                    etc_dataset=df2
+                    etc_header=header2
+                elif gubun == 3:
+                    df=df2
+                    header=header2
+                    etc_dataset=df1
+                    etc_header=header1
+
+            else:
+                print('파일이 없습니다')
+
+
+                """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부
+                etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,index:값 지울때 기준"""
+            return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[1],
+                                   title=title,headtitle=title[gubun],readmode='y',
+                                   queryData1=df, header=header,
+                                   etc_dataset=etc_dataset,etc_header=etc_header, gubun=gubun,
+                                   index=index_name
+                                   )
+
 
     except:
         print(traceback.format_exc())
 
 @bp.route('/jasan_modi/', methods=['get','post'])
 def jasan_modi():
-    """수정/저장"""
-    readmode = request.form['readmode']
-    if readmode=='y':
-        readmode='n'
-        print(readmode)
-        return json.dumps(readmode)
-    elif readmode=='n':
-        dataset = request.form['dataset']
-        print(dataset)
-    return '0'
+    """수정/저장 로직"""
+    try:
 
+        readmode = request.form['readmode']
+        if readmode=='y':
+            readmode='n'
+            return json.dumps(readmode)
+        elif readmode=='n':
+            path="C:\\Users\\User\\PycharmProjects\\webproject1\\app\\static\\setting\\"
+            filepath="app\static\\setting\\"
+            sheet1 = json.loads(request.form['sheet1'])
+            sheet2 = json.loads(request.form['sheet2'])
+            col = len(sheet1['header'])
+            col2 = len(sheet2['header'])
+            filename = request.form['filename']
+
+            dataset = numpy.array(sheet1['dataset']).reshape((int(sheet1['rows']), col))
+            sheet1_df = pd.DataFrame(dataset)
+
+            sheet1_df.columns = sheet1['header']
+            dataset2 = numpy.array(sheet2['dataset']).reshape((int(sheet2['rows']), col2))
+            sheet2_df = pd.DataFrame(dataset2)
+            sheet2_df.columns = sheet2['header']
+
+            gubun = int(request.form['gubun'])
+            index = json.loads(request.form['index'])
+
+            if gubun in [0,1]:
+                sheet1_df = sheet1_df[sheet1_df[index[0]] != '']
+                sheet1_df['순서'] = sheet1_df.index
+                sheet1_df=sheet1_df[['순서','사용자','대여일자','반납일자','카드번호']]
+                sheet2_df = sheet2_df[sheet2_df[index[1]] != '']
+                sheet_name=['카드기록','전체카드']
+
+            elif gubun in [2,3]:
+                sheet1_df = sheet1_df[sheet1_df[index[2]] != '']
+                sheet2_df = sheet2_df[sheet2_df[index[3]] != '']
+                sheet_name=['대여현황','대여기록']
+            print(sheet1_df)
+            with pd.ExcelWriter(filepath+filename) as writer:
+                sheet1_df.to_excel(writer, sheet_name=sheet_name[0], index=False)
+                sheet2_df.to_excel(writer, sheet_name=sheet_name[1], index=False)
+
+        return '0'
+
+    except:
+        print(traceback.format_exc())
 
 
 # --------내부 함수
