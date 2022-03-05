@@ -2,7 +2,7 @@
 <html lang="ko" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>출입증 현황</title>
+    <title></title>
     {% extends 'base.html' %}
     {% block content %}
 
@@ -14,8 +14,15 @@ var readmode='';
 var maxlength={{queryData1|length}};
 var add_rows=0;
 var date = new Date();
+var month=(date.getMonth()+1)+'';
+var day=(date.getDate())+'';
+var today2=date.getFullYear()+"-"+month.padStart(2,'0')+"-"+day.padStart(2,'0');
+var modi_str=[]; <!-- 수정 내역들 -->
+var td_str=[];  <!-- 클릭비교용 -->
 
 $(function () {
+
+
 
     readmode='{{readmode}}';
     $('#undo_exc').hide();
@@ -29,15 +36,79 @@ $(function () {
         else if(menu=='submenu2'){ window.open("/jasan/1", "_self");  }
         else if(menu=='submenu3'){ window.open("/jasan/2", "_self");  }
         else if(menu=='submenu4'){ window.open("/jasan/3", "_self");  }
+        else if(menu=='submenu5'){ window.open("/jasan/4", "_self");  }
+        else if(menu=='submenu6'){ window.open("/rental_pdf", "_blank");  }
     });
 
     <!-- 항목 선택 -->
-    $(document).on("click","[name=tbody_td]",function(){
+    $(document).on("click","[name=tbody_input]",function(){
         $(this).select();
     });
 
+    <!-- 수정값 저장 -->
+    $(document).on("click","[name=tbody_input]",function(){
+        if('{{gubun}}'==2){
+            var td=$(this).parent().parent().children();
+            var col=$(this).closest('td').prevAll().length;
+            td_str[0]=td.eq(2).children().val();
+            td_str[1]=td.eq(3).children().val();
+        }
+
+    });
+
+    $(document).on("blur","[name=tbody_input]",function(){
+        if('{{gubun}}'==2){
+            var td=$(this).parent().parent().children();
+            var col=$(this).closest('td').prevAll().length;
+<!--            var row=$(this).closest('tr').prevAll().length;-->
+            var click_col=td.eq(col).children().val().toUpperCase();
+            var ret='';
+
+            if(col==2 && click_col=='X'){
+                td.eq(col).children().val('X');
+                ret=td.eq(col+1).children().val(); <!-- 반납값 -->
+                td.eq(col+1).children().val('nan');
+                modi_save(td,ret);
+            }
+            else if(col==2 && click_col!='X'){
+                td.eq(col).children().val('0');
+                td.eq(col+1).children().select();
+            }
+            if(col==3){
+                modi_save(td,ret);
+            }
+        }
+    });
+
+
 });
 
+function modi_save(td,ret){
+<!-- 수정값 리스트 추가. 변경해서 원상복귀한건 값이 추가됨 -->
+    var imsi_str=[];
+    if((td_str[0]!=td.eq(2).children().val()) || (td_str[0]=='0' && td_str[1]!=td.eq(3).children().val())){
+        imsi_str.push(td.eq(0).children().val());
+        imsi_str.push(td.eq(1).children().val());
+        if(td.eq(2).children().val()=='X'){
+        imsi_str.push('X');
+        imsi_str.push(ret);
+        }
+        else if(td.eq(2).children().val()=='0'){
+        imsi_str.push('0');
+        imsi_str.push(td.eq(3).children().val());
+        }
+    }
+
+<!-- imsi_str와 modi_str 비교해서 최신값 갱신 -->
+
+    for(var i=0;i<modi_str.length;i+=4){
+        if(imsi_str[1]==modi_str[i+1]){
+            modi_str.splice(i,4);
+        }
+    }
+    modi_str.push(...imsi_str);
+<!--    alert(modi_str);-->
+}
 
 function modify(){
     <!-- 수정모드 -->
@@ -78,7 +149,7 @@ function modify(){
                     context+='background-color:#DDDDDD;';
                     }
                     context+='">';
-                    context+='<input name="tbody_td" type="text" style="width:100%; border:none; background:transparent;" value={{queryData1[i][j]}}';
+                    context+='<input name="tbody_input" type="text" style="width:100%; border:none; background:transparent;" value={{queryData1[i][j]}}';
                     {% if gubun==0 and j==0 %}
                         context+=' disabled ';
                     {% endif %}
@@ -104,7 +175,9 @@ function modify(){
         var maxCell={{(header|length)}}*{{(queryData1|length)}};
         var td=$('#tbody').children().children();
         var index=[];
+        var gubun={{gubun}};
         var rows={{(queryData1|length)}};
+        var etc_rows={{(etc_dataset|length)}};
 
         {% for i in range(index|length) %}
             index.push('{{index[i]}}');
@@ -122,6 +195,7 @@ function modify(){
             value=td.eq(i).children().val();
             dataset.push(value);
         }
+        <!-- 추가내용 삽입 -->
         if($('[name="app_tr"]').length>0){
             for(j=0;j<add_rows;j++){
                 var td=$('[name="app_tr"]').eq(j).children();
@@ -138,42 +212,77 @@ function modify(){
                 etc_dataset.push('{{etc_dataset[i][j]}}');
             {% endfor %}
         {% endfor %}
-        if({{gubun}}==0){
-            sheet1={    dataset: dataset, header:header, rows:rows   };
-            sheet2={    dataset: etc_dataset, header:etc_header, rows:{{(etc_dataset|length)}}    };
-        }
-        else if({{gubun}}==1){
-            sheet1={    dataset: etc_dataset, header:etc_header, rows:{{(etc_dataset|length)}}    };
-            sheet2={    dataset: dataset, header:header, rows:rows   };
-        }
-        else if({{gubun}}==2){
-            sheet1={    dataset: dataset, header:header, rows:rows   };
-            sheet2={    dataset: etc_dataset, header:etc_header, rows:{{(etc_dataset|length)}}    };
-        }
-        else if({{gubun}}==3){
-            sheet1={    dataset: etc_dataset, header:etc_header, rows:{{(etc_dataset|length)}}    };
-            sheet2={    dataset: dataset, header:header, rows:rows   };
+
+        <!-- 수정이력 기록 -->
+        if(modi_str.length>0){
+            for(var i=0;i<modi_str.length;i+=4){
+                etc_dataset.push(modi_str[i+1]);
+                if(modi_str[2]=='0'){
+                    etc_dataset.push(today2)
+                    etc_dataset.push(modi_str[i+3]);
+                    etc_dataset.push('nan');
+                    etc_dataset.push('nan');
+                }
+                else if(modi_str[2]=='X'){
+                    etc_dataset.push('nan');
+                    etc_dataset.push('nan');
+                    etc_dataset.push(today2)
+                    etc_dataset.push(modi_str[i+3]);
+                }
+                etc_rows++;
+           }
         }
 
-        $.ajax({
-            url : {{ url_for('tab5.jasan_modi')}}
-            ,type: 'post'
-            ,dataType: 'JSON'
-            ,traditional : true
-            ,data: {readmode : readmode, filename: '{{filename}}', index : JSON.stringify(index), gubun : '{{gubun}}',
-            sheet1: JSON.stringify(sheet1), sheet2: JSON.stringify(sheet2)}
-        })
-        .done(function(value){
-            history.go(0);
-        });
-
+        if(gubun==0){
+            sheet1={    dataset: dataset, header:header, rows:rows   };
+            sheet2={    dataset: etc_dataset, header:etc_header, rows:etc_rows    };
+        }
+        else if(gubun==1){
+            sheet1={    dataset: etc_dataset, header:etc_header, rows:etc_rows    };
+            sheet2={    dataset: dataset, header:header, rows:rows   };
+        }
+        else if(gubun==2){
+            sheet1={    dataset: dataset, header:header, rows:rows   };
+            sheet2={    dataset: etc_dataset, header:etc_header, rows:etc_rows    };
+        }
+        else if(gubun==3){
+            sheet1={    dataset: etc_dataset, header:etc_header, rows:etc_rows    };
+            sheet2={    dataset: dataset, header:header, rows:rows   };
+        }
+        else if(gubun==4){
+            sheet1={    dataset: dataset, header:header, rows:rows    };
+        }
+        if(gubun in [0,1,2,3]){
+            $.ajax({
+                url : {{ url_for('tab5.jasan_modi')}}
+                ,type: 'post'
+                ,dataType: 'JSON'
+                ,traditional : true
+                ,data: {readmode : readmode, filename: '{{filename}}', index : JSON.stringify(index), gubun : '{{gubun}}',
+                sheet1: JSON.stringify(sheet1), sheet2: JSON.stringify(sheet2)}
+            })
+            .done(function(value){
+                history.go(0);
+            });
+        }
+        else if(gubun == 4){
+             $.ajax({
+                url : {{ url_for('tab5.jasan_modi')}}
+                ,type: 'post'
+                ,dataType: 'JSON'
+                ,traditional : true
+                ,data: {readmode : readmode, filename: '{{filename}}', index : JSON.stringify(index), gubun : '{{gubun}}',
+                sheet1: JSON.stringify(sheet1)}
+            })
+            .done(function(value){
+                history.go(0);
+            });
+        }
     }
 }
 
 <!-- 1줄 추가 -->
 function append(){
-    var month=(date.getMonth()+1)+'';
-    var today2=date.getFullYear()+"-"+month.padStart(2,'0')+"-"+date.getDate();
     var context='';
 
     context+='<table class="table table-striped table-bordered table-hover"><tr name="app_tr">';
@@ -187,7 +296,7 @@ function append(){
     {% for j in range(header|length-1) %}
         context+='<td style="font-size:10pt;">';
         context+='<input type="text" style="width:100%; border:none; background:transparent;"';
-        {% if gubun==0 and j==2 %}
+        {% if gubun==0 and j==1 %}
             context+=' value="'+today2;
             context+='"';
         {% endif %}
@@ -219,11 +328,13 @@ function cancel(){
                 <button type="button" name="submenu2" class="btn btn-outline-secondary">{{title[1]}}</button>
                 <button type="button" name="submenu3" class="btn btn-outline-secondary">{{title[2]}}</button>
                 <button type="button" name="submenu4" class="btn btn-outline-secondary">{{title[3]}}</button>
+                <button type="button" name="submenu5" class="btn btn-outline-secondary">{{title[4]}}</button>
+                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[5]}}</button>
             </div>
         </td></tr></div>
         <tr style="height:20px"></tr>
         {% if gubun==0 or gubun==1 %}
-        <tr><td>남은카드: {{remaincard}}</td></tr>
+        <tr><td>남은 임시카드: {{remaincard}}</td></tr>
         <tr><td>대여중: {{usecardlist}}</td></tr>
         {% endif %}
         <tr>

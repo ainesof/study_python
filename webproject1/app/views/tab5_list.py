@@ -391,6 +391,16 @@ def download():
     except:
         print(traceback.format_exc())
 
+@bp.route('/rental_pdf/')
+def rental_pdf():
+    """렌탈PDF 확인 페이지"""
+    try:
+        return render_template('tab5/rental_pdf.html')
+
+    except:
+        print(traceback.format_exc())
+
+
 
 @bp.route('/pdf_view/', methods=['get','post'])
 def pdf_view():
@@ -402,12 +412,12 @@ def pdf_view():
 @bp.route('/jasan/<int:gubun>/', methods=['get','post'])
 def jasan(gubun):
     try:
-        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록']
-        index_name = ['사용자','카드번호','성명','성명']
+        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록','직원 정보','렌탈 인수인도서']
+        index_name = ['사용자','카드번호','성명','성명','성명']
         filepath = "app\static\\setting\\"
-        readfile=["card.xlsx","notebook.xlsx"]
-        filename_bak=["card_bak.xlsx","notebook_bak.xlsx"]
-        file_coltype=[{'카드번호':str,'카드번호':str},{'수량':str,'대여 수':str,'반납 수':str}]
+        readfile=["card.xlsx","notebook.xlsx","member.xlsx"]
+        filename_bak=["card_bak.xlsx","notebook_bak.xlsx","member_bak.xlsx"]
+        file_coltype=[{'카드번호':str,'카드번호':str},{'수량':str,'대여 수':str,'반납 수':str,'대여':str},{'사번':str,'IP':int,'전화번호':str}]
 
         '''출입증 관리'''
         if gubun in [0,1]:
@@ -515,6 +525,31 @@ def jasan(gubun):
                                    index=index_name
                                    )
 
+        elif gubun in [4]:
+            filename=readfile[2]
+            if os.path.isfile(filepath+filename)==False:
+                print('백업파일 사용')
+                filename=filename_bak[2]
+
+            if os.path.isfile(filepath+filename):
+                sheet1 = pd.read_excel(filepath + filename, sheet_name=0, converters=file_coltype[2])
+                df = pd.DataFrame(sheet1)
+
+                header = df.columns.tolist()
+                df = df.values.tolist()
+
+            else:
+                print('파일이 없습니다')
+
+
+                """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부
+               ,gubun:구분값,index:값 지울때 기준"""
+            return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[2],
+                                   title=title,headtitle=title[gubun],readmode='y',
+                                   queryData1=df, header=header,gubun=gubun, index=index_name
+                                   )
+
+
 
     except:
         print(traceback.format_exc())
@@ -531,38 +566,46 @@ def jasan_modi():
         elif readmode=='n':
             path="C:\\Users\\User\\PycharmProjects\\webproject1\\app\\static\\setting\\"
             filepath="app\static\\setting\\"
-            sheet1 = json.loads(request.form['sheet1'])
-            sheet2 = json.loads(request.form['sheet2'])
-            col = len(sheet1['header'])
-            col2 = len(sheet2['header'])
-            filename = request.form['filename']
-
-            dataset = numpy.array(sheet1['dataset']).reshape((int(sheet1['rows']), col))
-            sheet1_df = pd.DataFrame(dataset)
-
-            sheet1_df.columns = sheet1['header']
-            dataset2 = numpy.array(sheet2['dataset']).reshape((int(sheet2['rows']), col2))
-            sheet2_df = pd.DataFrame(dataset2)
-            sheet2_df.columns = sheet2['header']
-
             gubun = int(request.form['gubun'])
             index = json.loads(request.form['index'])
+            filename = request.form['filename']
 
-            if gubun in [0,1]:
-                sheet1_df = sheet1_df[sheet1_df[index[0]] != '']
-                sheet1_df['순서'] = sheet1_df.index
-                sheet1_df=sheet1_df[['순서','사용자','대여일자','반납일자','카드번호']]
-                sheet2_df = sheet2_df[sheet2_df[index[1]] != '']
-                sheet_name=['카드기록','전체카드']
+            sheet1 = json.loads(request.form['sheet1'])
+            col = len(sheet1['header'])
+            dataset = numpy.array(sheet1['dataset']).reshape((int(sheet1['rows']), col))
+            sheet1_df = pd.DataFrame(dataset)
+            sheet1_df.columns = sheet1['header']
 
-            elif gubun in [2,3]:
-                sheet1_df = sheet1_df[sheet1_df[index[2]] != '']
-                sheet2_df = sheet2_df[sheet2_df[index[3]] != '']
-                sheet_name=['대여현황','대여기록']
-            print(sheet1_df)
-            with pd.ExcelWriter(filepath+filename) as writer:
-                sheet1_df.to_excel(writer, sheet_name=sheet_name[0], index=False)
-                sheet2_df.to_excel(writer, sheet_name=sheet_name[1], index=False)
+            if gubun in [0,1,2,3]:
+                sheet2 = json.loads(request.form['sheet2'])
+                col2 = len(sheet2['header'])
+                dataset2 = numpy.array(sheet2['dataset']).reshape((int(sheet2['rows']), col2))
+                sheet2_df = pd.DataFrame(dataset2)
+                sheet2_df.columns = sheet2['header']
+
+                if gubun in [0,1]:
+                    sheet1_df = sheet1_df[sheet1_df[index[0]] != '']
+                    sheet1_df['순서'] = sheet1_df.index
+                    sheet1_df=sheet1_df[['순서','사용자','대여일자','반납일자','카드번호']]
+                    sheet2_df = sheet2_df[sheet2_df[index[1]] != '']
+                    sheet_name=['카드기록','전체카드']
+
+                elif gubun in [2,3]:
+                    sheet1_df = sheet1_df[sheet1_df[index[2]] != '']
+                    sheet2_df = sheet2_df[sheet2_df[index[3]] != '']
+                    sheet_name=['대여현황','대여기록']
+
+                with pd.ExcelWriter(filepath+filename) as writer:
+                    sheet1_df.to_excel(writer, sheet_name=sheet_name[0], index=False)
+                    sheet2_df.to_excel(writer, sheet_name=sheet_name[1], index=False)
+
+            elif gubun==4:
+                # sheet1_df = sheet1_df[sheet1_df[index[4]] != '']
+                sheet_name = '직원정보'
+
+                with pd.ExcelWriter(filepath+filename) as writer:
+                    sheet1_df.to_excel(writer, sheet_name=sheet_name, index=False)
+
 
         return '0'
 
