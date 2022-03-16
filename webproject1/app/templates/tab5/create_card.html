@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사원증 신청</title>
+    {% extends 'base.html' %}
+    {% block content %}
+
+<script>
+
+var row=0;
+
+$(function () {
+
+    append();
+
+    <!-- 기타 링크 -->
+    $('td[name^=link]').click(function(){
+    var url=$(this).attr('value')
+    window.open(url, "_blank");
+    });
+
+    <!-- 메뉴 링크 -->
+    $('button[name^=submenu]').click(function(){
+        var menu=$(this).attr('name')
+        if(menu=='submenu1'){  window.open("/jasan/0", "_self");   }
+        else if(menu=='submenu2'){ window.open("/jasan/1", "_self");  }
+        else if(menu=='submenu3'){ window.open("/jasan/2", "_self");  }
+        else if(menu=='submenu4'){ window.open("/jasan/3", "_self");  }
+        else if(menu=='submenu5'){ window.open("/jasan/4", "_self");  }
+        else if(menu=='submenu6'){ window.open("/create_card", "_self");  }
+        else if(menu=='submenu7'){ window.open("/rental_pdf", "_blank");  }
+    });
+
+});
+
+<!-- 1줄 추가 -->
+function append(){
+    var context='';
+    row=$('#tbody >tr').length+1; <!-- 객체 안 tr개수 가져옴 -->
+    context+='<tr>';
+    context+='<td><input class="btn btn-dark btn-sm" type="button" value="-" ';
+    context+='onclick="row_del($(this))"></td><td>';
+    context+=row;
+    context+='</td><td>흥국자산운용</td><td><select><option selected>신규</option><option>재발급</option></select></td>';
+    context+='<td>카드</td>';
+    context+='<td><input type="text" style="width:100%; border:none; background:transparent;"></td>';
+    context+='<td><input type="text" style="width:100%; border :none; background:transparent;"></td>';
+    context+='</tr>';
+
+    $('#tbody').append(context);
+
+
+}
+
+<!-- 선택줄 삭제 후 정렬 -->
+function row_del(e){
+    row=$('#tbody >tr').length;
+    e.closest('tr').remove();
+    for(var i=0;i<row;i++){
+        $('#tbody').children().eq(i).children().eq(1).text(i+1);
+        }
+}
+
+
+
+</script>
+</head>
+<body>
+<div class="container my-3">
+    <table>
+        <tr>
+            <p class="text-center" style="font-size:20pt;"><b name="headtitle">{{headtitle}}</b></p>
+        </tr>
+        <div class="container my-3"><tr><td colspan="3">
+            <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                <button type="button" name="submenu1" class="btn btn-outline-secondary">{{title[0]}}</button>
+                <button type="button" name="submenu2" class="btn btn-outline-secondary">{{title[1]}}</button>
+                <button type="button" name="submenu3" class="btn btn-outline-secondary">{{title[2]}}</button>
+                <button type="button" name="submenu4" class="btn btn-outline-secondary">{{title[3]}}</button>
+                <button type="button" name="submenu5" class="btn btn-outline-secondary">{{title[4]}}</button>
+                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[5]}}</button>
+                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[6]}}</button>
+            </div>
+        </td></tr></div>
+        <tr style="height:20px"></tr>
+        <tr>
+            <div><td align="right">
+                <input class="btn btn-dark" type="button" name="append" onclick="append()" value="추가"/>
+                <input class="btn btn-dark" type="button" name="toExcel" value="excel"/>
+            </td></div>
+        </tr>
+    </table>
+</div>
+<div class="container my-3">
+    <table class="table table-striped table-bordered table-hover" id="tab5_table" style="font-size:10pt;">
+        <thead><tr class="thead-dark" align="center">
+        <th></th><th>순번</th><th>회사명</th><th>발급구분</th><th>제작형태</th><th>사진파일명</th><th>한글명</th>
+        </tr></thead>
+        <tbody id="tbody" align="center">
+        </tbody></table>
+</div>
+
+<input type="hidden" name="win" value="{{win}}"/>
+<input type="hidden" name="logic" value="{{logic}}"/>
+{% endblock %}
+</body>
+</html>

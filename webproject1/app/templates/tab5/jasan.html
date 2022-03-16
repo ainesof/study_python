@@ -37,7 +37,8 @@ $(function () {
         else if(menu=='submenu3'){ window.open("/jasan/2", "_self");  }
         else if(menu=='submenu4'){ window.open("/jasan/3", "_self");  }
         else if(menu=='submenu5'){ window.open("/jasan/4", "_self");  }
-        else if(menu=='submenu6'){ window.open("/rental_pdf", "_blank");  }
+        else if(menu=='submenu6'){ window.open("/create_card", "_self");  }
+        else if(menu=='submenu7'){ window.open("/rental_pdf", "_blank");  }
     });
 
     <!-- 항목 선택 -->
@@ -56,6 +57,7 @@ $(function () {
 
     });
 
+    <!-- 값 수정시 자동세팅 및 수정리스트 추가-->
     $(document).on("blur","[name=tbody_input]",function(){
         if('{{gubun}}'==2){
             var td=$(this).parent().parent().children();
@@ -80,11 +82,10 @@ $(function () {
         }
     });
 
-
 });
 
-function modi_save(td,ret){
 <!-- 수정값 리스트 추가. 변경해서 원상복귀한건 값이 추가됨 -->
+function modi_save(td,ret){
     var imsi_str=[];
     if((td_str[0]!=td.eq(2).children().val()) || (td_str[0]=='0' && td_str[1]!=td.eq(3).children().val())){
         imsi_str.push(td.eq(0).children().val());
@@ -110,8 +111,8 @@ function modi_save(td,ret){
 <!--    alert(modi_str);-->
 }
 
-function modify(){
     <!-- 수정모드 -->
+function modify(){
     var index_loc='';
 
     if(readmode=='y'){
@@ -330,6 +331,7 @@ function cancel(){
                 <button type="button" name="submenu4" class="btn btn-outline-secondary">{{title[3]}}</button>
                 <button type="button" name="submenu5" class="btn btn-outline-secondary">{{title[4]}}</button>
                 <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[5]}}</button>
+                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[6]}}</button>
             </div>
         </td></tr></div>
         <tr style="height:20px"></tr>

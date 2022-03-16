@@ -400,6 +400,18 @@ def rental_pdf():
     except:
         print(traceback.format_exc())
 
+@bp.route('/create_card/')
+def create_card():
+    """사원증 신청양식 제작 페이지"""
+    try:
+
+        title = ['출입증 발급기록', '전체 출입증', '노트북 대여현황', '노트북 대여기록', '직원 정보', '사원증 신청', '렌탈 인수인도서']
+        """logic&win: 넣어야 상단메뉴가 작동, header:제목,title:소메뉴,headtitle:메인타이틀"""
+        return render_template('tab5/create_card.html', logic=5, win=1,title=title, headtitle=title[5])
+
+
+    except:
+        print(traceback.format_exc())
 
 
 @bp.route('/pdf_view/', methods=['get','post'])
@@ -412,12 +424,14 @@ def pdf_view():
 @bp.route('/jasan/<int:gubun>/', methods=['get','post'])
 def jasan(gubun):
     try:
-        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록','직원 정보','렌탈 인수인도서']
+        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록','직원 정보','사원증 신청','렌탈 인수인도서']
         index_name = ['사용자','카드번호','성명','성명','성명']
         filepath = "app\static\\setting\\"
         readfile=["card.xlsx","notebook.xlsx","member.xlsx"]
         filename_bak=["card_bak.xlsx","notebook_bak.xlsx","member_bak.xlsx"]
-        file_coltype=[{'카드번호':str,'카드번호':str},{'수량':str,'대여 수':str,'반납 수':str,'대여':str},{'사번':str,'IP':int,'전화번호':str}]
+        file_coltype=[{'카드번호':str,'카드번호':str},{'수량':str,'대여 수':str,'반납 수':str,'대여':str},
+                      {'사번':str,'IP':str,'IP2':str,'전화번호':str,'PC1':str,'PC2':str,
+                       '모니터1':str,'모니터2':str,'모니터3':str}]
 
         '''출입증 관리'''
         if gubun in [0,1]:
@@ -534,13 +548,12 @@ def jasan(gubun):
             if os.path.isfile(filepath+filename):
                 sheet1 = pd.read_excel(filepath + filename, sheet_name=0, converters=file_coltype[2])
                 df = pd.DataFrame(sheet1)
-
                 header = df.columns.tolist()
                 df = df.values.tolist()
 
+
             else:
                 print('파일이 없습니다')
-
 
                 """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부
                ,gubun:구분값,index:값 지울때 기준"""
@@ -548,8 +561,6 @@ def jasan(gubun):
                                    title=title,headtitle=title[gubun],readmode='y',
                                    queryData1=df, header=header,gubun=gubun, index=index_name
                                    )
-
-
 
     except:
         print(traceback.format_exc())
@@ -600,7 +611,7 @@ def jasan_modi():
                     sheet2_df.to_excel(writer, sheet_name=sheet_name[1], index=False)
 
             elif gubun==4:
-                # sheet1_df = sheet1_df[sheet1_df[index[4]] != '']
+                sheet1_df = sheet1_df[sheet1_df[index[4]] != '']
                 sheet_name = '직원정보'
 
                 with pd.ExcelWriter(filepath+filename) as writer:
