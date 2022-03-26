@@ -10,6 +10,7 @@
 <script src='//unpkg.com/jquery@3/dist/jquery.min.js'></script>
 <script src='//unpkg.com/popper.js@1/dist/umd/popper.min.js'></script>
 <script src='//unpkg.com/bootstrap@4/dist/js/bootstrap.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
 <!-- pybo CSS-->
 <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
 <!-- datapicker -->
@@ -24,6 +25,8 @@ href="//code.jquery.com/ui/1.8.23/themes/smoothness/jquery-ui.css"
 <!--필수, FileSaver savaAs 이용 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- 구글 아이콘 -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script>
 
     <!-- 메세지창 관리1 -->
@@ -85,9 +88,43 @@ $(function() {
     });
 
 
+    <!-- 토글창 사용 -->
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+    });
+
 });
 
 </script>
+<style>
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+</style>
 </head>
 <body>
 
@@ -106,12 +143,12 @@ $(function() {
 <div id="top_menu">
 <br>
 <div class="btn-group btn-group-lg" role="group" aria-label="...">
-    <button type="button" class="btn btn-outline-secondary" name="menu1"/>
-    <button type="button" class="btn btn-outline-secondary" name="menu2"/>
-    <button type="button" class="btn btn-outline-secondary" name="menu3"/>
-    <button type="button" class="btn btn-outline-secondary" name="menu4"/>
-    <button type="button" class="btn btn-outline-secondary" name="menu5"/>
-    <button type="button" class="btn btn-outline-secondary" name="menu6"/>
+    <button class="btn btn-outline-secondary" name="menu1"/>
+    <button class="btn btn-outline-secondary" name="menu2"/>
+    <button class="btn btn-outline-secondary" name="menu3"/>
+    <button class="btn btn-outline-secondary" name="menu4"/>
+    <button class="btn btn-outline-secondary" name="menu5"/>
+    <button class="btn btn-outline-secondary" name="menu6"/>
 </div>
 <br><br>
 </div>
@@ -126,5 +163,18 @@ $(function() {
 
 {% endblock %}
 <!-- 기본 템플릿 안에 삽입될 내용 end -->
+<div id="footer"></div>
+
+<!-- 메세지창-->
+<div class="modal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <div class="modal-header" style="font-size:13pt; font-weight:bold;"></div>
+        <div class="modal-body" style="font-size:10pt;"></div>
+        <div class="modal-footer" style="font-size:8pt;">클릭시 창이 닫힙니다</div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -22,15 +22,25 @@ var td_str=[];  <!-- 클릭비교용 -->
 
 $(function () {
 
-
-
     readmode='{{readmode}}';
-    $('#undo_exc').hide();
-    $('#ins_exc').hide();
+    $('[name="undo_exc"]').hide();
+    $('[name="ins_exc"]').hide();
 
+    <!-- 출입증 관련 -->
+    {% if gubun==0 or gubun==1 %}
+        imsicard();
+        $('[name="remain"]').popover({
+            title: "사용가능 출입증", content: '{{remaincard}}',
+            html: false, trigger: "focus", placement: "right", animate: true
+        });
+        $('[name="used"]').popover({
+            title: "사용 중 출입증", content: '{{usecardlist}}',
+            html: false, trigger: "focus", placement: "right", animate: true
+        });
+    {% endif %}
 
     <!-- 메뉴 링크 -->
-    $('button[name^=submenu]').click(function(){
+    $('button[name^="submenu"]').click(function(){
         var menu=$(this).attr('name')
         if(menu=='submenu1'){  window.open("/jasan/0", "_self");   }
         else if(menu=='submenu2'){ window.open("/jasan/1", "_self");  }
@@ -41,38 +51,36 @@ $(function () {
         else if(menu=='submenu7'){ window.open("/rental_pdf", "_blank");  }
     });
 
-    <!-- 항목 선택 -->
-    $(document).on("click","[name=tbody_input]",function(){
+    <!-- 클릭시 전체선택 -->
+    $(document).on("click",'[name="tbody_input"]',function(){
         $(this).select();
     });
 
-    <!-- 수정값 저장 -->
-    $(document).on("click","[name=tbody_input]",function(){
+   <!--  수정값 저장 -->
+    $(document).on("click",'[name="tbody_input"]',function(){
         if('{{gubun}}'==2){
             var td=$(this).parent().parent().children();
             var col=$(this).closest('td').prevAll().length;
             td_str[0]=td.eq(2).children().val();
             td_str[1]=td.eq(3).children().val();
         }
-
     });
 
     <!-- 값 수정시 자동세팅 및 수정리스트 추가-->
-    $(document).on("blur","[name=tbody_input]",function(){
+    $(document).on("blur",'[name="tbody_input"]',function(){
         if('{{gubun}}'==2){
             var td=$(this).parent().parent().children();
             var col=$(this).closest('td').prevAll().length;
-<!--            var row=$(this).closest('tr').prevAll().length;-->
             var click_col=td.eq(col).children().val().toUpperCase();
             var ret='';
 
-            if(col==2 && click_col=='X'){
+            if(col==2 && (click_col=='X' || click_col=='')){
                 td.eq(col).children().val('X');
                 ret=td.eq(col+1).children().val(); <!-- 반납값 -->
-                td.eq(col+1).children().val('nan');
+                td.eq(col+1).children().val('');
                 modi_save(td,ret);
             }
-            else if(col==2 && click_col!='X'){
+            else if(col==2){
                 td.eq(col).children().val('0');
                 td.eq(col+1).children().select();
             }
@@ -81,7 +89,6 @@ $(function () {
             }
         }
     });
-
 });
 
 <!-- 수정값 리스트 추가. 변경해서 원상복귀한건 값이 추가됨 -->
@@ -91,17 +98,16 @@ function modi_save(td,ret){
         imsi_str.push(td.eq(0).children().val());
         imsi_str.push(td.eq(1).children().val());
         if(td.eq(2).children().val()=='X'){
-        imsi_str.push('X');
-        imsi_str.push(ret);
+            imsi_str.push('X');
+            imsi_str.push(ret);
         }
         else if(td.eq(2).children().val()=='0'){
-        imsi_str.push('0');
-        imsi_str.push(td.eq(3).children().val());
+            imsi_str.push('0');
+            imsi_str.push(td.eq(3).children().val());
         }
     }
 
 <!-- imsi_str와 modi_str 비교해서 최신값 갱신 -->
-
     for(var i=0;i<modi_str.length;i+=4){
         if(imsi_str[1]==modi_str[i+1]){
             modi_str.splice(i,4);
@@ -111,7 +117,7 @@ function modi_save(td,ret){
 <!--    alert(modi_str);-->
 }
 
-    <!-- 수정모드 -->
+<!-- 수정모드 -->
 function modify(){
     var index_loc='';
 
@@ -127,9 +133,10 @@ function modify(){
             readmode=value;
             var context="";
             $('[name="toExcel"]').hide();
-            $('#undo_exc').show();
-            $('#ins_exc').show();
-            $('#modi_exc').val("저장");
+            $('[name="fake_exc"]').hide();
+            $('[name="undo_exc"]').show();
+            $('[name="ins_exc"]').show();
+            $('[name="modi_exc"]').val("저장");
 
             context+='<table class="table table-striped table-bordered table-hover" id="tab5_table">';
             context+='<thead>';
@@ -138,7 +145,15 @@ function modify(){
                 {% if index[gubun]==header[i] %}
                     index_loc={{i}};
                 {% endif %}
-                context+='<th style="font-size:10pt;">{{header[i]}}</th>';
+                context+='<th style="font-size:10pt;"';
+                {% if header[i]==index[gubun] %}
+                context+=' onclick="call_msg(0)"';
+                {% endif %}
+                context+='>{{header[i]}}';
+                {% if header[i]==index[gubun] %}
+                context+='<object class="info_image" type="image/svg+xml" data="{{url_for('static',filename='images/info_image.svg')}}"/>';
+                {% endif %}
+                context+='</th>';
             {% endfor %}
             context+='</tr></thead>';
             context+='<tbody id="tbody">';
@@ -146,11 +161,25 @@ function modify(){
                 context+='<tr>';
                 {% for j in range(header|length) %}
                     context+='<td style="font-size:10pt;';
-                    if({{j}}==index_loc){
-                    context+='background-color:#DDDDDD;';
-                    }
+                    if({{j}}==index_loc){context+='background-color:#DDDDDD;'; }
                     context+='">';
-                    context+='<input name="tbody_input" type="text" style="width:100%; border:none; background:transparent;" value={{queryData1[i][j]}}';
+ {#
+<!--                    {% if gubun==2 and j==2 %}-->
+<!--                        context+='<select style="background-color:transparent;"><option value="0"';-->
+<!--                        {% if queryData1[i][j]=='0' %}-->
+<!--                            context+=' selected';-->
+<!--                        {% endif %}-->
+<!--                        context+='>0</option><option value="X"';-->
+<!--                        {% if queryData1[i][j]=='X' %}-->
+<!--                            context+=' selected';-->
+<!--                        {% endif %}-->
+<!--                        context+='>X</option></select';-->
+<!--                    {% else %}-->
+#}
+                        context+='<input name="tbody_input" type="text" style="width:100%; border:none; background:transparent;" value={{queryData1[i][j]}}';
+{#
+                    {% endif %}
+#}
                     {% if gubun==0 and j==0 %}
                         context+=' disabled ';
                     {% endif %}
@@ -221,12 +250,12 @@ function modify(){
                 if(modi_str[2]=='0'){
                     etc_dataset.push(today2)
                     etc_dataset.push(modi_str[i+3]);
-                    etc_dataset.push('nan');
-                    etc_dataset.push('nan');
+                    etc_dataset.push('');
+                    etc_dataset.push('');
                 }
                 else if(modi_str[2]=='X'){
-                    etc_dataset.push('nan');
-                    etc_dataset.push('nan');
+                    etc_dataset.push('');
+                    etc_dataset.push('');
                     etc_dataset.push(today2)
                     etc_dataset.push(modi_str[i+3]);
                 }
@@ -261,9 +290,9 @@ function modify(){
                 ,traditional : true
                 ,data: {readmode : readmode, filename: '{{filename}}', index : JSON.stringify(index), gubun : '{{gubun}}',
                 sheet1: JSON.stringify(sheet1), sheet2: JSON.stringify(sheet2)}
-            })
-            .done(function(value){
-                history.go(0);
+                ,success: function(value){
+                    history.go(0);
+                }
             });
         }
         else if(gubun == 4){
@@ -274,9 +303,9 @@ function modify(){
                 ,traditional : true
                 ,data: {readmode : readmode, filename: '{{filename}}', index : JSON.stringify(index), gubun : '{{gubun}}',
                 sheet1: JSON.stringify(sheet1)}
-            })
-            .done(function(value){
-                history.go(0);
+                ,success: function(value){
+                    history.go(0);
+                }
             });
         }
     }
@@ -310,10 +339,33 @@ function append(){
     add_rows++;
 }
 
-    <!-- 수정취소 -->
+<!-- 수정취소 -->
 function cancel(){
     history.go(0);
 }
+
+<!-- 임시카드 카운트-->
+function imsicard(){
+    var imsi=[];
+    var remain_cnt=0;
+    var usecard_cnt=0;
+
+    remaincard='{{remaincard}}';
+    usecardlist='{{usecardlist}}';
+    imsi=remaincard.split(',');
+    if(remaincard){ remain_cnt=imsi.length};
+    imsi=usecardlist.split(',');
+    if(usecardlist){ usecard_cnt=imsi.length-1};
+
+    $('.bg-secondary').eq(0).text(remain_cnt);
+    $('.bg-secondary').eq(1).text(usecard_cnt);
+    modal_msg.push(['대여가능 임시카드',remaincard]);
+    modal_msg.push(['사용 중 임시카드',usecardlist]);
+
+}
+
+<!-- 메세지창 내용-->
+modal_msg=[['기준값','해당 값을 지울시에 1줄 전체가 삭제']];
 
 </script>
 </head>
@@ -323,28 +375,13 @@ function cancel(){
         <tr>
             <p class="text-center" style="font-size:20pt;"><b name="headtitle">{{headtitle}}</b></p>
         </tr>
-        <div class="container my-3"><tr><td colspan="3">
-            <div class="btn-group btn-group-sm" role="group" aria-label="...">
-                <button type="button" name="submenu1" class="btn btn-outline-secondary">{{title[0]}}</button>
-                <button type="button" name="submenu2" class="btn btn-outline-secondary">{{title[1]}}</button>
-                <button type="button" name="submenu3" class="btn btn-outline-secondary">{{title[2]}}</button>
-                <button type="button" name="submenu4" class="btn btn-outline-secondary">{{title[3]}}</button>
-                <button type="button" name="submenu5" class="btn btn-outline-secondary">{{title[4]}}</button>
-                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[5]}}</button>
-                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[6]}}</button>
-            </div>
-        </td></tr></div>
         <tr style="height:20px"></tr>
-        {% if gubun==0 or gubun==1 %}
-        <tr><td>남은 임시카드: {{remaincard}}</td></tr>
-        <tr><td>대여중: {{usecardlist}}</td></tr>
-        {% endif %}
         <tr>
             <div><td align="right">
-                <input class="btn btn-dark" type="button" name="toExcel" value="excel"/>
-                <input id="ins_exc" class="btn btn-dark" type="button" onclick="append()" value="추가">
-                <input id="modi_exc" class="btn btn-dark" type="button" onclick="modify()" value="수정" style="display:inline"/>
-                <input id="undo_exc" class="btn btn-dark" type="button" onclick="cancel()" value="취소">
+                <input class="btn btn-dark" name="toExcel" type="button" value="excel"/>
+                <input class="btn btn-dark" name="ins_exc" type="button" onclick="append()" value="추가">
+                <input class="btn btn-dark" name="modi_exc" type="button" onclick="modify()" value="수정" style="display:inline"/>
+                <input class="btn btn-dark" name="undo_exc" type="button" onclick="cancel()" value="취소">
             </td></div>
         </tr>
     </table>
@@ -376,10 +413,43 @@ function cancel(){
         </tbody>
     </table>
 </div>
-
-<input type="hidden" name="win" value="{{win}}"/>
-<input type="hidden" name="logic" value="{{logic}}"/>
+<div class="sideBanner">
+    <span class="txt-label">
+        <table><tr><td colspan="3">
+        <div class="btn-group-vertical">
+            <button class="btn btn-dark" style='cursor:default;'>메뉴</button>
+            {% if gubun==0 or gubun==1 %}
+                <button name="remain" class="btn btn-primary btn-sm">사용가능
+                    <span class="badge bg-secondary"></span>
+                </button>
+                <button name="used" class="btn btn-primary btn-sm">대여 중
+                    <span class="badge bg-secondary"></span>
+                </button>
+            {% elif gubun==2 or gubun==3 %}
+                <button class="btn btn-primary btn-sm" style='cursor:default;'>대여수량
+                    <span class="badge bg-secondary">{{total}}</span>
+                </button>
+            {% elif gubun==4 %}
+                <button class="btn btn-primary btn-sm" style='cursor:default;'>총 인원
+                    <span class="badge bg-secondary">{{queryData1|length}}</span>
+                </button>
+            {% endif %}
+            <button name="submenu1" class="btn btn-outline-secondary btn-sm">{{title[0]}}</button>
+            <button name="submenu2" class="btn btn-outline-secondary btn-sm">{{title[1]}}</button>
+            <button name="submenu3" class="btn btn-outline-secondary btn-sm">{{title[2]}}</button>
+            <button name="submenu4" class="btn btn-outline-secondary btn-sm">{{title[3]}}</button>
+            <button name="submenu5" class="btn btn-outline-secondary btn-sm">{{title[4]}}</button>
+            <button name="submenu6" class="btn btn-outline-secondary btn-sm">{{title[5]}}</button>
+            <button name="submenu7" class="btn btn-outline-secondary btn-sm">{{title[6]}}</button>
+            <input name="modi_exc" class="btn btn-dark"  type="button" onclick="modify()" value="수정"/>
+            <input name="undo_exc" class="btn btn-dark" type="button" onclick="cancel()" value="취소" />
+            <div class="btn-group" role="group">
+                <input id="up_btn" class="btn btn-outline-dark btn-lg" type="button" value="▲"/>
+                <input class="btn btn-outline-dark btn-lg" type="button" value=" " disabled />
+                <input id="down_btn" class="btn btn-outline-dark btn-lg" type="button" value="▼"/>
+            </div>
+        </div></td></tr></table>
+    </span>
+</div>
 {% endblock %}
 
-</body>
-</html>

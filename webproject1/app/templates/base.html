@@ -10,6 +10,7 @@
 <script src="{{url_for('static',filename='jquery.min.js')}}"></script>
 <script src="{{url_for('static',filename='popper.min.js')}}"></script>
 <script src="{{url_for('static',filename='bootstrap.min.js')}}"></script>
+<script src="{{url_for('static',filename='bootstrap.bundle.min.js')}}"></script>
 <!-- pybo CSS-->
 <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
 <!-- datapicker -->
@@ -22,37 +23,20 @@
 <script src="{{url_for('static',filename='jquery-ui.js')}}"></script>
 <script>
 
-    <!-- 메세지창 관리1 -->
-function call_msg(gubun){
-    if(gubun<modal_msg.length){
-        header=modal_msg[gubun][0];
-        body=modal_msg[gubun][1];
-        $('.modal-header').html(header);
-        $('.modal-body').html(body);
-        $('.modal').fadeIn();
-    }
-    else if(gubun>=modal_msg.length){ alert('메세지 구분 값('+gubun+')은 '+modal_msg.length+'보다 작아야 합니다.'); }
-    else{
-        $('.modal-header').html('제목');
-        $('.modal-body').html('내용');
-        $('.modal').fadeIn();
-    }
-    setTimeout(() => $('.modal').fadeOut(), 5000);
-}
 
 $(function() {
 
-    <!-- 메세지창 관리2 -->
-    $('[name=modal_btn]').click(function(){ $('.modal').fadeIn(); });
+    <!-- 메세지창 관리1 -->
+    $('[name="modal_btn"]').click(function(){ $('.modal').fadeIn(); });
     $('.modal-content').click(function(){ $('.modal').fadeOut();  });
 
     <!-- 메뉴 제목 -->
-    $('button[name=menu1]').html('그룹별 현황');
-    $('button[name=menu2]').html('자산별 현황');
-    $('button[name=menu3]').html('ESG평가');
-    $('button[name=menu4]').html('자산관리');
-    $('button[name=menu5]').html('자료실');
-    $('button[name=menu6]').html('기타');
+    $('button[name="menu1"]').html('그룹별 현황');
+    $('button[name="menu2"]').html('자산별 현황');
+    $('button[name="menu3"]').html('ESG평가');
+    $('button[name="menu4"]').html('자산관리');
+    $('button[name="menu5"]').html('자료실');
+    $('button[name="menu6"]').html('기타');
 
     <!-- 메뉴 링크 -->
     $('button[name^=menu]').click(function(){
@@ -60,16 +44,19 @@ $(function() {
         if(menu=='menu1'){  window.open("/main/", "");   }
         else if(menu=='menu2'){ window.open("/main2/", "");  }
         else if(menu=='menu3'){
-<!--                    window.open("/download/", "");-->
+<!--            window.open("/esg_grade/", "");-->
+            alert('제작 중입니다');
         }
         else if(menu=='menu4'){ window.open("/jasan/0", "");  }
         else if(menu=='menu5'){ window.open("/download/", "");  }
         else if(menu=='menu6'){ window.open("/layout/", "");    }
     });
 
-    <!-- 설명 -->
+    <!-- 오버롤시 설명 -->
     $('#datepicker').prop("title", "전 영업일이 최신 값");
     $('#find').prop("title", "검색어 없이 누르면 전체 검색");
+    $('#up_btn').prop("title", "맨위로");
+    $('#down_btn').prop("title", "맨밑으로");
 
     <!-- 테이블헤더 더블클릭 -->
     $('.tab5_th').dblclick(function(){
@@ -85,7 +72,7 @@ $(function() {
     });
 
     <!-- 수익자 검색창 -->
-    $('[name=find]').click(function(){
+    $('[name="find"]').click(function(){
         if({{logic}}=='99'){
             var formInfo="find_suikja"+{{logic}}
             $('[name="arg1"]').val($("#datepicker").val());
@@ -96,7 +83,7 @@ $(function() {
             $('#frm').submit();
         }
         else{
-        window.open("/find_suikja/", formInfo, "height=500, width=500");
+            window.open("/find_suikja/", formInfo, "height=500, width=500");
         }
     });
 
@@ -112,15 +99,40 @@ $(function() {
                 [99,2,'고객별 설정액 현황/유형별']
                 ];
     title.forEach(function(element){
-        if($('input[name=logic]').val()==element[0] && $('input[name=win]').val()==element[1]){
+        if($('input[name="logic"]').val()==element[0] && $('input[name=win]').val()==element[1]){
             $('b[name=headtitle]').html(element[2]);
             }
         });
 
     <!-- 엑셀로 보내기 -->
-    $("[name='toExcel']").click(function(){
+    $('[name="toExcel"]').click(function(){
         exportExcel();
     });
+
+    <!-- 스크롤 이동 -->
+    $("#up_btn").click(function() {
+        var topPos = $('#top_menu').offset();
+        $('body,html').animate({scrollTop:topPos.top},300);
+    });
+    $("#down_btn").click(function() {
+        var topPos = $('#footer').offset();
+        $('body,html').animate({scrollTop:topPos.top},300);
+    });
+
+    <!-- 사이드바 스크롤 이동-->
+    var floatPosition = parseInt($(".sideBanner").css('top'));
+    $(window).scroll(function(){
+        var currentTop = $(window).scrollTop();
+        var bannerTop = floatPosition + currentTop + "px";
+        $(".sideBanner").stop().animate({"top" : bannerTop}, 600);
+    });
+
+    <!-- 토글창 사용 -->
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl)
+    });
+
 
     <!-- 날짜 변경시 -->
     $('#datepicker').datepicker(datepicker).change(function(e) {
@@ -135,23 +147,29 @@ $(function() {
             alert('데이터가 존재하지 않습니다');
             $('#datepicker').val(it);
         }
-
     });
-
-  <!-- PDF 뷰어 -->
-    $('[name="pdf_btn"]').click(function(){
-        var formInfo='pdf_view';
-        var pdf_name=$(this).val();
-        $('[name="arg1"]').val(pdf_name);
-        $('#pdf_viewer').attr("action", "{{ url_for('tab5.pdf_view')}}");
-        $('#pdf_viewer').attr("method", "POST");
-        $('#pdf_viewer').attr("target", formInfo);
-        window.open("", formInfo, 'height='+screen.height+',width=1000');
-        $('#pdf_viewer').submit();
-    });
-
 });
 
+    <!-- 메세지창 관리2 -->
+function call_msg(gubun){
+    if(gubun<modal_msg.length){
+        header=modal_msg[gubun][0];
+        body=modal_msg[gubun][1];
+        $('.modal-header').html(header);
+        $('.modal-body').html(body);
+        $('.modal').fadeIn();
+    }
+    else if(gubun>=modal_msg.length){ alert('메세지 구분 값('+gubun+')은 '+modal_msg.length+'보다 작아야 합니다.'); }
+    else{
+        $('.modal-header').html('제목');
+        $('.modal-body').html('내용');
+        $('.modal').fadeIn();
+    }
+    setTimeout(() => $('.modal').fadeOut(), 7000);
+}
+
+
+<!-- datepicker -->
 $.datepicker.setDefaults({
     dateFormat: 'yy-mm-dd',
     prevText: '이전 달',
@@ -165,7 +183,7 @@ $.datepicker.setDefaults({
     yearSuffix: '년'
 });
 
-
+<!-- 엑셀 생성 -->
 function exportExcel(){
 
     // step 1. workbook 생성
@@ -186,13 +204,12 @@ function exportExcel(){
 
 var excelHandler = {
 
-
     getExcelFileName : function(){
         var j;
         var day;
 
-        if ( $("b[name=headtitle]").length>0 ){
-            j=$('b[name=headtitle]').html();
+        if ( $('b[name="headtitle"]').length>0 ){
+            j=$('b[name="headtitle"]').html();
         }
         else{ j='noname'}
         if ( $("#datepicker").length>0 ){
@@ -210,7 +227,6 @@ var excelHandler = {
         }
     },
     getWorksheet : function(){
-
         return XLSX.utils.table_to_sheet(this.getExcelData());
     }
 }
@@ -222,15 +238,24 @@ function s2ab(s) {
     return buf;
 }
 
+
+
 </script>
 <style>
+
+    /* 테이블 */
+    table{ width:100%; }
+
+    /* 달력 */
     .ui-datepicker{ font-size: 15px; width: 200px; }
     .ui-datepicker select.ui-datepicker-month{ width:30%; font-size: 11px; }
     .ui-datepicker select.ui-datepicker-year{ width:40%; font-size: 11px; }
 
-    table{ width:100%; }
+    /* 테이블 상단 아이콘 정렬 */
+    .info_image { width: 17px; height: 17px;}
 
-    input[name='find'] {
+    /* 돋보기 이미지 */
+    input[name="find"] {
         background-image : url('{{url_for('static',filename='images/find.png')}}');
         background-size : 25px;
         background-position : center right;
@@ -238,11 +263,56 @@ function s2ab(s) {
         cursor:pointer;
     }
 
+    /* 사이드바 */
+    .sideBanner {
+        position: absolute;
+        _position: absolute;
+        top: 200px;
+        left: 30px;
+        align-content: justify;
+    }
+
+    /* 팝오버 */
+    .popover {
+        max-width:500px;
+        autoflow-y: auto;
+    }
+
 </style>
 </head>
 <body>
 
-<!-- 메세지창 -->
+<!-- 상위메뉴 -->
+<div id="top_menu" class="container my-3">
+     <table>
+        <tr><td>
+        <div class="btn-group btn-group-lg" role="group" aria-label="...">
+            <button class="btn btn-outline-secondary" name="menu1"/>
+            <button class="btn btn-outline-secondary" name="menu2"/>
+            <button class="btn btn-outline-secondary" name="menu3"/>
+            <button class="btn btn-outline-secondary" name="menu4"/>
+            <button class="btn btn-outline-secondary" name="menu5"/>
+            <button class="btn btn-outline-secondary" name="menu6"/>
+        </div>
+        </td></tr>
+        <tr style="height:30px"></tr>
+    </table>
+</div>
+
+<!-- 기본 템플릿 안에 삽입될 내용 start -->
+{% block content %}
+
+{% endblock %}
+<!-- 기본 템플릿 안에 삽입될 내용 end -->
+
+<div id="footer"></div>
+
+<!-- pdf뷰어 -->
+<form id="pdf_viewer" name="pdf_viewer" method="post">
+    <input type="hidden" id="arg1" name="arg1"/>
+</form>
+
+<!-- 메세지창-->
 <div class="modal" tabindex="-1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -252,36 +322,6 @@ function s2ab(s) {
     </div>
   </div>
 </div>
-
-
-<!-- 상위메뉴 -->
-<div id="top_menu" class="container my-3">
-     <table>
-        <tr><td colspan="3">
-        <div class="btn-group btn-group-lg" role="group" aria-label="...">
-            <button type="button" class="btn btn-outline-secondary" name="menu1"/>
-            <button type="button" class="btn btn-outline-secondary" name="menu2"/>
-            <button type="button" class="btn btn-outline-secondary" name="menu3"/>
-            <button type="button" class="btn btn-outline-secondary" name="menu4"/>
-            <button type="button" class="btn btn-outline-secondary" name="menu5"/>
-            <button type="button" class="btn btn-outline-secondary" name="menu6"/>
-        </div>
-        </td></tr>
-        <tr style="height:30px"></tr>
-    </table>
-</div>
-
-<!-- pdf뷰어 -->
-<form id="pdf_viewer" name="pdf_viewer" method="post">
-    <input type="hidden" id="arg1" name="arg1"/>
-</form>
-
-<!-- 기본 템플릿 안에 삽입될 내용 start -->
-{% block content %}
-
-{% endblock %}
-<!-- 기본 템플릿 안에 삽입될 내용 end -->
-
 
 </body>
 </html>

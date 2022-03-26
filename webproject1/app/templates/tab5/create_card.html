@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사원증 신청</title>
+    <title>사원증 신청서 작성</title>
     {% extends 'base.html' %}
     {% block content %}
 
@@ -12,12 +12,12 @@ var row=0;
 
 $(function () {
 
-    append();
+    $('#tbody').append(create_row());
 
     <!-- 기타 링크 -->
     $('td[name^=link]').click(function(){
-    var url=$(this).attr('value')
-    window.open(url, "_blank");
+        var url=$(this).attr('value')
+        window.open(url, "_blank");
     });
 
     <!-- 메뉴 링크 -->
@@ -34,37 +34,105 @@ $(function () {
 
 });
 
-<!-- 1줄 추가 -->
-function append(){
-    var context='';
-    row=$('#tbody >tr').length+1; <!-- 객체 안 tr개수 가져옴 -->
-    context+='<tr>';
-    context+='<td><input class="btn btn-dark btn-sm" type="button" value="-" ';
-    context+='onclick="row_del($(this))"></td><td>';
-    context+=row;
-    context+='</td><td>흥국자산운용</td><td><select><option selected>신규</option><option>재발급</option></select></td>';
-    context+='<td>카드</td>';
-    context+='<td><input type="text" style="width:100%; border:none; background:transparent;"></td>';
-    context+='<td><input type="text" style="width:100%; border :none; background:transparent;"></td>';
-    context+='</tr>';
-
-    $('#tbody').append(context);
-
-
+<!-- 1줄 삽입 후 정렬 -->
+function row_ins(e){
+    e.closest('tr').after(create_row());
+    for(var i=0;i<=row;i++){
+        $('#tbody').children().eq(i).children().eq(1).text(i+1);
+    }
 }
 
 <!-- 선택줄 삭제 후 정렬 -->
 function row_del(e){
-    row=$('#tbody >tr').length;
     e.closest('tr').remove();
     for(var i=0;i<row;i++){
         $('#tbody').children().eq(i).children().eq(1).text(i+1);
-        }
+    }
+    row=$('#tbody >tr').length+1;
+    if(row<=1){ $('#tbody').append(create_row());   }
 }
 
+<!-- 1줄 추가 세부로직-->
+function create_row(){
+    var context='';
+    row=$('#tbody >tr').length+1; <!-- 객체 안 tr개수 가져옴 -->
+    context+='<tr><td>';
+    context+='<input class="btn btn-outline-dark btn-sm" type="button" value="+" onclick="row_ins($(this))"> &nbsp;';
+    context+='<input class="btn btn-outline-dark btn-sm" type="button" value="-" onclick="row_del($(this))">';
+    context+='</td><td style="vertical-Align:middle">';
+    context+=row;
+    context+='</td><td style="vertical-Align:middle">흥국자산운용</td><td style="vertical-Align:middle">';
+    context+='<select><option selected>신규</option><option>재발급</option></select></td>';
+    context+='<td style="vertical-Align:middle">카드</td>';
+    context+='<td style="vertical-Align:middle"><input type="text" style="width:100%; border:none; background:transparent;"></td>';
+    context+='<td style="vertical-Align:middle"><input type="text" style="width:100%; border:none; background:transparent;"></td>';
+    context+='</tr>';
+
+    return context;
+}
+
+<!-- 엑셀 생성 -->
+function excel(){
+    var date = new Date();
+    var month=(date.getMonth()+1)+'';
+    var day=(date.getDate())+'';
+    var today2=date.getFullYear()+"-"+month.padStart(2,'0')+"-"+day.padStart(2,'0');
+    var dataset=[];
+    var header=['순번','회사명','발급구분','제작형태','사진파일명','한글명','영문명','사번','직급','부서','발급일자','한자명','소속'];
+    var row=$('#tbody >tr').length;
+    var filename='사원증신청양식_'+row+'명('+today2+').xlsx';
+    var err;
+
+    for(var i=0;i<row;i++){
+        var td=$('#tbody').children().eq(i).children();
+
+        if(td.eq(5).children().val()==''){
+            err=td.eq(5).children();
+         }
+         else if(td.eq(6).children().val()==''){
+            err=td.eq(6).children();
+         }
+        else{
+            dataset.push(td.eq(1).text());
+            dataset.push(td.eq(2).text());
+            dataset.push(td.eq(3).children().val());
+            dataset.push(td.eq(4).text());
+            dataset.push(td.eq(5).children().val());
+            dataset.push(td.eq(6).children().val());
+            for(var j=6;j<header.length;j++){
+                dataset.push('');
+            }
+        }
+    }
+    sheet1={    dataset: dataset, header:header, rows:row    }
+
+    if(!err){
+        $.ajax({
+            url : {{ url_for('tab5.create_card_excel')}}
+            ,type: 'post'
+            ,dataType: 'JSON'
+            ,traditional : true
+            ,data: {filename: filename,sheet1: JSON.stringify(sheet1)}
+            ,success: function(value){
+                if(value['result']){   alert(value['filename']+' 파일이 생성되었습니다.');    }
+                else if(value['flag']=='PermissionError'){   alert('엑셀파일이 열려있어 새로 생성할 수 없습니다.'); }
+                else{   alert('에러로 파일이 생성되지 않았습니다.'); }
+                history.go(0);
+            }
+        });
+    }
+    else{
+        alert('빈값이 있습니다');
+        err.focus();
+    }
+}
+
+<!-- 메세지창 내용-->
+modal_msg=[['발급구분','신규: 새로운 직원카드 발급,<br> 재발급: 기존 직원 재발급 카드번호가 기존과 동일']];
 
 
 </script>
+
 </head>
 <body>
 <div class="container my-3">
@@ -72,37 +140,65 @@ function row_del(e){
         <tr>
             <p class="text-center" style="font-size:20pt;"><b name="headtitle">{{headtitle}}</b></p>
         </tr>
-        <div class="container my-3"><tr><td colspan="3">
-            <div class="btn-group btn-group-sm" role="group" aria-label="...">
-                <button type="button" name="submenu1" class="btn btn-outline-secondary">{{title[0]}}</button>
-                <button type="button" name="submenu2" class="btn btn-outline-secondary">{{title[1]}}</button>
-                <button type="button" name="submenu3" class="btn btn-outline-secondary">{{title[2]}}</button>
-                <button type="button" name="submenu4" class="btn btn-outline-secondary">{{title[3]}}</button>
-                <button type="button" name="submenu5" class="btn btn-outline-secondary">{{title[4]}}</button>
-                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[5]}}</button>
-                <button type="button" name="submenu6" class="btn btn-outline-secondary">{{title[6]}}</button>
-            </div>
-        </td></tr></div>
-        <tr style="height:20px"></tr>
+        <tr style="height:70px"></tr>
         <tr>
             <div><td align="right">
-                <input class="btn btn-dark" type="button" name="append" onclick="append()" value="추가"/>
-                <input class="btn btn-dark" type="button" name="toExcel" value="excel"/>
+                <input class="btn btn-dark" type="button" onclick="excel()" value="생성"/>
             </td></div>
         </tr>
     </table>
 </div>
 <div class="container my-3">
     <table class="table table-striped table-bordered table-hover" id="tab5_table" style="font-size:10pt;">
-        <thead><tr class="thead-dark" align="center">
-        <th></th><th>순번</th><th>회사명</th><th>발급구분</th><th>제작형태</th><th>사진파일명</th><th>한글명</th>
+        <thead><tr class="thead-dark" align="center" style="font-size:12pt; vertical-Align:middle;">
+            <th style="vertical-Align:middle"></th>
+            <th>순번</th>
+            <th>회사명</th>
+            <th onclick="call_msg(0)">발급구분
+                <object class="info_image" type="image/svg+xml" data="{{url_for('static',filename='images/info_image.svg')}}" />
+            </th>
+            <th>제작형태</th>
+            <th>사진파일명</th>
+            <th>한글명</th>
         </tr></thead>
         <tbody id="tbody" align="center">
         </tbody></table>
 </div>
+<div class="sideBanner">
+    <span class="txt-label">
+        <table><tr><td colspan="3">
+        <div class="btn-group-vertical">
+            <button class="btn btn-dark" style='cursor:default;'>메뉴</button>
+            {% if gubun==0 or gubun==1 %}
+                <button name="remain" class="btn btn-primary btn-sm">사용가능
+                    <span class="badge bg-secondary"></span>
+                </button>
+                <button name="used" class="btn btn-primary btn-sm">대여 중
+                    <span class="badge bg-secondary"></span>
+                </button>
+            {% elif gubun==2 or gubun==3 %}
+                <button class="btn btn-primary btn-sm" style='cursor:default;'>대여수량
+                    <span class="badge bg-secondary">{{total}}</span>
+                </button>
+            {% elif gubun==4 %}
+                <button class="btn btn-primary btn-sm" style='cursor:default;'>총 인원
+                    <span class="badge bg-secondary">{{queryData1|length}}</span>
+                </button>
+            {% endif %}
+            <button name="submenu1" class="btn btn-outline-secondary btn-sm">{{title[0]}}</button>
+            <button name="submenu2" class="btn btn-outline-secondary btn-sm">{{title[1]}}</button>
+            <button name="submenu3" class="btn btn-outline-secondary btn-sm">{{title[2]}}</button>
+            <button name="submenu4" class="btn btn-outline-secondary btn-sm">{{title[3]}}</button>
+            <button name="submenu5" class="btn btn-outline-secondary btn-sm">{{title[4]}}</button>
+            <button name="submenu6" class="btn btn-outline-secondary btn-sm">{{title[5]}}</button>
+            <button name="submenu7" class="btn btn-outline-secondary btn-sm">{{title[6]}}</button>
+            <div class="btn-group" role="group">
+                <input id="up_btn" class="btn btn-outline-dark btn-lg" type="button" value="▲"/>
+                <input class="btn btn-outline-dark btn-lg" type="button" value=" " disabled />
+                <input id="down_btn" class="btn btn-outline-dark btn-lg" type="button" value="▼"/>
+            </div>
+        </div></td></tr></table>
+    </span>
+</div>
 
-<input type="hidden" name="win" value="{{win}}"/>
-<input type="hidden" name="logic" value="{{logic}}"/>
 {% endblock %}
-</body>
-</html>

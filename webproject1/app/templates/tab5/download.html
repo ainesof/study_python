@@ -10,8 +10,8 @@
 $(function () {
     <!-- 파일 다운 -->
     $('td[name^=file]').click(function(){
-        $('#arg1').val($(this).attr('name'));
-        $('#arg2').val($(this).text());
+        $('#arg2').val($(this).attr('name'));
+        $('#arg3').val($(this).text());
         $('#frm').attr("action", "/file_down");
         $('#frm').attr("method", "POST");
         $('#frm').attr("target", "download");
@@ -39,7 +39,7 @@ $(function () {
         </tr>
         <tr>
             <td><li>업데이트 일자</li></td>
-            <td name="file_py" style="cursor:pointer">2021/01/03</td>
+            <td name="file_py" style="cursor:pointer">2022/01/03</td>
         </tr>
     </ul>
 </table>
@@ -52,7 +52,7 @@ $(function () {
         </tr>
         <tr>
             <td><li>VPN 실행파일</li></td>
-            <td name="file_etc" style="cursor:pointer">FortiClientVPNOnlineInstaller_6.4.exe</td>
+            <td name="file_etc" style="cursor:pointer">FortiClientVPN.msi</td>
         </tr>
         <tr>
             <td><li>VPN사용 매뉴얼</li></td>
@@ -63,8 +63,8 @@ $(function () {
             <td name="file_etc" style="cursor:pointer">FXKSSU20190712KO.zip</td>
         </tr>
         <tr>
-            <td><li>스캔사용 매뉴얼</li></td>
-            <td name="file_etc" style="cursor:pointer">Simple Scanner Utility 설치 가이드_주의사항.pdf</td>
+            <td><li>T_store 설치 매뉴얼</li></td>
+            <td name="file_etc" style="cursor:pointer">t_Store_설치 이용 매뉴얼.pdf</td>
         </tr>
         <tr>
             <td><li>메신저 설치 프로그램</li></td>
@@ -100,8 +100,7 @@ $(function () {
 <form id="frm" name="frm" method="post">
     <input type="hidden" id="arg1" name="arg1"/>
     <input type="hidden" id="arg2" name="arg2"/>
+    <input type="hidden" id="arg3" name="arg3"/>
 </form>
 
 {% endblock %}
-</body>
-</html>

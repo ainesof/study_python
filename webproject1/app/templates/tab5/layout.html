@@ -15,6 +15,11 @@ $(function () {
 
     setInterval('schedule_set()', 1000);
 
+<!-- 슬라이드토글 테스트 -->
+    $('#paritycheck').click(function(){
+    $('[name="pdf_btn"]').slideToggle('fast')
+    });
+
 
 });
 
@@ -98,9 +103,11 @@ function kfr_getfile(){
     });
 }
 
+function asd(){
+   $('.btn-primary').eq(0).attr('title','aaaaaaaaaaaaaaaaa');
+    alert($('.btn-primary').eq(0).attr('title'));
 
-
-
+}
 </script>
 
 </head>
@@ -108,7 +115,9 @@ function kfr_getfile(){
 
 
 <ul class="list-group">
-    <li class="list-group-item active"> 레이아웃 구성</li>
+    <li class="list-group-item active"> 레이아웃 구성
+        <span class="material-icons">sms_failed</span>
+    </li>
     <li class="list-group-item">1-1고객 그룹별 수탁고 총괄->1-2고객 그룹별 순자산/설정액 현황(본부/그룹+고객)->1-3펀드리스트</li>
     <li class="list-group-item">2-1고객 유형별 수탁고 총괄->2-2고객 유형별 순자산/설정액 현황(본부/유형+그룹)->2-3펀드리스트</li>
     <li class="list-group-item">3-1ESG 평가 등급</li>
@@ -150,10 +159,4 @@ function kfr_getfile(){
         </table>
     </div>
 </div>
-
-
-
 {% endblock %}
-
-</body>
-</html>

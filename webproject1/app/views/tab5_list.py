@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, send_file
 import traceback, socket, datetime
 from app.models import query, dateQuery, etcQuery
 import pandas as pd
+from styleframe import StyleFrame, Styler, utils
 import json
 import numpy
 import ftplib,logging,logging.handlers
@@ -266,6 +267,17 @@ def tab5_newwindow_suikja():
 
 # -------------------
 
+@bp.route('/esg_grade/')
+def esg_grade():
+    win=1;
+    logic=5;
+    """렌탈PDF 확인 페이지"""
+    try:
+        return render_template('tab5/esg_grade.html',win=win, logic=logic)
+
+    except:
+        print(traceback.format_exc())
+
 @bp.route('/layout/')
 def layout():
     """사이트 흐름도 보여줌"""
@@ -366,17 +378,19 @@ def kfr_getfile():
 def file_down():
     """최근버전은 main, 그 외는 풀네임으로 찾음"""
     try:
-        fileType = request.form['arg1']
-        name = request.form['arg2']
-        if fileType == 'file_py_recently':
+        test = request.form['arg1']
+        filetype = request.form['arg2']
+        name = request.form['arg3']
+        print(test)
+        if filetype == 'file_py_recently':
             name = 'main.exe'
-        elif fileType == 'file_py':
+        elif filetype == 'file_py':
             name = 'main' + name.replace('/', '')[2:] + '.exe'
         fileName = f'static/file/' + name
 
         return send_file(fileName,
                          mimetype='application/octet-stream',
-                         attachment_filename=name,
+                         download_name=name,
                          as_attachment=True
                          )
     except:
@@ -405,14 +419,12 @@ def create_card():
     """사원증 신청양식 제작 페이지"""
     try:
 
-        title = ['출입증 발급기록', '전체 출입증', '노트북 대여현황', '노트북 대여기록', '직원 정보', '사원증 신청', '렌탈 인수인도서']
+        title = ['출입증 발급기록', '전체 출입증', '노트북 대여현황', '노트북 대여기록', '직원 정보', '사원증 신청서 작성', '렌탈 인수인도서']
         """logic&win: 넣어야 상단메뉴가 작동, header:제목,title:소메뉴,headtitle:메인타이틀"""
         return render_template('tab5/create_card.html', logic=5, win=1,title=title, headtitle=title[5])
 
-
     except:
         print(traceback.format_exc())
-
 
 @bp.route('/pdf_view/', methods=['get','post'])
 def pdf_view():
@@ -424,12 +436,12 @@ def pdf_view():
 @bp.route('/jasan/<int:gubun>/', methods=['get','post'])
 def jasan(gubun):
     try:
-        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록','직원 정보','사원증 신청','렌탈 인수인도서']
+        title = ['출입증 발급기록', '전체 출입증','노트북 대여현황','노트북 대여기록','직원 정보','사원증 신청서 작성','렌탈 인수인도서']
         index_name = ['사용자','카드번호','성명','성명','성명']
         filepath = "app\static\\setting\\"
         readfile=["card.xlsx","notebook.xlsx","member.xlsx"]
         filename_bak=["card_bak.xlsx","notebook_bak.xlsx","member_bak.xlsx"]
-        file_coltype=[{'카드번호':str,'카드번호':str},{'수량':str,'대여 수':str,'반납 수':str,'대여':str},
+        file_coltype=[{'카드번호':str,'비고':str},{'수량':str,'대여 수':str,'반납 수':str,'대여':str},
                       {'사번':str,'IP':str,'IP2':str,'전화번호':str,'PC1':str,'PC2':str,
                        '모니터1':str,'모니터2':str,'모니터3':str}]
 
@@ -446,6 +458,8 @@ def jasan(gubun):
             if os.path.isfile(filepath+filename):
                 sheet1 = pd.read_excel(filepath + filename, sheet_name=0,converters=file_coltype[0])
                 sheet2 = pd.read_excel(filepath + filename, sheet_name=1,converters=file_coltype[0])
+                sheet1=sheet1.fillna('')
+                sheet2=sheet2.fillna('')
                 df1 = pd.DataFrame(sheet1)
                 df2 = pd.DataFrame(sheet2)
 
@@ -454,13 +468,14 @@ def jasan(gubun):
 
                 imsicard= list(map(str,imsicard))
 
-                uselist = df1.query('반납일자.isnull() & 카드번호 in @imsicard', engine='python')
+                uselist = df1.query('반납일자=="" & 카드번호 in @imsicard', engine='python')
                 uselist = uselist[['카드번호','사용자']]
                 uselist=uselist.sort_values(by=['카드번호'], axis=0)
 
                 for i in range(len(uselist.index)):
                     usecard.append(uselist.iloc[i,0])
-                    usecardlist+=str(uselist.iloc[i,0])+"("+str(uselist.iloc[i,1])+") "
+                    usecardlist+=str(uselist.iloc[i,0])+"("+str(uselist.iloc[i,1])+"),"
+
                 imsicard=set(imsicard)
                 usecard=set(usecard)
                 remaincard=list(imsicard-usecard)
@@ -484,7 +499,6 @@ def jasan(gubun):
                     etc_dataset=df1
                     etc_header=header1
 
-
             else:
                 print('파일이 없습니다')
 
@@ -500,6 +514,7 @@ def jasan(gubun):
 
         elif gubun in [2,3]:
             filename=readfile[1]
+            total=0
             if os.path.isfile(filepath+filename)==False:
                 print('백업파일 사용')
                 filename=filename_bak[1]
@@ -507,8 +522,15 @@ def jasan(gubun):
             if os.path.isfile(filepath+filename):
                 sheet1 = pd.read_excel(filepath + filename, sheet_name=0, converters=file_coltype[1])
                 sheet2 = pd.read_excel(filepath + filename, sheet_name=1, converters=file_coltype[1])
+                sheet1=sheet1.fillna('')
+                sheet2=sheet2.fillna('')
                 df1 = pd.DataFrame(sheet1)
                 df2 = pd.DataFrame(sheet2)
+
+                groupd=df1['수량'].groupby(df1['수량']).size()
+                for i in range(len(groupd)):
+                    if groupd.index[i].isnumeric():
+                        total+=int(groupd.index[i])*groupd[i]
 
                 header1 = df1.columns.tolist()
                 header2 = df2.columns.tolist()
@@ -529,14 +551,13 @@ def jasan(gubun):
             else:
                 print('파일이 없습니다')
 
-
                 """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부
-                etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,index:값 지울때 기준"""
+                etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,index:값 지울때 기준,total:총 수량"""
             return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[1],
                                    title=title,headtitle=title[gubun],readmode='y',
                                    queryData1=df, header=header,
                                    etc_dataset=etc_dataset,etc_header=etc_header, gubun=gubun,
-                                   index=index_name
+                                   index=index_name,total=total
                                    )
 
         elif gubun in [4]:
@@ -547,10 +568,10 @@ def jasan(gubun):
 
             if os.path.isfile(filepath+filename):
                 sheet1 = pd.read_excel(filepath + filename, sheet_name=0, converters=file_coltype[2])
+                sheet1=sheet1.fillna('')
                 df = pd.DataFrame(sheet1)
                 header = df.columns.tolist()
                 df = df.values.tolist()
-
 
             else:
                 print('파일이 없습니다')
@@ -575,7 +596,6 @@ def jasan_modi():
             readmode='n'
             return json.dumps(readmode)
         elif readmode=='n':
-            path="C:\\Users\\User\\PycharmProjects\\webproject1\\app\\static\\setting\\"
             filepath="app\static\\setting\\"
             gubun = int(request.form['gubun'])
             index = json.loads(request.form['index'])
@@ -606,22 +626,73 @@ def jasan_modi():
                     sheet2_df = sheet2_df[sheet2_df[index[3]] != '']
                     sheet_name=['대여현황','대여기록']
 
-                with pd.ExcelWriter(filepath+filename) as writer:
-                    sheet1_df.to_excel(writer, sheet_name=sheet_name[0], index=False)
-                    sheet2_df.to_excel(writer, sheet_name=sheet_name[1], index=False)
+                # with pd.ExcelWriter(filepath+filename) as writer:
+                #     sheet1_df.to_excel(writer, sheet_name=sheet_name[0], index=False)
+                #     sheet2_df.to_excel(writer, sheet_name=sheet_name[1], index=False)
+
+                sf1 = StyleFrame(sheet1_df)
+                sf2 = StyleFrame(sheet2_df)
+                excel_writer = StyleFrame.ExcelWriter(filepath+filename)
+                sf1.to_excel(excel_writer=excel_writer, sheet_name=sheet_name[0], best_fit=None, columns_and_rows_to_freeze=None)
+                sf2.to_excel(excel_writer=excel_writer, sheet_name=sheet_name[1], best_fit=None, columns_and_rows_to_freeze=None)
+                excel_writer.save()
 
             elif gubun==4:
                 sheet1_df = sheet1_df[sheet1_df[index[4]] != '']
                 sheet_name = '직원정보'
 
-                with pd.ExcelWriter(filepath+filename) as writer:
-                    sheet1_df.to_excel(writer, sheet_name=sheet_name, index=False)
-
+                # with pd.ExcelWriter(filepath+filename) as writer:
+                #     sheet1_df.to_excel(writer, sheet_name=sheet_name, index=False)
+                excel_writer = StyleFrame.ExcelWriter(filepath+filename)
+                sf = StyleFrame(sheet1_df)
+                sf.to_excel(excel_writer=excel_writer, sheet_name=sheet_name, best_fit=None, columns_and_rows_to_freeze=None)
+                excel_writer.save()
 
         return '0'
 
     except:
         print(traceback.format_exc())
+
+
+@bp.route('/create_card_excel/', methods=['get','post'])
+def create_card_excel():
+    """수정/저장 로직"""
+    try:
+        existfile=''
+        path=os.path.join(os.path.expanduser('~'),'Desktop')
+        filepath=path.replace('\\',r'\\')+r"\\"
+        filename = request.form['filename']
+
+        sheet1 = json.loads(request.form['sheet1'])
+        col = len(sheet1['header'])
+        dataset = numpy.array(sheet1['dataset']).reshape((int(sheet1['rows']), col))
+        sheet_df = pd.DataFrame(dataset)
+        sheet_df.columns = sheet1['header']
+
+        # with pd.ExcelWriter(filepath+filename) as writer:
+        #     sheet_df.to_excel(writer, index=False)
+
+        excel_writer = StyleFrame.ExcelWriter(filepath+filename)
+        sf = StyleFrame(sheet_df)
+        sf.apply_headers_style(cols_to_style=['순번','제작형태'],styler_obj=Styler(bg_color='#a01710',font_size=11,font_color=utils.colors.white))
+        sf.apply_headers_style(cols_to_style=['회사명','발급구분','사진파일명','한글명'],styler_obj=Styler(font_size=11,bg_color='#f6ff3b'))
+        sf.apply_headers_style(cols_to_style=['영문명','사번','직급','부서','발급일자','한자명','소속'],styler_obj=Styler(font_size=11,bg_color='#80aaff'))
+        sf.apply_column_style(cols_to_style=['회사명'],styler_obj=Styler(font_size=11,bg_color='#f6ff3b'),width=13)
+        sf.apply_column_style(cols_to_style=['사진파일명'],styler_obj=Styler(font_size=11,bg_color='#f6ff3b'),width=12)
+        sf.apply_column_style(cols_to_style=['발급구분','한글명'],styler_obj=Styler(font_size=11,bg_color='#f6ff3b'))
+        sf.to_excel(excel_writer=excel_writer, best_fit=None, columns_and_rows_to_freeze=None)
+        excel_writer.save()
+
+        return json.dumps({'filename':filename,'result': os.path.exists(filepath+filename), 'flag': True})
+
+    except PermissionError:
+        print('Error!')
+        return json.dumps({'filename': filename, 'result': False, 'flag': 'PermissionError'})
+
+    except:
+        print(traceback.format_exc())
+        return json.dumps({'filename': filename, 'result': False, 'flag': 'Error'})
+
 
 
 # --------내부 함수
