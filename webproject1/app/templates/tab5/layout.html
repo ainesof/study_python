@@ -103,27 +103,25 @@ function kfr_getfile(){
     });
 }
 
-function asd(){
-   $('.btn-primary').eq(0).attr('title','aaaaaaaaaaaaaaaaa');
-    alert($('.btn-primary').eq(0).attr('title'));
+<!-- ESG자료 다운로드하다 포기 -->
+function esg_down(){
 
+    $.get({{ url_for('tab5.esg_download')}},function(path){
+        alert(path);
+    });
 }
-</script>
 
+</script>
 </head>
 <body>
 
-
 <ul class="list-group">
-    <li class="list-group-item active"> 레이아웃 구성
-        <span class="material-icons">sms_failed</span>
-    </li>
+    <li class="list-group-item active"> 레이아웃 구성<span class="material-icons">sms_failed</span></li>
     <li class="list-group-item">1-1고객 그룹별 수탁고 총괄->1-2고객 그룹별 순자산/설정액 현황(본부/그룹+고객)->1-3펀드리스트</li>
     <li class="list-group-item">2-1고객 유형별 수탁고 총괄->2-2고객 유형별 순자산/설정액 현황(본부/유형+그룹)->2-3펀드리스트</li>
     <li class="list-group-item">3-1ESG 평가 등급</li>
     <li class="list-group-item">99-1다이렉트 수익자정보 검색(새창)->99-2다이렉트 수익자정보</li>
 </ul>
-
 
 <div style="margin:10px;">
 <!-- Javascript가 필요없이 data-toggle에 collapse href에 대상 id을 설정합니다. -->
@@ -132,6 +130,7 @@ function asd(){
 <button id="kfr_getfile" class="btn btn-primary" onclick="kfr_getfile()">파일 가져오기</button>
 <button id="scheduler_do" class="btn btn-primary" onclick="btn_click()">스케쥴러 중지</button>
 <button name="pdf_btn" class="btn btn-primary" value="ESGDigest_2021_1H_A095570_AJ네트웍스.pdf">pdf뷰어</button>
+<button id="esg_down" class="btn btn-primary" onclick="esg_down()">엑셀 값 추출</button>
 </div>
 
 

@@ -9,6 +9,7 @@ import pandas as pd
 from styleframe import StyleFrame, Styler, utils
 import json
 import numpy
+import time
 import ftplib,logging,logging.handlers
 from collections import OrderedDict
 
@@ -418,10 +419,11 @@ def rental_pdf():
 def create_card():
     """사원증 신청양식 제작 페이지"""
     try:
-
         title = ['출입증 발급기록', '전체 출입증', '노트북 대여현황', '노트북 대여기록', '직원 정보', '사원증 신청서 작성', '렌탈 인수인도서']
-        """logic&win: 넣어야 상단메뉴가 작동, header:제목,title:소메뉴,headtitle:메인타이틀"""
-        return render_template('tab5/create_card.html', logic=5, win=1,title=title, headtitle=title[5])
+        """logic&win: 넣어야 상단메뉴가 작동, header:제목,title:소메뉴,headtitle:메인타이틀, IP:IP"""
+
+        return render_template('tab5/create_card.html', logic=5, win=1,title=title, headtitle=title[5]
+                               ,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
 
     except:
         print(traceback.format_exc())
@@ -444,6 +446,8 @@ def jasan(gubun):
         file_coltype=[{'카드번호':str,'비고':str},{'수량':str,'대여 수':str,'반납 수':str,'대여':str},
                       {'사번':str,'IP':str,'IP2':str,'전화번호':str,'PC1':str,'PC2':str,
                        '모니터1':str,'모니터2':str,'모니터3':str}]
+        modi_date=''
+        modi_time=''
 
         '''출입증 관리'''
         if gubun in [0,1]:
@@ -488,6 +492,8 @@ def jasan(gubun):
                 df1 = df1.values.tolist()
                 df2 = df2.values.tolist()
 
+                modi_date,modi_time=file_write_time(filepath, filename)
+
                 if gubun == 0:
                     df=df1
                     header=header1
@@ -504,13 +510,16 @@ def jasan(gubun):
 
                 """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부,
                 etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,remaincard=남은카드,usecardlist:사용중카드
-                index:값 지울때 기준"""
+                index:값 지울때 기준, IP:IP,modi_date:파일 수정일자,modi_time:파일 수정시간"""
+
             return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[0],
                                    title=title,headtitle=title[gubun],readmode='y',
                                    queryData1=df, header=header,
                                    etc_dataset=etc_dataset,etc_header=etc_header, gubun=gubun,
                                    remaincard=remaincard,usecardlist=usecardlist,
-                                   index=index_name)
+                                   index=index_name,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
+                                   modi_date=modi_date,modi_time=modi_time
+                                   )
 
         elif gubun in [2,3]:
             filename=readfile[1]
@@ -537,6 +546,8 @@ def jasan(gubun):
                 df1 = df1.values.tolist()
                 df2 = df2.values.tolist()
 
+                modi_date,modi_time=file_write_time(filepath, filename)
+
                 if gubun == 2:
                     df=df1
                     header=header1
@@ -552,12 +563,15 @@ def jasan(gubun):
                 print('파일이 없습니다')
 
                 """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부
-                etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,index:값 지울때 기준,total:총 수량"""
+                etc_dataset:다른시트 데이터,etc_header:다른시트 헤더,gubun:구분값,index:값 지울때 기준,total:총 수량,IP:IP
+                ,modi_date:파일 수정일자,modi_time:파일 수정시간"""
             return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[1],
                                    title=title,headtitle=title[gubun],readmode='y',
                                    queryData1=df, header=header,
                                    etc_dataset=etc_dataset,etc_header=etc_header, gubun=gubun,
-                                   index=index_name,total=total
+                                   index=index_name,total=total,
+                                   ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
+                                   modi_date=modi_date,modi_time=modi_time
                                    )
 
         elif gubun in [4]:
@@ -573,14 +587,19 @@ def jasan(gubun):
                 header = df.columns.tolist()
                 df = df.values.tolist()
 
+                modi_date,modi_time=file_write_time(filepath, filename)
+
+
             else:
                 print('파일이 없습니다')
 
                 """queryData1:뿌릴 데이터,header:제목,title:소메뉴,headtitle:메인타이틀,readmode:읽기전용여부
-               ,gubun:구분값,index:값 지울때 기준"""
+               ,gubun:구분값,index:값 지울때 기준,IP:IP,modi_date:파일 수정일자,modi_time:파일 수정시간"""
             return render_template('tab5/jasan.html', logic=4, win=1,searchdate=' ',filename=readfile[2],
                                    title=title,headtitle=title[gubun],readmode='y',
-                                   queryData1=df, header=header,gubun=gubun, index=index_name
+                                   queryData1=df, header=header,gubun=gubun, index=index_name,
+                                   ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
+                                   modi_date=modi_date,modi_time=modi_time
                                    )
 
     except:
@@ -654,6 +673,16 @@ def jasan_modi():
         print(traceback.format_exc())
 
 
+def file_write_time(path,name):
+    """해당 파일의 최근수정일 반환"""
+    recently = time.gmtime(os.path.getatime(path + name))
+    print(path + name)
+    modi_date=str(recently.tm_year)[2:4] + '.' + str(recently.tm_mon).zfill(2) + '.' + str(recently.tm_mday).zfill(2)
+    modi_time=str(recently.tm_hour + 9).zfill(2) + ':' + str(recently.tm_min).zfill(2) + ':' + str(recently.tm_sec).zfill(2)
+    print(modi_date+' '+modi_time)
+
+    return modi_date,modi_time
+
 @bp.route('/create_card_excel/', methods=['get','post'])
 def create_card_excel():
     """수정/저장 로직"""
@@ -693,8 +722,31 @@ def create_card_excel():
         print(traceback.format_exc())
         return json.dumps({'filename': filename, 'result': False, 'flag': 'Error'})
 
+@bp.route('/esg_download/', methods=['get','post'])
+def esg_download():
+    """ESG자료 다운로드"""
+    try:
+        sitepath = r"http:\\esg.kesgresearch.com\media\docs\esgdigest\202101"
+        filename = "esgcode.xlsx"
+        filepath = "app\static\\setting\\"
+        pdfpath = "C:\\Users\\User\\PycharmProjects\\webproject1\\app\\static\\pdf\\"
 
+        if os.path.isfile(filepath + filename) == False:
+            print('백업파일 사용')
+            filename = "esgcode_bak.xlsx"
 
+        if os.path.isfile(filepath + filename):
+            sheet1 = pd.read_excel(filepath + filename, sheet_name=0)
+            sheet1 = sheet1.fillna('')
+            df1 = pd.DataFrame(sheet1)
+            filename=df1['기업코드'][1]+"_"+df1['기업명'][1]+".pdf"
+            downfile = sitepath+r"\ESGDigest_2021_1H_"+filename
+
+        # return render_template('tab5/pdf_view.html', pdfname=downfile)
+        return downfile
+
+    except:
+        print(traceback.format_exc())
 # --------내부 함수
 
 def cal(gubun,win, logic, date1, val1, val2, val3, val4):

@@ -166,38 +166,42 @@ modal_msg=[['발급구분','신규: 새로운 직원카드 발급,<br> 재발급
 </div>
 <div class="sideBanner">
     <span class="txt-label">
-        <table><tr><td colspan="3">
-        <div class="btn-group-vertical">
-            <button class="btn btn-dark" style='cursor:default;'>메뉴</button>
-            {% if gubun==0 or gubun==1 %}
-                <button name="remain" class="btn btn-primary btn-sm">사용가능
-                    <span class="badge bg-secondary"></span>
-                </button>
-                <button name="used" class="btn btn-primary btn-sm">대여 중
-                    <span class="badge bg-secondary"></span>
-                </button>
-            {% elif gubun==2 or gubun==3 %}
-                <button class="btn btn-primary btn-sm" style='cursor:default;'>대여수량
-                    <span class="badge bg-secondary">{{total}}</span>
-                </button>
-            {% elif gubun==4 %}
-                <button class="btn btn-primary btn-sm" style='cursor:default;'>총 인원
-                    <span class="badge bg-secondary">{{queryData1|length}}</span>
-                </button>
-            {% endif %}
-            <button name="submenu1" class="btn btn-outline-secondary btn-sm">{{title[0]}}</button>
-            <button name="submenu2" class="btn btn-outline-secondary btn-sm">{{title[1]}}</button>
-            <button name="submenu3" class="btn btn-outline-secondary btn-sm">{{title[2]}}</button>
-            <button name="submenu4" class="btn btn-outline-secondary btn-sm">{{title[3]}}</button>
-            <button name="submenu5" class="btn btn-outline-secondary btn-sm">{{title[4]}}</button>
-            <button name="submenu6" class="btn btn-outline-secondary btn-sm">{{title[5]}}</button>
-            <button name="submenu7" class="btn btn-outline-secondary btn-sm">{{title[6]}}</button>
-            <div class="btn-group" role="group">
-                <input id="up_btn" class="btn btn-outline-dark btn-lg" type="button" value="▲"/>
-                <input class="btn btn-outline-dark btn-lg" type="button" value=" " disabled />
-                <input id="down_btn" class="btn btn-outline-dark btn-lg" type="button" value="▼"/>
-            </div>
-        </div></td></tr></table>
+        <table>
+            <tr>접속IP: <mark>{{ip}}</mark></tr>
+            <tr><td colspan="3">
+                <div class="btn-group-vertical">
+                <button class="btn btn-dark" style='cursor:default;'>메뉴</button>
+                {% if gubun==0 or gubun==1 %}
+                    <button name="remain" class="btn btn-primary btn-sm">사용가능
+                        <span class="badge bg-secondary"></span>
+                    </button>
+                    <button name="used" class="btn btn-primary btn-sm">대여 중
+                        <span class="badge bg-secondary"></span>
+                    </button>
+                {% elif gubun==2 or gubun==3 %}
+                    <button class="btn btn-primary btn-sm" style='cursor:default;'>대여수량
+                        <span class="badge bg-secondary">{{total}}</span>
+                    </button>
+                {% elif gubun==4 %}
+                    <button class="btn btn-primary btn-sm" style='cursor:default;'>총 인원
+                        <span class="badge bg-secondary">{{queryData1|length}}</span>
+                    </button>
+                {% endif %}
+                    <button name="submenu1" class="btn btn-outline-secondary btn-sm">{{title[0]}}</button>
+                    <button name="submenu2" class="btn btn-outline-secondary btn-sm">{{title[1]}}</button>
+                    <button name="submenu3" class="btn btn-outline-secondary btn-sm">{{title[2]}}</button>
+                    <button name="submenu4" class="btn btn-outline-secondary btn-sm">{{title[3]}}</button>
+                    <button name="submenu5" class="btn btn-outline-secondary btn-sm">{{title[4]}}</button>
+                    <button name="submenu6" class="btn btn-outline-secondary btn-sm">{{title[5]}}</button>
+                    <button name="submenu7" class="btn btn-outline-secondary btn-sm">{{title[6]}}</button>
+                    <div class="btn-group" role="group">
+                        <input id="up_btn" class="btn btn-outline-dark btn-lg" type="button" value="▲"/>
+                        <input class="btn btn-outline-dark btn-lg" type="button" value=" " disabled />
+                        <input id="down_btn" class="btn btn-outline-dark btn-lg" type="button" value="▼"/>
+                    </div>
+                </div>
+            </td></tr>
+        </table>
     </span>
 </div>
 
